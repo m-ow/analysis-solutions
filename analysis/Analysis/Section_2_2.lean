@@ -62,7 +62,10 @@ lemma Nat.add_succ (n m:Nat) : n + (m++) = (n + m)++ := by
 
 /-- n++ = n + 1 (Why?) -/
 theorem Nat.succ_eq_add_one (n:Nat) : n++ = n + 1 := by
-  sorry
+  revert n; apply induction
+  . rfl
+  intro n ih
+  rw [succ_add, ih]
 
 /-- Proposition 2.2.4 (Addition is commutative) -/
 theorem Nat.add_comm (n m:Nat) : n + m = m + n := by
@@ -75,7 +78,10 @@ theorem Nat.add_comm (n m:Nat) : n + m = m + n := by
 
 /-- Proposition 2.2.5 (Addition is associative) / Exercise 2.2.1-/
 theorem Nat.add_assoc (a b c:Nat) : (a + b) + c = a + (b + c) := by
-  sorry
+  revert a; apply induction
+  . rfl
+  intro n ih
+  rw [succ_add, succ_add, succ_add, ih]
 
 /-- Proposition 2.2.6 (Cancellation law) -/
 theorem Nat.add_cancel_left (a b c:Nat) (habc: a + b = a + c) : b = c := by
@@ -132,7 +138,11 @@ theorem Nat.add_eq_zero (a b:Nat) (hab: a + b = 0) : a = 0 ∧ b = 0 := by
 
 /-- Lemma 2.2.10 (unique predecessor) / Exercise 2.2.2 -/
 lemma Nat.uniq_succ_eq (a:Nat) (ha: a.isPos) : ∃! b, b++ = a := by
-  sorry
+  revert a; apply induction
+  . intro ha; contradiction
+  intro n ih ha
+  by_contra h
+  simp at h
 
 /-- Definition 2.2.11 (Ordering of the natural numbers) -/
 instance Nat.instLE : LE Nat where
@@ -169,25 +179,68 @@ example : (8:Nat) > 5 := by
   decide
 
 theorem Nat.succ_gt (n:Nat) : n++ > n := by
-  sorry
+  revert n; apply induction
+  . rw [Nat.gt_iff_lt, Nat.lt_iff]; constructor
+    use 1; rfl
+    decide
+  intro n ih
+  rw [Nat.gt_iff_lt, Nat.lt_iff]; constructor
+  . use 1; rw [succ_eq_add_one]
+  . rw [Nat.gt_iff_lt, Nat.lt_iff] at ih
+    have h : (n ≠ n++) := ih.right
+    apply succ_ne_succ; assumption
 
 /-- Proposition 2.2.12 (Basic properties of order for natural numbers) / Exercise 2.2.3
 
 (a) (Order is reflexive). -/
 theorem Nat.ge_refl (a:Nat) : a ≥ a := by
-  sorry
+  revert a; apply induction
+  . use 0; rfl
+  intro n ih
+  use 0; rw [add_comm, zero_add]
 
 /-- (b) (Order is transitive) -/
 theorem Nat.ge_trans {a b c:Nat} (hab: a ≥ b) (hbc: b ≥ c) : a ≥ c := by
-  sorry
+  revert a; apply induction
+  . intro h0b; cases' hbc with x hx; cases' h0b with z hz;
+    rw [hx] at hz; use (x + z);
+    rw [<- Nat.add_assoc]; assumption
+  intro n ih hnb
+  cases' hnb with z hz;
+  cases' hbc with x hx; rw [hx] at hz
+  use (x + z); rw [<- Nat.add_assoc]; assumption
 
 /-- (c) (Order is anti-symmetric)  -/
 theorem Nat.ge_antisymm {a b:Nat} (hab: a ≥ b) (hba: b ≥ a) : a = b := by
-  sorry
+  cases' hab with k hk; cases' hba with n hn;
+  have h : (a + 0 = a) := Nat.add_zero a
+  rw [<- h] at hk
+  rw [hn] at hk
+  rw [Nat.add_assoc] at hk
+  apply Nat.add_cancel_left at hk
+  have hk' : n + k = 0 := Eq.symm hk
+  apply Nat.add_eq_zero at hk'
+  cases' hk' with hK hN
+  rw [hK] at hn; simp at hn;
+  have hn' : a = b := Eq.symm hn
+  assumption
 
 /-- (d) (Addition preserves order)  -/
 theorem Nat.add_ge_add_right (a b c:Nat) : a ≥ b ↔ a + c ≥ b + c := by
-  sorry
+  apply Iff.intro
+  . intro hab
+    cases' hab with x hx;
+    use x; rw [hx, Nat.add_assoc]
+    nth_rw 2 [Nat.add_comm]
+    rw [Nat.add_assoc]
+  . intro h
+    cases' h with x hx; use x
+    rw [Nat.add_assoc] at hx
+    nth_rw 3 [Nat.add_comm] at hx
+    rw [<- Nat.add_assoc] at hx
+    rw [Nat.add_comm] at hx
+    nth_rw 2 [Nat.add_comm] at hx
+    apply Nat.add_cancel_left at hx; assumption
 
 /-- (d) (Addition preserves order)  -/
 theorem Nat.add_ge_add_left (a b c:Nat) : a ≥ b ↔ c + a ≥ c + b := by
@@ -202,11 +255,45 @@ theorem Nat.add_le_add_left (a b c:Nat) : a ≤ b ↔ c + a ≤ c + b := add_ge_
 
 /-- (e) a < b iff a++ ≤ b. -/
 theorem Nat.lt_iff_succ_le (a b:Nat) : a < b ↔ a++ ≤ b := by
-  sorry
+  apply Iff.intro
+  . intro hab; rw [lt_iff] at hab
+    cases' hab with hE hN; cases' hE with d hd
+    have hD : d.isPos := by
+      { rw [isPos_iff]; by_contra h
+        rw [h] at hd; simp at hd
+        have hd' : a = b := Eq.symm hd; contradiction }
+    apply uniq_succ_eq at hD; cases' hD with e he
+    simp at he; cases' he with he h'
+    rw [<- he] at hd
+    use e; rw [succ_add, add_comm]; rwa [<- add_comm, succ_add] at hd
+  . intro hab; constructor
+    . cases' hab with x hx
+      use (1 + x); rwa [<- add_assoc, <- succ_eq_add_one]
+    . by_contra h; cases' hab with x hx; rw [h] at hx
+      have hb0 : (b = b + 0) := by rw [add_zero]
+      nth_rw 1 [hb0] at hx; rw [succ_eq_add_one, add_assoc] at hx
+      apply add_cancel_left at hx
+      have hx' : (1 + x = 0) := Eq.symm hx
+      apply add_eq_zero at hx'; simp at hx'
 
 /-- (f) a < b if and only if b = a + d for positive d. -/
 theorem Nat.lt_iff_add_pos (a b:Nat) : a < b ↔ ∃ d:Nat, d.isPos ∧ b = a + d := by
-  sorry
+  apply Iff.intro
+  . intro hab; cases' hab with hE hN; cases' hE with k hk;
+    use k; constructor;
+    . rw [isPos_iff]; by_contra h
+      rw [h] at hk; simp at hk
+      have hba : (a = b) := Eq.symm hk; contradiction
+    . assumption
+  . intro h; rw [lt_iff]
+    cases' h with k hk; cases' hk with hP hK
+    constructor
+    . use k
+    . by_contra h; rw [h] at hK
+      have hb0 : (b = b + 0) := by rw [add_zero]
+      nth_rw 1 [hb0] at hK; apply add_cancel_left at hK
+      rw [isPos_iff] at hP
+      have hK' : (k = 0) := Eq.symm hK; contradiction
 
 /-- If a < b then a ̸= b,-/
 theorem Nat.ne_of_lt (a b:Nat) : a < b → a ≠ b := by
@@ -229,7 +316,7 @@ theorem Nat.trichotomous (a b:Nat) : a < b ∨ a = b ∨ a > b := by
   -- this proof is written to follow the structure of the original text.
   revert a; apply induction
   . have why : 0 ≤ b := by
-      sorry
+      use b; rfl
     replace why := (Nat.le_iff_lt_or_eq _ _).mp why
     tauto
   intro a ih
@@ -237,9 +324,22 @@ theorem Nat.trichotomous (a b:Nat) : a < b ∨ a = b ∨ a > b := by
   . rw [lt_iff_succ_le] at case1
     rw [Nat.le_iff_lt_or_eq] at case1
     tauto
-  . have why : a++ > b := by sorry
+  . have why : a++ > b := by
+      { rw [gt_iff_lt, lt_iff_add_pos]; use 1; constructor
+        . rw [isPos_iff]; simp
+        . rw [<- succ_eq_add_one]; rwa [succ.injEq] }
     tauto
-  have why : a++ > b := by sorry
+  have why : a++ > b := by
+    { constructor
+      . cases' case3 with h1 h2; cases' h1 with x hx;
+        use (x + 1); rwa [<- add_assoc, <- succ_eq_add_one, succ.injEq];
+      . by_contra h
+        cases' case3 with hE hN; cases' hE with x hx
+        rw [h] at hx; rw [succ_eq_add_one, add_assoc] at hx
+        have h0 : (a + 0 = a) := by rw [add_zero]
+        nth_rw 1 [<- h0] at hx; apply add_cancel_left at hx
+        have hx' : (1 + x = 0) := Eq.symm hx
+        apply add_eq_zero at hx'; contradiction }
   tauto
 
 /-- (Not from textbook) The order is decidable.  This exercise is only recommended for Lean experts. -/
