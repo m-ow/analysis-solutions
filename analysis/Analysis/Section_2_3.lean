@@ -40,15 +40,31 @@ theorem Nat.two_mul (m: Nat) : 2 * m = 0 + m + m := by
 
 /-- This lemma will be useful to prove Lemma 2.3.2. -/
 lemma Nat.mul_zero (n: Nat) : n * 0 = 0 := by
-  sorry
+  revert n; apply induction
+  . decide
+  . intro n ih
+    rw [succ_mul]
+    simp
+    assumption
 
 /-- This lemma will be useful to prove Lemma 2.3.2. -/
 lemma Nat.mul_succ (n m:Nat) : n * m++ = n * m + n := by
-  sorry
+  revert n; apply induction
+  . rw [zero_mul, zero_mul]
+    simp
+  . intro n ih
+    rw [succ_mul, succ_mul]
+    rw [ih, add_succ, add_succ]
+    nth_rw 2 [add_assoc]
+    nth_rw 4 [add_comm]
+    rw [add_assoc]
 
 /-- Lemma 2.3.2 (Multiplication is commutative) / Exercise 2.3.1 -/
 lemma Nat.mul_comm (n m: Nat) : n * m = m * n := by
-  sorry
+  revert n; apply induction
+  . rw [mul_zero, zero_mul]
+  . intro n ih
+    rw [succ_mul, mul_succ, <- ih]
 
 theorem Nat.mul_one (m: Nat) : m * 1 = m := by
   rw [mul_comm, one_mul]
