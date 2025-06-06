@@ -71,10 +71,29 @@ theorem Nat.mul_one (m: Nat) : m * 1 = m := by
 
 /-- Lemma 2.3.3 (Positive natural numbers have no zero divisors) / Exercise 2.3.2 -/
 lemma Nat.mul_eq_zero_iff (n m: Nat) : n * m = 0 ↔ n = 0 ∨ m = 0 := by
-  sorry
+  apply Iff.intro
+  . revert n; apply induction
+    . intro h; left; simp
+    . intro n ih hnm
+      rw [succ_mul] at hnm
+      apply add_eq_zero at hnm
+      cases' hnm with hn0 hm
+      right; assumption
+  . revert n; apply induction
+    . intro h; exact zero_mul m
+    . intro n ih hnm
+      cases' hnm with hN hM
+      . rw [hN]; exact zero_mul m
+      . rw [hM]; rw [succ_mul]
+        simp; exact mul_zero n
 
 lemma Nat.pos_mul_pos {n m: Nat} (h₁: n.isPos) (h₂: m.isPos) : (n * m).isPos := by
-  sorry
+  rw [isPos_iff] at h₁ h₂ ⊢
+  by_contra h
+  rw [mul_eq_zero_iff] at h
+  cases' h with hN hM
+  . contradiction
+  . contradiction
 
 /-- Proposition 2.3.4 (Distributive law)-/
 theorem Nat.mul_add (a b c: Nat) : a * (b + c) = a * b + a * c := by
