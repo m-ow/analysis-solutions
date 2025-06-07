@@ -176,7 +176,36 @@ instance Nat.isOrderedRing : IsOrderedRing Nat where
 
 /-- Proposition 2.3.9 (Euclid's division lemma) / Exercise 2.3.5 -/
 theorem Nat.exists_div_mod (n :Nat) {q: Nat} (hq: q.isPos) : ∃ m r: Nat, 0 ≤ r ∧ r < q ∧ n = m * q + r := by
-  sorry
+  revert n; apply induction
+  . use 0, 0; constructor
+    . simp
+    . constructor
+      . constructor
+        . use q; rfl
+        . symm; assumption
+      . simp
+  . intro n ih
+    cases' ih with m h; cases' h with r h
+    cases' h with h0 h; cases' h with hrq hn
+    rw [lt_iff_succ_le, le_iff_lt_or_eq] at hrq
+    cases' hrq with hL hQ
+    . use m, (r + 1); constructor
+      . use r + 1; simp
+      . constructor
+        . constructor
+          . cases' hL with hE hN; cases' hE with x hx
+            use x; rwa [<- succ_eq_add_one]
+          . cases' hL with hE hN; rwa [<- succ_eq_add_one]
+        . rw [hn, succ_eq_add_one, add_assoc]
+    . use (m + 1), 0; constructor
+      . use 0; simp
+      . constructor
+        . constructor
+          . use q; simp
+          . by_contra h; rw [<- h] at hQ; simp at hQ
+        . simp; rw [add_mul]
+          nth_rw 2 [<- hQ]; rw [one_mul, hn]
+          rw [succ_eq_add_one, succ_eq_add_one, add_assoc]
 
 /-- Definition 2.3.11 (Exponentiation for natural numbers) -/
 abbrev Nat.pow (m n: Nat) : Nat := Nat.recurse (fun _ prod ↦ prod * m) 1 n
