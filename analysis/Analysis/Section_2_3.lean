@@ -222,14 +222,6 @@ theorem Nat.pow_succ (m n: Nat) : (m:Nat) ^ n++ = m^n * m := recurse_succ (fun _
 /-- Exercise 2.3.4-/
 theorem Nat.sq_add_eq (a b: Nat) : (a + b) ^ (2 : Nat) = a ^ (2 : Nat) + 2 * a * b + b ^ (2 : Nat) := by
   change (a + b) * (a + b) = a * a + 2 * a * b + b * b
-  rw [add_mul, mul_comm]
-  nth_rw 2 [mul_comm]
-  rw [add_mul, add_mul]
-  rw [two_mul]
-  simp
-  rw [<- add_assoc]
-  rw [add_mul]
-  rw [<- add_assoc]
-  nth_rw 6 [mul_comm]
+  ring
 
 end Chapter2
