@@ -111,7 +111,13 @@ theorem Nat.add_mul (a b c: Nat) : (a + b)*c = a*c + b*c := by
 
 /-- Proposition 2.3.5 (Multiplication is associative) / Exercise 2.3.3 -/
 theorem Nat.mul_assoc (a b c: Nat) : (a * b) * c = a * (b * c) := by
-  sorry
+  revert a; apply induction
+  . rw [zero_mul, zero_mul]
+    have h : (0 * (b * c) = 0) := by rw [zero_mul]
+    rw [h]
+  . intro n ih
+    rw [succ_eq_add_one, add_mul, add_mul, add_mul]
+    rw [ih]; rfl
 
 /-- (Not from textbook)  Nat is a commutative semiring. -/
 instance Nat.instCommSemiring : CommSemiring Nat where
