@@ -230,8 +230,8 @@ theorem Real.LIM_of_nonneg {a: ℕ → ℚ} (ha: ∀ n, a n ≥ 0) (hcauchy: (a:
   obtain ⟨ c, cpos, hb ⟩ := hb
   have claim1 : ∀ n, ¬ (c/2).close (a n) (b n) := by
     intro n
-    replace ha := ha n
-    replace hb := hb n
+    specialize ha n
+    specialize hb n
     simp [Section_4_3.close_iff]
     calc
       _ < c := by linarith
@@ -241,7 +241,7 @@ theorem Real.LIM_of_nonneg {a: ℕ → ℚ} (ha: ∀ n, a n ≥ 0) (hcauchy: (a:
     contrapose! claim1
     rw [Rat.eventually_close_iff] at claim1
     obtain ⟨ N, claim1 ⟩ := claim1
-    replace claim1 := claim1 N (le_refl _)
+    specialize claim1 N (le_refl _)
     use N
     rwa [Section_4_3.close_iff]
   have claim3 : ¬ Sequence.equiv a b := by
@@ -288,7 +288,7 @@ theorem Real.exists_rat_le_and_nat_ge {x:Real} (hx: x.isPos) : (∃ q:ℚ, q > 0
       convert LIM_mono hcauchy _ _
       . exact Sequence.isCauchy_of_const r
       intro n
-      replace this := this n
+      specialize this n
       simp at this
       exact (le_abs_self _).trans this
     _ < ((N:ℚ):Real) := by simp [←Real.lt_of_coe,hN]
