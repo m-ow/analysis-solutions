@@ -267,17 +267,41 @@ theorem SetTheory.Set.singleton_empty_neq_pair : singleton_empty ≠ pair_empty 
   sorry
 
 /-- Remark 3.1.11.  (These results can be proven either by a direct rewrite, or by using extensionality.) -/
-theorem SetTheory.Set.union_congr_left (A A' B:Set) (h: A = A') : A ∪ B = A' ∪ B := by sorry
+theorem SetTheory.Set.union_congr_left (A A' B:Set) (h: A = A') : A ∪ B = A' ∪ B := by
+  apply ext
+  intro x
+  rw [ext_iff] at h
+  specialize h x
+  rw [mem_union, mem_union]
+  apply Iff.intro
+  . intro h'; cases' h' with hA hB
+    . rw [h] at hA; left; assumption
+    . right; assumption
+  . intro h'; cases' h' with hA hB
+    . rw [<- h] at hA; left; assumption
+    . right; assumption
 
 /-- Remark 3.1.11.  (These results can be proven either by a direct rewrite, or by using extensionality.) -/
-theorem SetTheory.Set.union_congr_right (A B B':Set) (h: B = B') : A ∪ B = A ∪ B' := by sorry
+theorem SetTheory.Set.union_congr_right (A B B':Set) (h: B = B') : A ∪ B = A ∪ B' := by
+  rw [h]
 
 /-- Lemma 3.1.12 (Basic properties of unions) / Exercise 3.1.3 -/
 theorem SetTheory.Set.singleton_union_singleton (a b:Object) : ({a}:Set) ∪ ({b}:Set) = {a,b} := by
-  sorry
+  rw [pair_eq]
 
 /-- Lemma 3.1.12 (Basic properties of unions) / Exercise 3.1.3 -/
-theorem SetTheory.Set.union_comm (A B:Set) : A ∪ B = B ∪ A := by sorry
+theorem SetTheory.Set.union_comm (A B:Set) : A ∪ B = B ∪ A := by
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_union] at *; cases' h with hA hB
+    . right; assumption
+    . left; assumption
+  . intro h
+    rw [mem_union] at *; cases' h with hA hB
+    . right; assumption
+    . left; assumption
 
 /-- Lemma 3.1.12 (Basic properties of unions) / Exercise 3.1.3 -/
 theorem SetTheory.Set.union_assoc (A B C:Set) : (A ∪ B) ∪ C = A ∪ (B ∪ C) := by
@@ -295,19 +319,40 @@ theorem SetTheory.Set.union_assoc (A B C:Set) : (A ∪ B) ∪ C = A ∪ (B ∪ C
       rw [mem_union]; tauto
     have : x ∈ B ∪ C := by rw [mem_union]; tauto
     rw [mem_union]; tauto
-  sorry
+  . intro hx; rw [mem_union] at *
+    cases' hx with hA hBC
+    . left; rw [mem_union]; left; assumption
+    . rw [mem_union] at hBC; cases' hBC with hB hC
+      . left; rw [mem_union]; right; assumption
+      . right; assumption
 
 /-- Proposition 3.1.27(c) -/
 theorem SetTheory.Set.union_self (A:Set) : A ∪ A = A := by
-  sorry
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_union] at h; cases' h with h1 h2
+    <;> assumption
+  . intro h
+    rw [mem_union]; left; assumption
 
 /-- Proposition 3.1.27(a) -/
 theorem SetTheory.Set.union_empty (A:Set) : A ∪ ∅ = A := by
-  sorry
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_union] at h; cases' h with h1 h2
+    . assumption
+    . have hX : x ∉ (∅:Set) := by exact not_mem_empty x
+      contradiction
+  . intro h
+    rw [mem_union]; left; assumption
 
 /-- Proposition 3.1.27(a) -/
 theorem SetTheory.Set.empty_union (A:Set) : ∅ ∪ A = A := by
-  sorry
+  rw [union_comm]; exact union_empty A
 
 theorem SetTheory.Set.triple_eq (a b c:Object) : {a,b,c} = ({a}:Set) ∪ {b,c} := by
   rfl
