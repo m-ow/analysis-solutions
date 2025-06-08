@@ -12,25 +12,44 @@ In order to align the formalization with Mathlib conventions, a small number of 
 
 - Sequences are indexed to start from zero rather than from one, as Mathlib has much more support for the 0-based natural numbers `ℕ` than the 1-based natural numbers.
 - Many operations that are left undefined in the text, such as division by zero, or taking the formal limit of a non-Cauchy sequence, are instead assigned a "junk" value (e.g., `0`) to make the operation totally defined.  This is because Lean has better support for total functions than partial functions (indiscriminate use of the latter can lead into "dependent type hell" in which even very basic manipulations require quite subtle and delicate proofs).  See for instance [this blog post](https://xenaproject.wordpress.com/2020/07/05/division-by-zero-in-type-theory-a-faq/) by Kevin Buzzard for more discussion.
+- The Chapter 2 natural numbers are constructed by an inductive type, rather than via a purely axiomatic approach.  However, the Peano Axioms are formalized in [the epilogue to this chapter](https://teorth.github.io/analysis/sec2e/).
 
-## Currently formalized sections
+## Sections
 
-- [Section 2.1: The Peano axioms](https://teorth.github.io/analysis/docs/Analysis/Section_2_1.html)
-- [Section 2.2: Addition](https://teorth.github.io/analysis/docs/Analysis/Section_2_2.html)
-- [Section 2.3: Multiplication](https://teorth.github.io/analysis/docs/Analysis/Section_2_3.html)
-- [Chapter 2 epilogue: Isomorphism with the Mathlib natural numbers](https://teorth.github.io/analysis/docs/Analysis/Section_2_analysis/docs/.html)
-- [Section 3.1: Set theory fundamentals](https://teorth.github.io/analysis/docs/Analysis/Section_3_1.html)
-- [Section 4.1: The integers](https://teorth.github.io/analysis/docs/Analysis/Section_4_1.html)
-- [Section 4.2: The rationals](https://teorth.github.io/analysis/docs/Analysis/Section_4_2.html)
-- [Section 4.3: Absolute value and exponentiation](https://teorth.github.io/analysis/docs/Analysis/Section_4_3.html)
-- [Section 5.1: Cauchy sequences of rationals](https://teorth.github.io/analysis/docs/Analysis/Section_5_1.html)
-- [Section 5.2: Equivalent Cauchy sequences](https://teorth.github.io/analysis/docs/Analysis/Section_5_2.html)
-- [Section 5.3: Construction of the real numbers](https://teorth.github.io/analysis/docs/Analysis/Section_5_3.html)
-- [Section 5.4: Ordering the reals](https://teorth.github.io/analysis/docs/Analysis/Section_5_4.html)
+- Section 2.1: The Peano axioms ([Verso page](https://teorth.github.io/analysis/sec21/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_2_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_2_1.lean))
+- Section 2.2: Addition ([Verso page](https://teorth.github.io/analysis/sec22/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_2_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_2_2.lean))
+- Section 2.3: Multiplication ([Verso page](https://teorth.github.io/analysis/sec23/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_2_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_2_3.lean))
+- Chapter 2 epilogue: Isomorphism with the Mathlib natural numbers ([Verso page](https://teorth.github.io/analysis/sec2e/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_2_analysis/docs/.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_2_epilogue.lean))
+- Section 3.1: Set theory fundamentals ([Verso page](https://teorth.github.io/analysis/sec31/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_3_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_3_1.lean))
+- Section 3.3: Functions (planned)
+- Section 3.4: Images and inverse images (planned)
+- Section 3.5: Cartesian products (planned)
+- Section 3.6: Cardinality of sets (planned)
+- Section 4.1: The integers ([Verso page](https://teorth.github.io/analysis/sec41/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_1.lean))
+- Section 4.2: The rationals ([Verso page](https://teorth.github.io/analysis/sec42/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_2.lean))
+- Section 4.3: Absolute value and exponentiation ([Verso page](https://teorth.github.io/analysis/sec43/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_3.lean))
+- Section 5.1: Cauchy sequences of rationals ([Verso page](https://teorth.github.io/analysis/sec51/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_1.lean))
+- Section 5.2: Equivalent Cauchy sequences ([Verso page](https://teorth.github.io/analysis/sec52/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_2.lean))
+- Section 5.3: Construction of the real numbers ([Verso page](https://teorth.github.io/analysis/sec53/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_3.lean))
+- Section 5.4: Ordering the reals ([Verso page](https://teorth.github.io/analysis/sec54/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_4.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_4.lean))
+- Section 5.5: The least upper bound property - under construction
+- Chapter 5 epilogue: Isomorphism with the Mathlib real numbers (planned)
+- Section 6.1: Convergence and limit laws (planned)
+- Section 6.2: The extended real number system (planned)
+- Section 6.3: Suprema and Infima of sequences (planned)
+- Section 6.4: Limsup, Liminf, and limit points (planned)
+- Section 6.5: Some standard limits (planned)
+- Section 6.6: Subsequences (planned)
+- Section 7.1: Finite series (planned)
+- Section 7.2: Infinite series (planned)
+- Section 7.3: Sums of non-negative numbers (planned)
+- Section 7.4: Rearrangement of series (planned)
+- Section 7.5: The root and ratio tests (planned)
 
 ## Other resources
 
 - [Web page for this project](https://teorth.github.io/analysis/)
+  - [Documentation](https://teorth.github.io/analysis/docs/)
 - [Web page for the book](https://terrytao.wordpress.com/books/analysis-i/)
   - [Springer edition](https://link.springer.com/book/10.1007/978-981-19-7261-4)
 - [Blog post announcing this project](https://terrytao.wordpress.com/2025/05/31/a-lean-companion-to-analysis-i/), Terence Tao, May 31 2025.
