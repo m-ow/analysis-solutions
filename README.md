@@ -13,7 +13,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
 - Sequences are indexed to start from zero rather than from one, as Mathlib has much more support for the 0-based natural numbers `ℕ` than the 1-based natural numbers.
 - Many operations that are left undefined in the text, such as division by zero, or taking the formal limit of a non-Cauchy sequence, are instead assigned a "junk" value (e.g., `0`) to make the operation totally defined.  This is because Lean has better support for total functions than partial functions (indiscriminate use of the latter can lead into "dependent type hell" in which even very basic manipulations require quite subtle and delicate proofs).  See for instance [this blog post](https://xenaproject.wordpress.com/2020/07/05/division-by-zero-in-type-theory-a-faq/) by Kevin Buzzard for more discussion.
 
-Currently formalized sections:
+## Currently formalized sections
 
 - [Section 2.1: The Peano axioms](https://teorth.github.io/analysis/docs/Analysis/Section_2_1.html)
 - [Section 2.2: Addition](https://teorth.github.io/analysis/docs/Analysis/Section_2_2.html)
@@ -28,7 +28,7 @@ Currently formalized sections:
 - [Section 5.3: Construction of the real numbers](https://teorth.github.io/analysis/docs/Analysis/Section_5_3.html)
 - [Section 5.4: Ordering the reals](https://teorth.github.io/analysis/docs/Analysis/Section_5_4.html)
 
-Other resources:
+## Other resources
 
 - [Web page for this project](https://teorth.github.io/analysis/)
 - [Web page for the book](https://terrytao.wordpress.com/books/analysis-i/)
@@ -37,7 +37,7 @@ Other resources:
 - [Lean Zulip discussion about this project](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/Lean.20companion.20to.20.22Analysis.20I.22.20-.20discussion/with/521458888)
 - [Notes for contributors](./CONTRIBUTING.md)
 
-General Lean resources:
+## General Lean resources
 
 - [The Lean community](https://leanprover-community.github.io/)
   - [Lean4 web playground](https://live.lean-lang.org/)
@@ -62,3 +62,34 @@ General Lean resources:
 - A [broader list](https://docs.google.com/document/d/1kD7H4E28656ua8jOGZ934nbH2HcBLyxcRgFDduH5iQ0) of AI and formal mathematics resources.
 
 More resource suggestions welcome!
+
+## Building
+
+### Building the project
+
+To build this project after [installing Lean](https://www.lean-lang.org/lean-get-started) and cloning this repository, follow these steps:
+
+```
+% cd analysis/
+% cd analysis/
+% lake exe cache get
+% lake build
+```
+
+### Building the project's web page
+
+To build the project's web page after [installing Lean](https://www.lean-lang.org/lean-get-started) and cloning this repository, follow these steps:
+
+```
+% cd analysis/
+% cd analysis/
+% lake exe cache get
+% lake -R -Kenv=dev build Analysis:docs
+% lake build
+% cd ../
+% cd book/
+% lake exe analysis-book
+% cd ../
+```
+
+After this, `book/_site/` contains the project's web page.
