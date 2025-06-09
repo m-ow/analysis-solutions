@@ -375,13 +375,18 @@ theorem SetTheory.Set.subset_def (X Y:Set) : X ⊆ Y ↔ ∀ x, x ∈ X → x �
 theorem SetTheory.Set.ssubset_def (X Y:Set) : X ⊂ Y ↔ (X ⊆ Y ∧ X ≠ Y) := by rfl
 
 /-- Remark 3.1.15 -/
-theorem SetTheory.Set.subset_congr_left {A A' B:Set} (hAA':A = A') (hAB: A ⊆ B) : A' ⊆ B := by sorry
+theorem SetTheory.Set.subset_congr_left {A A' B:Set} (hAA':A = A') (hAB: A ⊆ B) : A' ⊆ B := by
+  rwa [hAA'] at hAB
 
 /-- Examples 3.1.16 -/
-theorem SetTheory.Set.subset_self (A:Set) : A ⊆ A := by sorry
+theorem SetTheory.Set.subset_self (A:Set) : A ⊆ A := by
+  rw [subset_def]; intro x h; assumption
 
 /-- Examples 3.1.16 -/
-theorem SetTheory.Set.empty_subset (A:Set) : ∅ ⊆ A := by sorry
+theorem SetTheory.Set.empty_subset (A:Set) : ∅ ⊆ A := by
+  rw [subset_def]; intro x h
+  have hX : x ∉ (∅:Set) := by exact not_mem_empty x
+  contradiction
 
 /-- Proposition 3.1.17 (Partial ordering by set inclusion) -/
 theorem SetTheory.Set.subset_trans (A B C:Set) (hAB:A ⊆ B) (hBC:B ⊆ C) : A ⊆ C := by
@@ -395,11 +400,23 @@ theorem SetTheory.Set.subset_trans (A B C:Set) (hAB:A ⊆ B) (hBC:B ⊆ C) : A �
 
 /-- Proposition 3.1.17 (Partial ordering by set inclusion) -/
 theorem SetTheory.Set.subset_antisymm (A B:Set) (hAB:A ⊆ B) (hBA:B ⊆ A) : A = B := by
-  sorry
+  apply ext; intro x
+  rw [subset_def] at hAB; rw [subset_def] at hBA
+  apply Iff.intro
+  . specialize hAB x; assumption
+  . specialize hBA x; assumption
 
 /-- Proposition 3.1.17 (Partial ordering by set inclusion) -/
 theorem SetTheory.Set.ssubset_trans (A B C:Set) (hAB:A ⊂ B) (hBC:B ⊂ C) : A ⊂ C := by
-  sorry
+  rw [ssubset_def] at *
+  cases' hAB with hAB hN; cases' hBC with hBC hN'
+  constructor
+  . exact subset_trans A B C hAB hBC
+  . by_contra h
+    rw [h] at hAB
+    have : C = B := by exact subset_antisymm C B hAB hBC
+    have : B = C := Eq.symm this
+    contradiction
 
 /-- This defines the subtype `A.toSubtype` for any `A:Set`.  To produce an element `x'` of this subtype, use `⟨ x, hx ⟩`, where `x:Object` and `hx:x ∈ A`.  The object `x` associated to a subtype element `x'` is recovered as `x.val`, and the property `hx` that `x` belongs to `A` is recovered as `x.property`-/
 abbrev SetTheory.Set.toSubtype (A:Set) := Subtype (fun x ↦ x ∈ A)
@@ -432,7 +449,11 @@ theorem SetTheory.Set.specification_axiom {A:Set} {P: A → Prop} {x:Object} (h:
 theorem SetTheory.Set.specification_axiom' {A:Set} (P: A → Prop) (x:A.toSubtype) : x.val ∈ A.specify P ↔ P x :=
   (SetTheory.specification_axiom A P).2 x
 
-theorem SetTheory.Set.specify_subset {A:Set} (P: A → Prop) : A.specify P ⊆ A := by sorry
+theorem SetTheory.Set.specify_subset {A:Set} (P: A → Prop) : A.specify P ⊆ A := by
+  rw [subset_def]
+  intro x h
+  apply specification_axiom at h
+  assumption
 
 /-- This exercise may require some understanding of how  subtypes are implemented in Lean. -/
 theorem SetTheory.Set.specify_congr {A A':Set} (hAA':A = A') {P: A → Prop} {P': A' → Prop} (hPP': (x:Object) → (h:x ∈ A) → (h':x ∈ A') → P ⟨ x, h⟩ ↔ P' ⟨ x, h'⟩ ) : A.specify P = A'.specify P' := by sorry
@@ -464,20 +485,59 @@ theorem SetTheory.Set.mem_sdiff (x:Object) (X Y:Set) : x ∈ (X \ Y) ↔ (x ∈ 
   exact (specification_axiom' (fun x ↦ x.val ∉ Y) ⟨ x, hX⟩ ).mpr hY
 
 /-- Proposition 3.1.27(d) / Exercise 3.1.6 -/
-theorem SetTheory.Set.inter_comm (A B:Set) : A ∩ B = B ∩ A := by sorry
+theorem SetTheory.Set.inter_comm (A B:Set) : A ∩ B = B ∩ A := by
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_inter] at *
+    cases' h with hA hB
+    constructor <;> assumption
+  . intro h
+    rw [mem_inter] at *
+    cases' h with hA hB
+    constructor <;> assumption
 
 /-- Proposition 3.1.27(b) -/
-theorem SetTheory.Set.subset_union {A X: Set} (hAX: A ⊆ X) : A ∪ X = X := by sorry
+theorem SetTheory.Set.subset_union {A X: Set} (hAX: A ⊆ X) : A ∪ X = X := by
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_union] at h; cases' h with hA hX
+    . rw [subset_def] at hAX; specialize hAX x
+      apply hAX; assumption
+    . assumption
+  . intro h; rw [mem_union]; right; assumption
 
 /-- Proposition 3.1.27(b) -/
-theorem SetTheory.Set.union_subset {A X: Set} (hAX: A ⊆ X) : X ∪ A = X := by sorry
+theorem SetTheory.Set.union_subset {A X: Set} (hAX: A ⊆ X) : X ∪ A = X := by
+  rw [union_comm]; exact subset_union hAX
 
 /-- Proposition 3.1.27(c) -/
 theorem SetTheory.Set.inter_self (A:Set) : A ∩ A = A := by
-  sorry
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h; rw [mem_inter] at h; cases' h with _ _
+    . assumption
+  . intro h; rw [mem_inter]; constructor <;> assumption
 
 /-- Proposition 3.1.27(e) -/
-theorem SetTheory.Set.inter_assoc (A B C:Set) : (A ∩ B) ∩ C = A ∩ (B ∩ C) := by sorry
+theorem SetTheory.Set.inter_assoc (A B C:Set) : (A ∩ B) ∩ C = A ∩ (B ∩ C) := by
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h; rw [mem_inter] at *
+    cases' h with hAB hC; rw [mem_inter] at hAB
+    cases' hAB with hA hB; constructor
+    . assumption
+    . rw [mem_inter]; constructor <;> assumption
+  . intro h; rw [mem_inter] at *
+    cases' h with hA hBC; rw [mem_inter] at hBC
+    cases' hBC with hB hC; constructor
+    . rw [mem_inter]; constructor <;> assumption
+    . assumption
 
 /-- Proposition 3.1.27(f) -/
 theorem  SetTheory.Set.inter_union_distrib_left (A B C:Set) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := sorry
