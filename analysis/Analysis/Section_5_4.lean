@@ -137,7 +137,7 @@ theorem Real.isPos_iff (x:Real) : x.isPos ↔ x > 0 := by sorry
 theorem Real.isNeg_iff (x:Real) : x.isNeg ↔ x < 0 := by sorry
 
 /-- Proposition 5.4.7(a) (order trichotomy) / Exercise 5.4.2 -/
-theorem Real.trichotomous' (x y z:Real) : x > y ∨ x < y ∨ x = y := by sorry
+theorem Real.trichotomous' (x y:Real) : x > y ∨ x < y ∨ x = y := by sorry
 
 /-- Proposition 5.4.7(a) (order trichotomy) / Exercise 5.4.2 -/
 theorem Real.not_gt_and_lt (x y:Real) : ¬ (x > y ∧ x < y):= by sorry
@@ -201,7 +201,6 @@ theorem Real.inv_of_gt {x y:Real} (hx: x.isPos) (hy: y.isPos) (hxy: x > y) : x�
   have hxnon: x ≠ 0 := nonzero_of_pos hx
   have hynon: y ≠ 0 := nonzero_of_pos hy
   have hxinv : x⁻¹.isPos := inv_of_pos hx
-  have hyinv : y⁻¹.isPos := inv_of_pos hy
   by_contra! this
   have : (1:Real) > 1 := calc
     1 = x * x⁻¹ := (inv_mul_self hxnon).symm

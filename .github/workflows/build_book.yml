@@ -49,7 +49,7 @@ jobs:
 
       - name: Build book
         run: |
-          ~/.elan/bin/lake exe analysis-book
+          ~/.elan/bin/lake exe analysis-book --docgen-url "https://teorth.github.io/analysis/docs/"
       - name: Copy docs to analysis-book
         run: |
           cp -r ../analysis/.lake/build/doc _site/docs

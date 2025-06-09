@@ -19,6 +19,8 @@ namespace Chapter5
 /-- Definition 5.5.1 (upper bounds).  Here we use the `upperBounds` set defined in Mathlib. -/
 theorem Real.upperBound_def (E: Set Real) (M: Real) : M ∈ upperBounds E ↔ ∀ x ∈ E, x ≤ M := mem_upperBounds
 
+theorem Real.lowerBound_def (E: Set Real) (M: Real) : M ∈ lowerBounds E ↔ ∀ x ∈ E, x ≥ M := mem_lowerBounds
+
 /-- API for Example 5.5.2 -/
 theorem Real.Icc_def (x y:Real) : Set.Icc x y = { z | x ≤ z ∧ z ≤ y } := rfl
 
@@ -45,6 +47,9 @@ theorem Real.isLUB_def (E: Set Real) (M: Real) : IsLUB E M ↔ M ∈ upperBounds
   simp_rw [ge_iff_le]
   rfl
 
+theorem Real.isGLB_def (E: Set Real) (M: Real) : IsGLB E M ↔ M ∈ lowerBounds E ∧ ∀ M' ∈ lowerBounds E, M' ≤ M := by
+  rfl
+
 /-- Example 5.5.6 -/
 example : IsLUB (Set.Icc 0 1) 1 := by sorry
 
@@ -59,8 +64,22 @@ theorem Real.LUB_unique {E: Set Real} {M M': Real} (h1: IsLUB E M) (h2: IsLUB E 
   have h4 := h2.2 _ h1.1
   linarith
 
+/-- definition of "bounded above", using Mathlib notation -/
+theorem Real.bddAbove_def (E: Set Real) : BddAbove E ↔ ∃ M, M ∈  upperBounds E := Set.nonempty_def
+
+theorem Real.bddBelow_def (E: Set Real) : BddBelow E ↔ ∃ M, M ∈  lowerBounds E := Set.nonempty_def
+
+/-- Exercise 5.5.2 -/
+theorem Real.upperBound_between {E: Set Real} {n:ℕ} {L K:ℤ} (hLK: L < K) (hK: K*((1/(n+1):ℚ):Real) ∈ upperBounds E) (hL: L*((1/(n+1):ℚ):Real) ∉ upperBounds E) : ∃ m, L < m ∧ m ≤ K ∧ m*((1/(n+1):ℚ):Real) ∈ upperBounds E ∧ (m-1)*((1/(n+1):ℚ):Real) ∉ upperBounds E := by sorry
+
+/-- Exercise 5.5.3 -/
+theorem Real.upperBound_discrete_unique {E: Set Real} {n:ℕ} {m m':ℤ} (hm1: (((m:ℚ) / (n+1):ℚ):Real) ∈ upperBounds E) (hm2: (((m:ℚ) / (n+1) - 1 / (n+1):ℚ):Real) ∉ upperBounds E) (hm'1: (((m':ℚ) / (n+1):ℚ):Real) ∈ upperBounds E) (hm'2: (((m':ℚ) / (n+1) - 1 / (n+1):ℚ):Real) ∉ upperBounds E) : m = m' := by sorry
+
+/-- Exercise 5.5.4 -/
+theorem Real.LIM_of_Cauchy {q:ℕ → ℚ} (hq: ∀ M, ∀ n ≥ M, ∀ n' ≥ M, |q n - q n'| ≤ 1 / (M+1)) : (q:Sequence).isCauchy ∧ ∀ M, |q M - LIM q| ≤ 1 / (M+1) := by sorry
+
 /-- Theorem 5.5.9 (Existence of least upper bound)-/
-theorem Real.LUB_exist {E: Set Real} (hE: Set.Nonempty E) (hbound: ∃ M, M ∈ upperBounds E): ∃ S, IsLUB E S := by
+theorem Real.LUB_exist {E: Set Real} (hE: Set.Nonempty E) (hbound: BddAbove E): ∃ S, IsLUB E S := by
   -- This proof is written to follow the structure of the original text.
   set x₀ := Set.Nonempty.some hE
   have hx₀ : x₀ ∈ E := Set.Nonempty.some_mem hE
@@ -70,7 +89,8 @@ theorem Real.LUB_exist {E: Set Real} (hE: Set.Nonempty E) (hbound: ∃ M, M ∈ 
       simp [isPos_iff, ε, ←lt_of_coe]
       positivity
     apply existsUnique_of_exists_of_unique
-    . obtain ⟨ M, hbound ⟩ := hbound
+    . rw [bddAbove_def] at hbound
+      obtain ⟨ M, hbound ⟩ := hbound
       obtain ⟨ K, _, hK ⟩ := le_mul hpos M
       obtain ⟨ L', _, hL ⟩ := le_mul hpos (-x₀)
       set L := -(L':ℤ)
@@ -86,9 +106,14 @@ theorem Real.LUB_exist {E: Set Real} (hE: Set.Nonempty E) (hbound: ∃ M, M ∈ 
         simp_rw [mul_comm] at claim1_2
         replace claim1_2 := lt_of_lt_of_le hK claim1_2
         exact upperBound_upper (le_of_lt claim1_2) hbound
-      have claim1_4 : ∃ m:ℤ, L < m ∧ m ≤ K ∧ m*ε ∈ upperBounds E ∧ ¬ (m-1)*ε ∈ upperBounds E := by
-        -- Exercise 5.5.2
-        sorry
+      have claim1_4 : ∃ m:ℤ, L < m ∧ m ≤ K ∧ m*ε ∈ upperBounds E ∧ (m-1)*ε ∉ upperBounds E := by
+        convert Real.upperBound_between (n := n) ?_ ?_ claim1_2
+        . qify
+          rw [←gt_iff_lt, gt_of_coe]
+          convert claim1_3
+        apply upperBound_upper (le_of_lt _) hbound
+        rw [←gt_iff_lt]
+        convert hK
       obtain ⟨ m, _, _, hm, hm' ⟩ := claim1_4
       use m
       have : (m/(n+1):ℚ) = m*ε := by
@@ -99,7 +124,8 @@ theorem Real.LUB_exist {E: Set Real} (hE: Set.Nonempty E) (hbound: ∃ M, M ∈ 
       convert hm'
       simp [sub_of_ratCast, this, sub_mul, ε]
     -- Exercise 5.5.3
-    sorry
+    intro m m' ⟨ hm1, hm2 ⟩ ⟨ hm'1, hm'2 ⟩
+    exact upperBound_discrete_unique hm1 hm2 hm'1 hm'2
   set m : ℕ → ℤ := fun n ↦ (claim1 n).exists.choose
   set a : ℕ → ℚ := fun n ↦ (m n:ℚ) / (n+1)
   set b : ℕ → ℚ := fun n ↦ 1 / (n+1)
@@ -125,13 +151,11 @@ theorem Real.LUB_exist {E: Set Real} (hE: Set.Nonempty E) (hbound: ∃ M, M ∈ 
       exact upperBound_upper hm2 hm1
     have bound2 : ((a-b) n) = a n - 1 / (n+1) := by simp [b]
     have bound3 : 1/((n+1):ℚ) ≤ 1/(N+1) := by gcongr
-    -- weirdly, `linarith` times out here
+    -- weirdly, `linarith` times out here, so we proceed manually
     rw [bound2] at bound1
     apply le_of_lt (lt_of_lt_of_le _ bound3)
     rwa [sub_lt_comm]
-  have claim3 : (a:Sequence).isCauchy := by
-    -- Exercise 5.5.4
-    sorry
+  have claim3 : (a:Sequence).isCauchy := (LIM_of_Cauchy claim2).1
   set S := LIM a
   have claim4 : S = LIM (a - b) := by
     have : LIM b = 0 := LIM_of_harmonic
@@ -154,6 +178,180 @@ theorem Real.LUB_exist {E: Set Real} (hE: Set.Nonempty E) (hbound: ∃ M, M ∈ 
   rw [claim4]
   apply LIM_of_le _ claim5
   exact sub_of_cauchy claim3 hb
+
+/-- A bare-bones extended real class to define supremum. -/
+inductive ExtendedReal where
+| neg_infty : ExtendedReal
+| real (x:Real) : ExtendedReal
+| infty : ExtendedReal
+
+/-- Mathlib prefers ⊤ to denote the +∞ element. -/
+instance ExtendedReal.inst_Top : Top ExtendedReal where
+  top := infty
+
+/-- Mathlib prefers ⊥ to denote the -∞ element.-/
+instance ExtendedReal.inst_Bot: Bot ExtendedReal where
+  bot := infty
+
+instance ExtendedReal.coe_real : Coe Real ExtendedReal where
+  coe x := ExtendedReal.real x
+
+instance ExtendedReal.real_coe : Coe ExtendedReal Real where
+  coe X := match X with
+  | neg_infty => 0
+  | real x => x
+  | infty => 0
+
+abbrev ExtendedReal.is_finite (X : ExtendedReal) : Prop := match X with
+  | neg_infty => False
+  | real _ => True
+  | infty => False
+
+theorem ExtendedReal.finite_eq_coe {X: ExtendedReal} (hX: X.is_finite) : X = ((X:Real):ExtendedReal) := by
+  cases X
+  . simp [is_finite] at hX
+  . simp [coe_real, real_coe]
+  simp [is_finite] at hX
+
+open Classical in
+/-- Definition 5.5.10 (Supremum)-/
+noncomputable abbrev ExtendedReal.sup (E: Set Real) : ExtendedReal := dite E.Nonempty (fun h1 ↦ dite (BddAbove E) (fun h2 ↦ ((Real.LUB_exist h1 h2).choose:Real)) (fun _ ↦ ⊤)) (fun _ ↦ ⊥)
+
+/-- Definition 5.5.10 (Supremum)-/
+theorem ExtendedReal.sup_of_empty : sup ∅ = ⊥ := by
+  simp [sup]
+
+/-- Definition 5.5.10 (Supremum)-/
+theorem ExtendedReal.sup_of_unbounded {E: Set Real} (hb: ¬ BddAbove E) : sup E = ⊤ := by
+  have hE : E.Nonempty := by
+    contrapose! hb
+    simp [hb]
+  simp [sup, hE, hb]
+
+/-- Definition 5.5.10 (Supremum)-/
+theorem ExtendedReal.sup_of_bounded {E: Set Real} (hnon: E.Nonempty) (hb: BddAbove E) : IsLUB E (sup E) := by
+  simp [hnon, hb, sup]
+  convert (Real.LUB_exist hnon hb).choose_spec
+
+theorem ExtendedReal.sup_of_bounded_finite {E: Set Real} (hnon: E.Nonempty) (hb: BddAbove E) : (sup E).is_finite := by
+  simp [sup, hnon, hb, is_finite]
+
+/-- Proposition 5.5.12 -/
+theorem Real.exist_sqrt_two : ∃ x:Real, x^2 = 2 := by
+  -- This proof is written to follow the structure of the original text.
+  set E := { y:Real | y ≥ 0 ∧ y^2 < 2 }
+  have claim1: 2 ∈ upperBounds E := by
+    rw [upperBound_def]
+    intro y hy
+    simp [E] at hy
+    contrapose! hy
+    intro hpos
+    calc
+      _ ≤ 2 * 2 := by norm_num
+      _ ≤ y * y := by gcongr
+      _ = y^2 := by ring
+  have claim1' : BddAbove E := by
+    rw [bddAbove_def]; use 2
+  have claim2: 1 ∈ E := by
+    simp [E]
+  have claim2': E.Nonempty := Set.nonempty_of_mem claim2
+  set x := ((ExtendedReal.sup E):Real)
+  have claim3 : IsLUB E x := ExtendedReal.sup_of_bounded claim2' claim1'
+  have claim4 : x ≥ 1 := by
+    rw [isLUB_def] at claim3
+    replace claim3 := claim3.1
+    rw [upperBound_def] at claim3
+    exact claim3 1 claim2
+  have claim5 : x ≤ 2 := by
+    rw [isLUB_def] at claim3
+    exact claim3.2 2 claim1
+  have claim6 : x.isPos := by
+    rw [isPos_iff]; linarith
+  use x
+  rcases trichotomous' (x^2) 2 with h | h | h
+  . have claim11: ∃ ε, 0 < ε ∧ ε < 1 ∧ x^2 - 4*ε > 2 := by
+      set ε := min (1/2) ((x^2-2)/8)
+      have hx : x^2 - 2 > 0 := by linarith
+      have hε : 0 < ε := by positivity
+      have hε1: ε ≤ 1/2 := min_le_left _ _
+      have hε2: ε ≤ (x^2-2)/8 := min_le_right _ _
+      exact ⟨ ε, hε, (by linarith), (by linarith) ⟩
+    obtain ⟨ ε, hε1, hε2, hε3 ⟩ := claim11
+    have claim12: (x-ε)^2 > 2 := calc
+      _ = x^2 - 2 * ε * x + ε * ε := by ring
+      _ ≥ x^2 - 2 * ε * 2 + 0 * 0 := by gcongr
+      _ = x^2 - 4 * ε := by ring
+      _ > 2 := hε3
+    have why (y:Real) (hy: y ∈ E) : x - ε ≥ y := by sorry
+    have claim13: x-ε ∈ upperBounds E := by
+      rwa [upperBound_def]
+    have claim14: x ≤ x-ε := by
+      rw [isLUB_def] at claim3
+      exact claim3.2 _ claim13
+    linarith
+  . have claim7 : ∃ ε, 0 < ε ∧ ε < 1 ∧ x^2 + 5*ε < 2 := by
+      set ε := min (1/2) ((2-x^2)/10)
+      have hx : 2 - x^2 > 0 := by linarith
+      have hε: 0 < ε := by positivity
+      have hε1: ε ≤ 1/2 := min_le_left _ _
+      have hε2: ε ≤ (2 - x^2)/10 := min_le_right _ _
+      exact ⟨ ε, hε, (by linarith), (by linarith) ⟩
+    obtain ⟨ ε, hε1, hε2, hε3 ⟩ := claim7
+    have claim8 : (x+ε)^2 < 2 := calc
+      _ = x^2 + (2*x)*ε + ε*ε := by ring
+      _ ≤ x^2 + (2*2)*ε + 1*ε := by gcongr
+      _ = x^2 + 5*ε := by ring
+      _ < 2 := hε3
+    have claim9 : x + ε ∈ E := by simp [E, claim8]; linarith
+    have claim10 : x + ε ≤ x := by
+      rw [isLUB_def] at claim3
+      replace claim3 := claim3.1
+      rw [upperBound_def] at claim3
+      exact claim3 _ claim9
+    linarith
+  assumption
+
+/-- Remark 5.5.13 -/
+theorem Real.exist_irrational : ∃ x:Real, ¬ ∃ q:ℚ, x = (q:Real) := by sorry
+
+theorem Real.GLB_exist {E: Set Real} (hE: Set.Nonempty E) (hbound: BddBelow E): ∃ S, IsGLB E S := by
+  sorry
+
+open Classical in
+noncomputable abbrev ExtendedReal.inf (E: Set Real) : ExtendedReal := dite E.Nonempty (fun h1 ↦ dite (BddBelow E) (fun h2 ↦ ((Real.GLB_exist h1 h2).choose:Real)) (fun _ ↦ ⊥)) (fun _ ↦ ⊤)
+
+theorem ExtendedReal.inf_of_empty : inf ∅ = ⊤ := by
+  simp [inf]
+
+theorem ExtendedReal.inf_of_unbounded {E: Set Real} (hb: ¬ BddBelow E) : inf E = ⊥ := by
+  have hE : E.Nonempty := by
+    contrapose! hb
+    simp [hb]
+  simp [inf, hE, hb]
+
+theorem ExtendedReal.inf_of_bounded {E: Set Real} (hnon: E.Nonempty) (hb: BddBelow E) : IsGLB E (inf E) := by
+  simp [hnon, hb, inf]
+  convert (Real.GLB_exist hnon hb).choose_spec
+
+theorem ExtendedReal.inf_of_bounded_finite {E: Set Real} (hnon: E.Nonempty) (hb: BddBelow E) : (inf E).is_finite := by
+  simp [inf, hnon, hb, is_finite]
+
+/-- Helper lemma for Exercise 5.5.1. -/
+theorem Real.mem_neg (E: Set Real) (x:Real) : x ∈ -E ↔ -x ∈ E := Set.mem_neg
+
+/-- Exercise 5.5.1-/
+theorem Real.inf_neg {E: Set Real} {M:Real} (h: IsLUB E M) : IsGLB (-E) (-M) := by sorry
+
+/-- Exercise 5.5.5 -/
+theorem Real.irrat_between {x y:Real} (hxy: x < y) : ∃ z, x < z ∧ z < y ∧ ¬ ∃ q:ℚ, z = (q:Real) := by sorry
+
+/- Use the notion of supremum in this section to define a Mathlib `sSup` operation -/
+noncomputable instance Real.inst_SupSet : SupSet Real where
+  sSup E := ((ExtendedReal.sup E):Real)
+
+/-- Use the `sSup` operation to build a conditionally complete lattice structure on `Real`-/
+noncomputable instance Real.inst_conditionallyCompleteLattice : ConditionallyCompleteLattice Real := conditionallyCompleteLatticeOfsSup Real (fun _ _ ↦ Set.Finite.bddAbove (by norm_num)) (fun _ _ ↦ Set.Finite.bddBelow (by norm_num))
+(by intro E hbound hnon; exact ExtendedReal.sup_of_bounded hnon hbound)
 
 
 end Chapter5

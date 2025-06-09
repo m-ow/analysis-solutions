@@ -13,7 +13,7 @@ lake exe Analysis:docs
 Change the working directory to `./book/`
 Build:
 ```
-lake exe analysis-book
+lake exe analysis-book --docgen-url "http://localhost:8000/analysis/docs/"
 ```
 
 View the book:
