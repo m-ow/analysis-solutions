@@ -6,7 +6,6 @@ import Analysis.Section_2_3
 
 In this (technical) epilogue, we show that the "Chapter 2" natural numbers `Chapter2.Nat` are isomorphic in various standard senses to the standard natural numbers `ℕ`.
 
-
 From this point onwards, `Chapter2.Nat` will be deprecated, and we will use the standard natural numbers `ℕ` instead.  In particular, one should use the full Mathlib API for `ℕ` for all subsequent chapters, in lieu of the `Chapter2.Nat` API.
 
 Filling the sorries here requires both the Chapter2.Nat API and the Mathlib API for the standard natural numbers `ℕ`.  As such, they are excellent exercises to prepare you for the aforementioned transition.
