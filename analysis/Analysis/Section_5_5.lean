@@ -353,5 +353,6 @@ noncomputable instance Real.inst_SupSet : SupSet Real where
 noncomputable instance Real.inst_conditionallyCompleteLattice : ConditionallyCompleteLattice Real := conditionallyCompleteLatticeOfsSup Real (fun _ _ ↦ Set.Finite.bddAbove (by norm_num)) (fun _ _ ↦ Set.Finite.bddBelow (by norm_num))
 (by intro E hbound hnon; exact ExtendedReal.sup_of_bounded hnon hbound)
 
+theorem ExtendedReal.sSup_of_bounded {E: Set Real} (hnon: E.Nonempty) (hb: BddAbove E) : IsLUB E (sSup E) := sup_of_bounded hnon hb
 
 end Chapter5
