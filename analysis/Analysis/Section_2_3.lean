@@ -169,10 +169,17 @@ lemma Nat.mul_cancel_right {a b c: Nat} (h: a * c = b * c) (hc: c.isPos) : a = b
 
 /-- (Not from textbook) Nat is an ordered semiring. -/
 instance Nat.isOrderedRing : IsOrderedRing Nat where
-  zero_le_one := by sorry
-  mul_le_mul_of_nonneg_left := by sorry
-  mul_le_mul_of_nonneg_right := by sorry
-
+  zero_le_one := by use 1; simp
+  mul_le_mul_of_nonneg_left := by intro a b c hAB h0C
+                                  cases' hAB with x hx
+                                  use c * x
+                                  rw [hx]
+                                  ring
+  mul_le_mul_of_nonneg_right := by intro a b c hAB h0C
+                                   cases' hAB with x hx
+                                   use x * c
+                                   rw [hx]
+                                   ring
 
 /-- Proposition 2.3.9 (Euclid's division lemma) / Exercise 2.3.5 -/
 theorem Nat.exists_div_mod (n :Nat) {q: Nat} (hq: q.isPos) : ∃ m r: Nat, 0 ≤ r ∧ r < q ∧ n = m * q + r := by
