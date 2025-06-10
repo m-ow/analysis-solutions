@@ -537,23 +537,183 @@ theorem SetTheory.Set.inter_assoc (A B C:Set) : (A ∩ B) ∩ C = A ∩ (B ∩ C
     . assumption
 
 /-- Proposition 3.1.27(f) -/
-theorem  SetTheory.Set.inter_union_distrib_left (A B C:Set) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := sorry
+theorem  SetTheory.Set.inter_union_distrib_left (A B C:Set) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_inter] at h
+    cases' h with hA hBC
+    rw [mem_union] at hBC
+    cases' hBC with hB hC
+    . rw [mem_union]
+      left
+      rw [mem_inter]
+      constructor <;> assumption
+    . rw [mem_union]
+      right
+      rw [mem_inter]
+      constructor <;> assumption
+  . intro h
+    rw [mem_inter]
+    constructor
+    . rw [mem_union] at h
+      cases' h with hAB hAC
+      . rw [mem_inter] at hAB
+        cases' hAB with hA hB
+        assumption
+      . rw [mem_inter] at hAC
+        cases' hAC with hA hC
+        assumption
+    . rw [mem_union] at h
+      cases' h with hAB hAC
+      . rw [mem_inter] at hAB
+        cases' hAB with hA hB
+        rw [mem_union]
+        left
+        assumption
+      . rw [mem_inter] at hAC
+        cases' hAC with hA hC
+        rw [mem_union]
+        right
+        assumption
 
 /-- Proposition 3.1.27(f) -/
 theorem  SetTheory.Set.union_inter_distrib_left (A B C:Set) : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := sorry
 
 /-- Proposition 3.1.27(f) -/
 theorem SetTheory.Set.union_compl {A X:Set} (hAX: A ⊆ X) : A ∪ (X \ A) = X := by
-  sorry
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_union] at h
+    cases' h with hA hXA
+    . apply hAX; assumption
+    . rw [mem_sdiff] at hXA
+      cases' hXA with hX hNA; assumption
+  . intro h
+    rw [mem_union]
+    by_cases hA : x ∈ A
+    . left
+      assumption
+    . right
+      rw [mem_sdiff]
+      constructor <;> assumption
 
 /-- Proposition 3.1.27(f) -/
-theorem SetTheory.Set.inter_compl {A X:Set} (hAX: A ⊆ X) : A ∩ (X \ A) = ∅ := by sorry
+theorem SetTheory.Set.inter_compl {A X:Set} (hAX: A ⊆ X) : A ∩ (X \ A) = ∅ := by
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_inter] at h
+    cases' h with hA hXA
+    rw [mem_sdiff] at hXA
+    cases' hXA with hX hNA
+    contradiction
+  . intro h
+    have hX : x ∉ (∅:Set) := by exact not_mem_empty x
+    contradiction
 
 /-- Proposition 3.1.27(g) -/
-theorem SetTheory.Set.compl_union {A B X:Set} (hAX: A ⊆ X) (hBX: B ⊆ X) : X \ (A ∪ B) = (X \ A) ∩ (X \ B) := by sorry
+theorem SetTheory.Set.compl_union {A B X:Set} (hAX: A ⊆ X) (hBX: B ⊆ X) : X \ (A ∪ B) = (X \ A) ∩ (X \ B) := by
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_inter]
+    constructor
+    . rw [mem_sdiff]
+      constructor
+      . rw [mem_sdiff] at h
+        cases' h with hX hNAB
+        assumption
+      . rw [mem_sdiff] at h
+        cases' h with hX hNAB
+        rw [mem_union] at hNAB
+        simp at hNAB
+        cases' hNAB with hNA hNB
+        assumption
+    . rw [mem_sdiff]
+      constructor
+      . rw [mem_sdiff] at h
+        cases' h with hX hNA
+        assumption
+      . rw [mem_sdiff] at h
+        cases' h with hX hNAB
+        rw [mem_union] at hNAB
+        simp at hNAB
+        cases' hNAB with hNA hNB
+        assumption
+  . intro h
+    rw [mem_inter] at h
+    cases' h with hXA hXB
+    rw [mem_sdiff] at hXA hXB
+    cases' hXA with hX1 hNA
+    cases' hXB with hX2 hNB
+    rw [mem_sdiff]
+    constructor
+    . assumption
+    . rw [mem_union]
+      simp
+      constructor <;> assumption
+
+
+variable (P Q : Prop)
+
+example (h : P → Q) : ¬P ∨ Q := by
+  by_cases hp : P   -- Táctica que usa el tercio excluido: prueba ambos casos (P y ¬P)
+  · right           -- Caso 1: Si P es verdadero
+    exact h hp      -- Demuestra Q
+  · left            -- Caso 2: Si P es falso
+    exact hp        -- hp es ¬P en este contexto
+
 
 /-- Proposition 3.1.27(g) -/
-theorem SetTheory.Set.compl_inter {A B X:Set} (hAX: A ⊆ X) (hBX: B ⊆ X) : X \ (A ∩ B) = (X \ A) ∪ (X \ B) := by sorry
+theorem SetTheory.Set.compl_inter {A B X:Set} (hAX: A ⊆ X) (hBX: B ⊆ X) : X \ (A ∩ B) = (X \ A) ∪ (X \ B) := by
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_sdiff] at h
+    cases' h with hX hN
+    rw [mem_inter] at hN
+    simp at hN
+    have hN' : x ∉ A ∨ x ∉ B := by
+      by_cases hA' : (x ∈ A)
+      . right; exact hN hA'
+      . left; exact hA'
+    rw [mem_union]
+    cases' hN' with hNA hNB
+    . left
+      rw [mem_sdiff]
+      constructor <;> assumption
+    . right
+      rw [mem_sdiff]
+      constructor <;> assumption
+  . intro h
+    rw [mem_sdiff]
+    constructor
+    . rw [mem_union] at h
+      cases' h with hA hB
+      . rw [mem_sdiff] at hA
+        cases' hA with hX hNA
+        assumption
+      . rw [mem_sdiff] at hB
+        cases' hB with hX hNB
+        assumption
+    . rw [mem_inter]
+      simp
+      intro hA
+      rw [mem_union] at h
+      cases' h with hNA hNB
+      . rw [mem_sdiff] at hNA
+        cases' hNA with hX hA
+        contradiction
+      . rw [mem_sdiff] at hNB
+        cases' hNB with hX hB
+        assumption
 
 /-- Not from textbook: sets form a distributive lattice. -/
 instance SetTheory.Set.instDistribLattice : DistribLattice Set where
