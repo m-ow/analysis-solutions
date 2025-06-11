@@ -834,33 +834,142 @@ theorem SetTheory.Set.subset_tfae (A B C:Set) : [A ⊆ B, A ∪ B = B, A ∩ B =
 
 /-- Exercise 3.1.7 -/
 theorem SetTheory.Set.inter_subset_left (A B:Set) : A ∩ B ⊆ A := by
-  sorry
+  rw [subset_def]
+  intro x h
+  rw [mem_inter] at h
+  cases' h with hA hB
+  exact hA
 
 /-- Exercise 3.1.7 -/
 theorem SetTheory.Set.inter_subset_right (A B:Set) : A ∩ B ⊆ B := by
-  sorry
+  rw [inter_comm]
+  exact inter_subset_left B A
 
 /-- Exercise 3.1.7 -/
 theorem SetTheory.Set.subset_inter_iff (A B C:Set) : C ⊆ A ∩ B ↔ C ⊆ A ∧ C ⊆ B := by
-  sorry
+  apply Iff.intro
+  . intro h
+    constructor
+    . rw [subset_def]
+      intro x hC
+      rw [subset_def] at h
+      specialize h x
+      apply h at hC
+      rw [mem_inter] at hC
+      cases' hC with hA hB
+      exact hA
+    . rw [subset_def]
+      intro x hC
+      rw [subset_def] at h
+      specialize h x
+      apply h at hC
+      rw [mem_inter] at hC
+      cases' hC with hA hB
+      exact hB
+  . intro h
+    cases' h with hCA hCB
+    rw [subset_def]
+    intro x h
+    rw [mem_inter]
+    constructor
+    . rw [subset_def] at hCA
+      specialize hCA x
+      apply hCA at h
+      exact h
+    . rw [subset_def] at hCB
+      apply hCB at h
+      exact h
 
 /-- Exercise 3.1.7 -/
 theorem SetTheory.Set.subset_union_left (A B:Set) : A ⊆ A ∪ B := by
-  sorry
+  rw [subset_def]
+  intro x h
+  rw [mem_union]
+  left
+  assumption
 
 /-- Exercise 3.1.7 -/
 theorem SetTheory.Set.subset_union_right (A B:Set) : B ⊆ A ∪ B := by
-  sorry
+  rw [union_comm]
+  exact subset_union_left B A
 
 /-- Exercise 3.1.7 -/
 theorem SetTheory.Set.union_subset_iff (A B C:Set) : A ∪ B ⊆ C ↔ A ⊆ C ∧ B ⊆ C := by
-  sorry
+  apply Iff.intro
+  . intro h
+    constructor
+    . rw [subset_def] at *
+      intro x hA
+      specialize h x
+      have hAB : x ∈ A ∪ B := by
+        rw [mem_union]
+        left
+        exact hA
+      apply h at hAB
+      assumption
+    . rw [subset_def] at *
+      intro x hB
+      specialize h x
+      have hAB : x ∈ A ∪ B := by
+        rw [mem_union]
+        right
+        exact hB
+      apply h at hAB
+      assumption
+  . intro h
+    cases' h with hAC hBC
+    rw [subset_def] at *
+    intro x hAB
+    rw [mem_union] at hAB
+    cases' hAB with hA hB
+    . specialize hAC x
+      apply hAC at hA
+      assumption
+    . specialize hBC x
+      apply hBC at hB
+      assumption
 
 /-- Exercise 3.1.8 -/
-theorem SetTheory.Set.inter_union_cancel (A B:Set) : A ∩ (A ∪ B) = A := by sorry
+theorem SetTheory.Set.inter_union_cancel (A B:Set) : A ∩ (A ∪ B) = A := by
+  rw [inter_union_distrib_left]
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_union] at h
+    cases' h with hA hAB
+    . rw [mem_inter] at hA
+      cases' hA with hA1 hA2
+      exact hA1
+    . rw [mem_inter] at hAB
+      cases' hAB with hA hB
+      exact hA
+  . intro h
+    rw [mem_union]
+    left
+    rw [mem_inter]
+    constructor <;> assumption
 
 /-- Exercise 3.1.8 -/
-theorem SetTheory.Set.union_inter_cancel (A B:Set) : A ∪ (A ∩ B) = A := by sorry
+theorem SetTheory.Set.union_inter_cancel (A B:Set) : A ∪ (A ∩ B) = A := by
+  rw [union_inter_distrib_left]
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_inter] at h
+    cases' h with hAA hAB
+    rw [mem_union] at hAA
+    cases' hAA with hA1 hA2 <;> assumption
+  . intro h
+    rw [mem_inter]
+    constructor
+    . rw [mem_union]
+      left
+      exact h
+    . rw [mem_union]
+      left
+      exact h
 
 /-- Exercise 3.1.9 -/
 theorem SetTheory.Set.partition_left {A B X:Set} (h_union: A ∪ B = X) (h_inter: A ∩ B = ∅) : A = X \ B := by sorry
