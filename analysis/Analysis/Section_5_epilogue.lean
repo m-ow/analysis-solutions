@@ -14,13 +14,17 @@ Filling the sorries here requires both the Chapter5.Real API and the Mathlib API
 
 namespace Chapter5
 
+
 structure DedekindCut where
   E : Set ℚ
   nonempty : E.Nonempty
   bounded : BddAbove E
   lower: IsLowerSet E
+  nomax : ∀ q ∈ E, ∃ r ∈ E, r > q
 
-abbrev Real.toSet_Rat (x:Real) : Set ℚ := { q | (q:Real) ≤ x }
+theorem isLowerSet_iff (E: Set ℚ) : IsLowerSet E ↔ ∀ q r, r < q → q ∈ E → r ∈ E := isLowerSet_iff_forall_lt
+
+abbrev Real.toSet_Rat (x:Real) : Set ℚ := { q | (q:Real) < x }
 
 lemma Real.toSet_Rat_nonempty (x:Real) : x.toSet_Rat.Nonempty := by sorry
 
@@ -28,12 +32,15 @@ lemma Real.toSet_Rat_bounded (x:Real) : BddAbove x.toSet_Rat := by sorry
 
 lemma Real.toSet_Rat_lower (x:Real) : IsLowerSet x.toSet_Rat := by sorry
 
+lemma Real.toSet_Rat_nomax {x:Real} : ∀ q ∈ x.toSet_Rat, ∃ r ∈ x.toSet_Rat, r > q := by sorry
+
 abbrev Real.toCut (x:Real) : DedekindCut :=
  {
    E := x.toSet_Rat
    nonempty := x.toSet_Rat_nonempty
    bounded := x.toSet_Rat_bounded
    lower := x.toSet_Rat_lower
+   nomax := x.toSet_Rat_nomax
  }
 
 abbrev DedekindCut.toSet_Real (c: DedekindCut) : Set Real := (fun (q:ℚ) ↦ (q:Real)) '' c.E
@@ -58,7 +65,7 @@ end Chapter5
 
 /-- Now to develop analogous results for the Mathlib reals. -/
 
-abbrev Real.toSet_Rat (x:ℝ) : Set ℚ := { q | (q:ℝ) ≤ x }
+abbrev Real.toSet_Rat (x:ℝ) : Set ℚ := { q | (q:ℝ) < x }
 
 lemma Real.toSet_Rat_nonempty (x:ℝ) : x.toSet_Rat.Nonempty := by sorry
 
@@ -66,12 +73,15 @@ lemma Real.toSet_Rat_bounded (x:ℝ) : BddAbove x.toSet_Rat := by sorry
 
 lemma Real.toSet_Rat_lower (x:ℝ) : IsLowerSet x.toSet_Rat := by sorry
 
+lemma Real.toSet_Rat_nomax (x:ℝ) : ∀ q ∈ x.toSet_Rat, ∃ r ∈ x.toSet_Rat, r > q := by sorry
+
 abbrev Real.toCut (x:ℝ) : Chapter5.DedekindCut :=
  {
    E := x.toSet_Rat
    nonempty := x.toSet_Rat_nonempty
    bounded := x.toSet_Rat_bounded
    lower := x.toSet_Rat_lower
+   nomax := x.toSet_Rat_nomax
  }
 
 namespace Chapter5
@@ -105,15 +115,12 @@ lemma Real.equivR_iff (x : Real) (y : ℝ) : y = Real.equivR x ↔ y.toCut = x.t
   simp only [equivR, Equiv.trans_apply, ←Equiv.apply_eq_iff_eq_symm_apply]
   rfl
 
-/-- The isomorphism preserves order -/
-noncomputable abbrev Real.equivR_order : Real ≃o ℝ where
-  toEquiv := equivR
-  map_rel_iff' := by sorry
-
-/-- The isomorphism preserves ring operations -/
-noncomputable abbrev Real.equivR_ring : Real ≃+* ℝ where
+/-- The isomorphism preserves order and ring operations -/
+noncomputable abbrev Real.equivR_ordered_ring : Real ≃+*o ℝ where
   toEquiv := equivR
   map_add' := by sorry
   map_mul' := by sorry
+  map_le_map_iff' := by sorry
+
 
 end Chapter5

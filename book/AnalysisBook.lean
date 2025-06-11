@@ -41,7 +41,6 @@ def theme : Theme := { Theme.default with
   |>.override #[] ⟨do return {{<div class="frontpage"><h1>{{← param "title"}}</h1> {{← param "content"}}</div>}}, id⟩
 
 
-
 def_literate_page sec21 from Analysis.Section_2_1 in "../analysis" as "The Peano Axioms"
 
 def_literate_page sec22 from Analysis.Section_2_2 in "../analysis" as "Addition"
@@ -71,5 +70,10 @@ def demoSite : Site := site AnalysisBook.Home /
   "sec53" sec53
   "sec54" sec54
 
+def baseUrl := "https://teorth.github.io/analysis/docs/"
 
-def main := blogMain theme demoSite
+def linkTargets : Code.LinkTargets where
+  const name := .some <| s!"{baseUrl}find?pattern={name}#doc"
+  definition name := .some <| s!"{baseUrl}find?pattern={name}#doc"
+
+def main := blogMain theme demoSite (linkTargets := linkTargets)

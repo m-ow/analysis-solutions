@@ -129,12 +129,12 @@ theorem Sequence.add_cauchy {a b:ℕ → ℚ}  (ha: (a:Sequence).isCauchy) (hb: 
   obtain ⟨ M, hM, hhb ⟩ := hb
   use max N M
   simp at hN hM ⊢
-  simp [hN, Rat.steady_def'] at hha hhb ⊢
-  intro n m hnN hnM hmN hmM
+  simp [hN, Rat.steady_def] at hha hhb ⊢
+  intro n hnN hnM m hmN hmM
   have hn := hN.trans hnN
   have hm := hM.trans hmM
-  specialize hha n m hnN hmN
-  specialize hhb n m hn hnM hm hmM
+  specialize hha n hnN m hmN
+  specialize hhb n hn hnM m hm hmM
   simp [hn, hm, hnN, hnM, hmN, hmM] at hha hhb ⊢
   convert Section_4_3.add_close hha hhb
   ring
@@ -386,8 +386,8 @@ theorem Real.inv_of_bounded_away_zero_cauchy {a:ℕ → ℚ} (ha: bounded_away_z
   specialize ha_cauchy (c^2 * ε) (by positivity)
   obtain ⟨ N, ha_cauchy ⟩ := ha_cauchy
   use N
-  intro n m ⟨hn, hm⟩
-  specialize ha_cauchy n m ⟨hn, hm⟩
+  intro n hn m hm
+  specialize ha_cauchy n hn m hm
   calc
     _ = |(a m - a n) / (a m * a n)| := by
       congr

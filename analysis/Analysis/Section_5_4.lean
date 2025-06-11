@@ -381,6 +381,10 @@ theorem Real.inv_max {x y :Real} (hx:x.isPos) (hy:y.isPos) : (max x y)⁻¹ = mi
 /-- Exercise 5.4.9 -/
 theorem Real.inv_min {x y :Real} (hx:x.isPos) (hy:y.isPos) : (min x y)⁻¹ = max x⁻¹ y⁻¹ := by sorry
 
+/-- Not from textbook: the rationals map as an ordered ring homomorphism into the reals. -/
+abbrev Real.ratCast_ordered_hom : ℚ →+*o Real where
+  toRingHom := ratCast_hom
+  monotone' := by sorry
 
 
 end Chapter5

@@ -27,6 +27,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - _Section 3.4: Images and inverse images (planned)_
   - _Section 3.5: Cartesian products (planned)_
   - _Section 3.6: Cardinality of sets (planned)_
+  - _Chapter 3 epilogue: Connections with Mathlib sets (planned)_
 - Chapter 4: Integers and rationals
   - Section 4.1: The integers ([Verso page](https://teorth.github.io/analysis/sec41/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_1.lean))
   - Section 4.2: The rationals ([Verso page](https://teorth.github.io/analysis/sec42/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_2.lean))
@@ -40,12 +41,13 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Section 5.5: The least upper bound property (_Verso page_) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_5.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_5.lean))
   - Chapter 5 epilogue: Isomorphism with the Mathlib real numbers  (_Verso page_) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_epilogue.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_epilogue.lean))
 - Chapter 6: Limits of sequences
-  - _Section 6.1: Convergence and limit laws (planned)_
+  - Section 6.1: Convergence and limit laws (in progress) (_Verso page_) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_1.lean))
   - _Section 6.2: The extended real number system (planned)_
   - _Section 6.3: Suprema and Infima of sequences (planned)_
   - _Section 6.4: Limsup, Liminf, and limit points (planned)_
   - _Section 6.5: Some standard limits (planned)_
   - _Section 6.6: Subsequences (planned)_
+  - _Chapter 6 epilogue: Connections with Mathlib limits (planned)_
 - Chapter 7: Series
   - _Section 7.1: Finite series (planned)_
   - _Section 7.2: Infinite series (planned)_
@@ -118,7 +120,7 @@ To build the project's web page after [installing Lean](https://www.lean-lang.or
 % lake build
 % cd ../
 % cd book/
-% lake exe analysis-book --docgen-url="<url>"
+% lake exe analysis-book
 % cd ../
 ```
 where `<url>` is `http://localhost:8000/analysis/docs` for the local setup. 

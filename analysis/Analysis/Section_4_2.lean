@@ -226,6 +226,7 @@ def Rat.equiv_rat : ℚ ≃+* Rat where
   left_inv := by sorry
   right_inv := by sorry
 
+
 /-- Definition 4.2.6 (positivity) -/
 def Rat.isPos (q:Rat) : Prop := ∃ a b:ℤ, a > 0 ∧ b > 0 ∧ q = a/b
 

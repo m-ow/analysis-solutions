@@ -14,20 +14,20 @@ In second half of this section we also give a fully axiomatic treatment of the n
 -/
 
 abbrev Chapter2.Nat.toNat (n : Chapter2.Nat) : ℕ := match n with
-  | Chapter2.Nat.zero => 0
-  | Chapter2.Nat.succ n' => n'.toNat + 1
+  | zero => 0
+  | succ n' => n'.toNat + 1
 
 lemma Chapter2.Nat.zero_toNat : (0 : Chapter2.Nat).toNat = 0 := rfl
 
 lemma Chapter2.Nat.succ_toNat (n : Chapter2.Nat) : (n++).toNat = n.toNat + 1 := rfl
 
 abbrev Chapter2.Nat.equivNat : Chapter2.Nat ≃ ℕ where
-  toFun := Chapter2.Nat.toNat
+  toFun := toNat
   invFun n := (n:Chapter2.Nat)
   left_inv n := by
     induction' n with n hn
     . rfl
-    simp [Chapter2.Nat.succ_toNat, hn]
+    simp [succ_toNat, hn]
     symm
     exact succ_eq_add_one _
   right_inv n := by
@@ -36,15 +36,8 @@ abbrev Chapter2.Nat.equivNat : Chapter2.Nat ≃ ℕ where
     simp [←succ_eq_add_one]
     exact hn
 
-abbrev Chapter2.Nat.equivNat_order : Chapter2.Nat ≃o ℕ where
-  toEquiv := Chapter2.Nat.equivNat
-  map_rel_iff' := by
-    intro n m
-    simp [equivNat]
-    sorry
-
-abbrev Chapter2.Nat.equivNat_ring : Chapter2.Nat ≃+* ℕ where
-  toEquiv := Chapter2.Nat.equivNat
+abbrev Chapter2.Nat.equivNat_ordered_ring : Chapter2.Nat ≃+*o ℕ where
+  toEquiv := equivNat
   map_add' := by
     intro n m
     simp [equivNat]
@@ -53,6 +46,7 @@ abbrev Chapter2.Nat.equivNat_ring : Chapter2.Nat ≃+* ℕ where
     intro n m
     simp [equivNat]
     sorry
+  map_le_map_iff' := by sorry
 
 lemma Chapter2.Nat.pow_eq_pow (n m : Chapter2.Nat) : n.toNat ^ m.toNat = n^m := by
   sorry

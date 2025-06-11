@@ -13,7 +13,7 @@ require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @ "v4.20.0"
 -- Needed to build book
 require subverso from git
-  "https://github.com/leanprover/subverso.git" @ "main"
+  "https://github.com/leanprover/subverso.git" @ "a3e5c4c50791e536fc7f13a7aadd6236091796f9"
 
 
 

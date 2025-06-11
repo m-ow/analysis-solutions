@@ -20,9 +20,9 @@ namespace Chapter5
 structure Sequence where
   n₀ : ℤ
   seq : ℤ → ℚ
-  vanish : ∀ n, n < n₀ → seq n = 0
+  vanish : ∀ n < n₀, seq n = 0
 
-/-- Sequence can be thought of as functions from ℤ to ℚ. -/
+/-- Sequences can be thought of as functions from ℤ to ℚ. -/
 instance Sequence.instCoeFun : CoeFun Sequence (fun _ ↦ ℤ → ℚ) where
   coe := fun a ↦ a.seq
 
@@ -72,21 +72,12 @@ example (n:ℤ) (hn: n ≥ 3) : Sequence.squares_from_three n = n^2 := Sequence.
 end Chapter5
 
 abbrev Rat.steady (ε: ℚ) (a: Chapter5.Sequence) : Prop :=
-  ∀ n m, ε.close (a n) (a m)
+  ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.close (a n) (a m)
+
+lemma Rat.steady_def (ε: ℚ) (a: Chapter5.Sequence) :
+  ε.steady a ↔ ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.close (a n) (a m) := by rfl
 
 namespace Chapter5
-
-lemma Rat.steady_def (ε: ℚ) (a: Sequence) :
-  ε.steady a ↔ ∀ n m, ε.close (a n) (a m) := by rfl
-
-lemma Rat.steady_def' (ε: ℚ) (a: Sequence) :
-  ε.steady a ↔ ∀ n m, n ≥ a.n₀ ∧ m ≥ a.n₀ → ε.close (a n) (a m) := by
-  rw [steady_def]
-  constructor
-  . intro h n m ⟨ hn, hm ⟩
-    sorry
-  intro h n m
-  sorry
 
 /-- Example 5.1.5 -/
 example : (1:ℚ).steady ((fun n:ℕ ↦ if Even n then (1:ℚ) else (0:ℚ)):Sequence) := by sorry
@@ -123,12 +114,13 @@ lemma Sequence.from_eval (a:Sequence) {n₁ n:ℤ} (hn: n ≥ n₁) :
 end Chapter5
 
 /-- Definition 5.1.6 (Eventually ε-steady) -/
-abbrev Rat.eventuallySteady (ε: ℚ) (a: Chapter5.Sequence) : Prop := ∃ N, (N ≥ a.n₀) ∧ ε.steady (a.from N)
+abbrev Rat.eventuallySteady (ε: ℚ) (a: Chapter5.Sequence) : Prop := ∃ N ≥ a.n₀, ε.steady (a.from N)
+
+lemma Rat.eventuallySteady_def (ε: ℚ) (a: Chapter5.Sequence) :
+  ε.eventuallySteady a ↔ ∃ N ≥ a.n₀, ε.steady (a.from N) := by rfl
 
 namespace Chapter5
 
-lemma Rat.eventuallySteady_def (ε: ℚ) (a: Sequence) :
-  ε.eventuallySteady a ↔ ∃ N, (N ≥ a.n₀) ∧ ε.steady (a.from N) := by rfl
 
 /-- Example 5.1.7 -/
 lemma Sequence.ex_5_1_7_a : ¬ (0.1:ℚ).steady ((fun n:ℕ ↦ (n+1:ℚ)⁻¹ ):Sequence) := by sorry
@@ -139,14 +131,14 @@ lemma Sequence.ex_5_1_7_c : (0.1:ℚ).eventuallySteady ((fun n:ℕ ↦ (n+1:ℚ)
 
 lemma Sequence.ex_5_1_7_d {ε:ℚ} (hε:ε>0) : ε.eventuallySteady ((fun n:ℕ ↦ if n=0 then (10:ℚ) else (0:ℚ) ):Sequence) := by sorry
 
-abbrev Sequence.isCauchy (a:Sequence) : Prop := ∀ (ε:ℚ), (ε > 0 → (ε.eventuallySteady a))
+abbrev Sequence.isCauchy (a:Sequence) : Prop := ∀ ε > (0:ℚ), ε.eventuallySteady a
 
 lemma Sequence.isCauchy_def (a:Sequence) :
-  a.isCauchy ↔ ∀ (ε:ℚ), (ε > 0 → ε.eventuallySteady a) := by rfl
+  a.isCauchy ↔ ∀ ε > (0:ℚ), ε.eventuallySteady a := by rfl
 
-lemma Sequence.isCauchy_of_coe (a:ℕ → ℚ) : (a:Sequence).isCauchy ↔ ∀ (ε:ℚ), ε > 0 → ∃ N, ∀ j k, j ≥ N ∧ k ≥ N → Section_4_3.dist (a j) (a k) ≤ ε := by sorry
+lemma Sequence.isCauchy_of_coe (a:ℕ → ℚ) : (a:Sequence).isCauchy ↔ ∀ ε > (0:ℚ), ∃ N, ∀ j ≥ N, ∀ k ≥ N, Section_4_3.dist (a j) (a k) ≤ ε := by sorry
 
-lemma Sequence.isCauchy_of_mk {n₀:ℤ} (a: {n // n ≥ n₀} → ℚ) : (mk' n₀ a).isCauchy ↔ ∀ (ε:ℚ), ε > 0 → ∃ N, N ≥ n₀ ∧ ∀ j k, j ≥ N ∧ k ≥ N → Section_4_3.dist (mk' n₀ a j) (mk' n₀ a k) ≤ ε := by sorry
+lemma Sequence.isCauchy_of_mk {n₀:ℤ} (a: {n // n ≥ n₀} → ℚ) : (mk' n₀ a).isCauchy ↔ ∀ ε > (0:ℚ), ∃ N ≥ n₀, ∀ j ≥ N, ∀ k ≥ N, Section_4_3.dist (mk' n₀ a j) (mk' n₀ a k) ≤ ε := by sorry
 
 noncomputable def Sequence.sqrt_two : Sequence := (fun n:ℕ ↦ ((⌊ (Real.sqrt 2)*10^n ⌋ / 10^n):ℚ))
 
@@ -172,7 +164,7 @@ theorem Sequence.harmonic_steady : (mk' 1 (fun n ↦ (1:ℚ)/n)).isCauchy := by
     simp at hN ⊢; assumption
   constructor
   . simp at hN' ⊢; linarith
-  intro j k ⟨ hj, hk ⟩
+  intro j hj k hk
   have hj' : (j:ℚ) ≥ 0 := by simp; linarith
   have hj'' : (1:ℚ)/j ≤ (1:ℚ)/N := by
     gcongr
@@ -212,11 +204,11 @@ abbrev Sequence.BoundedBy (a:Sequence) (M:ℚ) : Prop :=
 lemma Sequence.BoundedBy_def (a:Sequence) (M:ℚ) :
   a.BoundedBy M ↔ ∀ n, |a n| ≤ M := by rfl
 
-abbrev Sequence.isBounded (a:Sequence) : Prop := ∃ M, M ≥ 0 ∧ a.BoundedBy M
+abbrev Sequence.isBounded (a:Sequence) : Prop := ∃ M ≥ 0, a.BoundedBy M
 
 /-- Definition 5.1.12 (bounded sequences) -/
 lemma Sequence.isBounded_def (a:Sequence) :
-  a.isBounded ↔ ∃ M, M ≥ 0 ∧ a.BoundedBy M := by rfl
+  a.isBounded ↔ ∃ M ≥ 0, a.BoundedBy M := by rfl
 
 /-- Example 5.1.13 -/
 example : BoundedBy ![1,-2,3,-4] 4 := by sorry
@@ -231,7 +223,7 @@ example : ((fun n:ℕ ↦ (-1:ℚ)^n):Sequence).isBounded := by sorry
 example : ¬ ((fun n:ℕ ↦ (-1:ℚ)^n):Sequence).isCauchy := by sorry
 
 /-- Lemma 5.1.14 -/
-lemma bounded_of_finite {n:ℕ} (a: Fin n → ℚ) : ∃ M, M ≥ 0 ∧  BoundedBy a M := by
+lemma bounded_of_finite {n:ℕ} (a: Fin n → ℚ) : ∃ M ≥ 0,  BoundedBy a M := by
   -- this proof is written to follow the structure of the original text.
   induction' n with n hn
   . use 0

@@ -298,15 +298,12 @@ abbrev Int.equivInt : Int ≃ ℤ where
   left_inv n := sorry
   right_inv n := sorry
 
-/-- Not in textbook: equivalence preserves order -/
-abbrev Int.equivInt_order : Int ≃o ℤ where
-  toEquiv := equivInt
-  map_rel_iff' := by sorry
-
-/-- Not in textbook: equivalence preserves ring operations -/
-abbrev Int.equivInt_ring : Int ≃+* ℤ where
+/-- Not in textbook: equivalence preserves order and ring operations -/
+abbrev Int.equivInt_ordered_ring : Int ≃+*o ℤ where
   toEquiv := equivInt
   map_add' := by sorry
   map_mul' := by sorry
+  map_le_map_iff' := by sorry
+
 
 end Section_4_1
