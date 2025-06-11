@@ -712,12 +712,50 @@ instance SetTheory.Set.instDistribLattice : DistribLattice Set where
   le_antisymm := subset_antisymm
   inf := (· ∩ ·)
   sup := (· ∪ ·)
-  le_sup_left := by sorry
-  le_sup_right := by sorry
-  sup_le := by sorry
-  inf_le_left := by sorry
-  inf_le_right := by sorry
-  le_inf := by sorry
+  le_sup_left := by
+    intro a b
+    rw [subset_def]
+    intro x hA
+    rw [mem_union]
+    left
+    exact hA
+  le_sup_right := by
+    intro a b
+    rw [subset_def]
+    intro x hB
+    rw [mem_union]
+    right
+    exact hB
+  sup_le := by
+    intro a b c hAC hBC
+    rw [subset_def]
+    intro x h
+    rw [mem_union] at h
+    cases' h with hA hB
+    . apply hAC; exact hA
+    . apply hBC; exact hB
+  inf_le_left := by
+    intro a b
+    rw [subset_def]
+    intro x h
+    rw [mem_inter] at h
+    cases' h with hA hB
+    exact hA
+  inf_le_right := by
+    intro a b
+    rw [subset_def]
+    intro x h
+    rw [mem_inter] at h
+    cases' h with hA hB
+    exact hB
+  le_inf := by
+    intro a b c hAB hAC
+    rw [subset_def]
+    intro x hA
+    rw [mem_inter]
+    constructor
+    . apply hAB; exact hA
+    . apply hAC; exact hA
   le_sup_inf := by
     intro X Y Z
     change (X ∪ Y) ∩ (X ∪ Z) ⊆ X ∪ (Y ∩ Z)
