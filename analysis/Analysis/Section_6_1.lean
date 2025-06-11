@@ -86,6 +86,11 @@ abbrev Real.eventuallySteady (ε: ℝ) (a: Chapter6.Sequence) : Prop := ∃ N �
 lemma Real.eventuallySteady_def (ε: ℝ) (a: Chapter6.Sequence) :
   ε.eventuallySteady a ↔ ∃ N, (N ≥ a.m) ∧ ε.steady (a.from N) := by rfl
 
+theorem Real.steady_mono {a: Chapter6.Sequence} {ε₁ ε₂: ℝ} (hε: ε₁ ≤ ε₂) (hsteady: ε₁.steady a) :
+  ε₂.steady a := by sorry
+
+theorem Real.eventuallySteady_mono {a: Chapter6.Sequence} {ε₁ ε₂: ℝ} (hε: ε₁ ≤ ε₂) (hsteady: ε₁.eventuallySteady a) :
+  ε₂.eventuallySteady a := by sorry
 
 namespace Chapter6
 
@@ -119,7 +124,24 @@ theorem Sequence.is_eventuallySteady_of_rat (ε:ℚ) (a: Chapter5.Sequence) : ε
 
 /-- Proposition 6.1.4 -/
 theorem Sequence.isCauchy_of_rat (a: Chapter5.Sequence) : a.isCauchy ↔ (a:Sequence).isCauchy := by
-  sorry -- TODO
+  -- This proof is written to follow the structure of the original text.
+  constructor
+  swap
+  . intro h
+    rw [isCauchy_def] at h
+    rw [Chapter5.Sequence.isCauchy_def]
+    intro ε hε
+    specialize h (ε:ℝ) (by positivity)
+    rwa [is_eventuallySteady_of_rat]
+  intro h
+  rw [Chapter5.Sequence.isCauchy_def] at h
+  rw [isCauchy_def]
+  intro ε hε
+  have : ∃ ε' > (0:ℚ), ε' < ε := exists_pos_rat_lt hε
+  obtain ⟨ ε', hε', hlt ⟩ := this
+  specialize h ε' hε'
+  rw [is_eventuallySteady_of_rat] at h
+  exact Real.eventuallySteady_mono (le_of_lt hlt) h
 
 end Chapter6
 
@@ -136,6 +158,12 @@ abbrev Real.eventually_close (ε: ℝ) (a: Chapter6.Sequence) (L:ℝ) : Prop := 
 /-- Definition 6.1.5 -/
 theorem Real.eventually_close_def (ε: ℝ) (a: Chapter6.Sequence) (L:ℝ) :
   ε.eventually_close a L ↔ ∃ N, (N ≥ a.m) ∧ ε.close_seq (a.from N) L := by rfl
+
+theorem Real.close_seq_mono {a: Chapter6.Sequence} {ε₁ ε₂: ℝ} (hε: ε₁ ≤ ε₂) (hclose: ε₁.close_seq a L) :
+  ε₂.close_seq a L := by sorry
+
+theorem Real.eventually_close_mono {a: Chapter6.Sequence} {ε₁ ε₂: ℝ} (hε: ε₁ ≤ ε₂) (hclose: ε₁.eventually_close a L) :
+  ε₂.eventually_close a L := by sorry
 
 namespace Chapter6
 
@@ -164,7 +192,32 @@ example : (0.01:ℝ).eventually_close seq_6_1_6 1 := by sorry
 example : seq_6_1_6.tendsTo 1 := by sorry
 
 /-- Proposition 6.1.7 (Uniqueness of limits) -/
-theorem Sequence.tendsTo_unique (a:Sequence) {L L':ℝ} (h:L ≠ L') : ¬ a.tendsTo L ∧ a.tendsTo L' := by sorry -- TODO
+theorem Sequence.tendsTo_unique (a:Sequence) {L L':ℝ} (h:L ≠ L') : ¬ (a.tendsTo L ∧ a.tendsTo L') := by
+  -- This proof is written to follow the structure of the original text.
+  by_contra this
+  obtain ⟨ hL, hL' ⟩ := this
+  replace h : L - L' ≠ 0 := by contrapose! h; linarith
+  replace h : |L-L'| > 0 := by positivity
+  set ε := |L-L'| / 3
+  have hε : ε > 0 := by positivity
+  rw [tendsTo_iff] at hL hL'
+  specialize hL ε hε
+  obtain ⟨ N, hN ⟩ := hL
+  specialize hL' ε hε
+  obtain ⟨ M, hM ⟩ := hL'
+  set n := max N M
+  specialize hN n (le_max_left N M)
+  specialize hM n (le_max_right N M)
+  have : |L-L'| ≤ 2 * |L-L'|/3 := calc
+    _ = dist L L' := by rw [Real.dist_eq]
+    _ ≤ dist L (a.seq n) + dist (a.seq n) L' := dist_triangle _ _ _
+    _ ≤ ε + ε := by
+      rw [←Real.dist_eq] at hN hM
+      rw [dist_comm] at hN
+      gcongr
+    _ = 2 * |L-L'|/3 := by
+      simp [ε]; ring
+  linarith
 
 /-- Definition 6.1.8 -/
 abbrev Sequence.convergent (a:Sequence) : Prop := ∃ L, a.tendsTo L
@@ -205,8 +258,31 @@ a.tendsTo L ↔ a.convergent ∧ lim a = L := by
 
 /-- Proposition 6.1.11 -/
 theorem Sequence.lim_harmonic : ((fun (n:ℕ) ↦ (n+1:ℝ)⁻¹):Sequence).convergent ∧ lim ((fun (n:ℕ) ↦ (n+1:ℝ)⁻¹):Sequence) = 0 := by
-  rw [←lim_eq]
-  sorry --TODO
+  -- This proof is written to follow the structure of the original text.
+  rw [←lim_eq, tendsTo_iff]
+  intro ε hε
+  have : ∃ (N:ℤ), N > 1/ε := exists_int_gt (1 / ε)
+  obtain ⟨ N, hN ⟩ := this
+  use N
+  intro n hn
+  have hNpos : (N:ℝ) > 0 := by apply LT.lt.trans _ hN; positivity
+  simp at hNpos
+  have hnpos : n ≥ 0 := by linarith
+  simp [hnpos, abs_inv]
+  calc
+    _ ≤ (N:ℝ)⁻¹ := by
+      rw [inv_le_inv₀ (by positivity) (by positivity)]
+      calc
+        _ ≤ (n:ℝ) := by simp [hn]
+        _ = (n.toNat:ℤ) := by simp [hnpos]
+        _ = n.toNat := rfl
+        _ ≤ (n.toNat:ℝ) + 1 := by linarith
+        _ ≤ _ := le_abs_self _
+    _ ≤ ε := by
+      rw [inv_le_comm₀ (by positivity) (by positivity)]
+      apply le_of_lt
+      rw [gt_iff_lt, ←inv_eq_one_div _] at hN
+      assumption
 
 /-- Proposition 6.1.12 / Exercise 6.1.5 -/
 theorem Sequence.Cauchy_of_convergent {a:Sequence} (h:a.convergent) : a.isCauchy := by

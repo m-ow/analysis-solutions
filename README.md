@@ -41,7 +41,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Section 5.5: The least upper bound property (_Verso page_) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_5.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_5.lean))
   - Chapter 5 epilogue: Isomorphism with the Mathlib real numbers  (_Verso page_) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_epilogue.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_epilogue.lean))
 - Chapter 6: Limits of sequences
-  - Section 6.1: Convergence and limit laws (in progress) (_Verso page_) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_1.lean))
+  - Section 6.1: Convergence and limit laws (_Verso page_) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_1.lean))
   - _Section 6.2: The extended real number system (planned)_
   - _Section 6.3: Suprema and Infima of sequences (planned)_
   - _Section 6.4: Limsup, Liminf, and limit points (planned)_
