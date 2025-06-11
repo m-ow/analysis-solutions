@@ -659,17 +659,6 @@ theorem SetTheory.Set.compl_union {A B X:Set} (hAX: A ⊆ X) (hBX: B ⊆ X) : X 
       simp
       constructor <;> assumption
 
-
-variable (P Q : Prop)
-
-example (h : P → Q) : ¬P ∨ Q := by
-  by_cases hp : P   -- Táctica que usa el tercio excluido: prueba ambos casos (P y ¬P)
-  · right           -- Caso 1: Si P es verdadero
-    exact h hp      -- Demuestra Q
-  · left            -- Caso 2: Si P es falso
-    exact hp        -- hp es ¬P en este contexto
-
-
 /-- Proposition 3.1.27(g) -/
 theorem SetTheory.Set.compl_inter {A B X:Set} (hAX: A ⊆ X) (hBX: B ⊆ X) : X \ (A ∩ B) = (X \ A) ∪ (X \ B) := by
   apply ext
