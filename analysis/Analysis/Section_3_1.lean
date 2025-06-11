@@ -972,11 +972,46 @@ theorem SetTheory.Set.union_inter_cancel (A B:Set) : A ∪ (A ∩ B) = A := by
       exact h
 
 /-- Exercise 3.1.9 -/
-theorem SetTheory.Set.partition_left {A B X:Set} (h_union: A ∪ B = X) (h_inter: A ∩ B = ∅) : A = X \ B := by sorry
+theorem SetTheory.Set.partition_left {A B X:Set} (h_union: A ∪ B = X) (h_inter: A ∩ B = ∅) : A = X \ B := by
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro hA
+    rw [mem_sdiff]
+    constructor
+    . rw [ext_iff] at h_union
+      specialize h_union x
+      have hAB : x ∈ A ∪ B := by
+        rw [mem_union]
+        left
+        exact hA
+      rw [h_union] at hAB
+      assumption
+    . by_contra h
+      rw [ext_iff] at h_inter
+      specialize h_inter x
+      have hAB : x ∈ A ∩ B := by
+        rw [mem_inter]
+        constructor <;> assumption
+      rw [h_inter] at hAB
+      have hX : x ∉ (∅:Set) := by exact not_mem_empty x
+      contradiction
+  . intro h
+    rw [mem_sdiff] at h
+    cases' h with hX hNB
+    rw [ext_iff] at h_union
+    specialize h_union x
+    rw [<- h_union] at hX
+    rw [mem_union] at hX
+    cases' hX with hA hB
+    . exact hA
+    . contradiction
 
 /-- Exercise 3.1.9 -/
 theorem SetTheory.Set.partition_right {A B X:Set} (h_union: A ∪ B = X) (h_inter: A ∩ B = ∅) : B = X \ A := by
-  sorry
+  rw [union_comm] at h_union
+  rw [inter_comm] at h_inter
+  exact partition_left h_union h_inter
 
 /-- Exercise 3.1.10 -/
 theorem Set.pairwise_disjoint (A B:Set) : Pairwise (Function.onFun Disjoint ![A \ B, A ∩ B, B \ A]) := by sorry
