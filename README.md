@@ -38,12 +38,12 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Section 5.2: Equivalent Cauchy sequences ([Verso page](https://teorth.github.io/analysis/sec52/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_2.lean))
   - Section 5.3: Construction of the real numbers ([Verso page](https://teorth.github.io/analysis/sec53/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_3.lean))
   - Section 5.4: Ordering the reals ([Verso page](https://teorth.github.io/analysis/sec54/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_4.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_4.lean))
-  - Section 5.5: The least upper bound property (_Verso page_) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_5.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_5.lean))
-  - Chapter 5 epilogue: Isomorphism with the Mathlib real numbers  (_Verso page_) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_epilogue.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_epilogue.lean))
+  - Section 5.5: The least upper bound property ([Verso page](https://teorth.github.io/analysis/sec55/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_5.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_5.lean))
+  - Chapter 5 epilogue: Isomorphism with the Mathlib real numbers  ([Verso page](https://teorth.github.io/analysis/sec5e/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_epilogue.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_epilogue.lean))
 - Chapter 6: Limits of sequences
-  - Section 6.1: Convergence and limit laws (_Verso page_) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_1.lean))
-  - Section 6.2: The extended real number system (_Verso page_) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_2.lean))
-  - _Section 6.3: Suprema and Infima of sequences (planned)_
+  - Section 6.1: Convergence and limit laws ([Verso page](https://teorth.github.io/analysis/sec61/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_1.lean))
+  - Section 6.2: The extended real number system ([Verso page](https://teorth.github.io/analysis/sec62/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_2.lean))
+  - Section 6.3: Suprema and Infima of sequences ([Verso page](https://teorth.github.io/analysis/sec63/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_3.lean))
   - _Section 6.4: Limsup, Liminf, and limit points (planned)_
   - _Section 6.5: Some standard limits (planned)_
   - _Section 6.6: Subsequences (planned)_
@@ -123,6 +123,6 @@ To build the project's web page after [installing Lean](https://www.lean-lang.or
 % lake exe analysis-book
 % cd ../
 ```
-where `<url>` is `http://localhost:8000/analysis/docs` for the local setup. 
 
-After this, `book/_site/` contains the project's web page.
+After this, `book/_site/` contains the project's web page. 
+This can be served as a webpage by executing `python3 serve.py`

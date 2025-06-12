@@ -22,31 +22,24 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install elan
         run: curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
-
+      - name: Restore cache if available
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ./analysis/.lake
+            ./book/.lake
+          key: lake-${{ runner.os }}-${{ runner.arch}}-${{ hashFiles('lean-toolchain') }}-${{ hashFiles('lake-manifest.json') }}-${{ github.sha }}
+          restore-keys: lake-${{ runner.os }}-${{ runner.arch}}-${{ hashFiles('lean-toolchain') }}-${{ hashFiles('lake-manifest.json') }}
+      # Getting the mathlib cache is only useful when mathlib gets updated, but will save a lot of time in that case.
       - name: Get Mathlib cache
         run: ~/.elan/bin/lake exe cache get || true
         working-directory: ./analysis
-
-      - name: Cache mathlib API docs
-        uses: actions/cache@v4
-        with:
-          path: |
-            ./analysis/.lake/build/doc/Init
-            ./analysis/.lake/build/doc/Lake
-            ./analysis/.lake/build/doc/Lean
-            ./analysis/.lake/build/doc/Std
-            ./analysis/.lake/build/doc/Mathlib
-            ./analysis/.lake/build/doc/declarations
-            ./analysis/.lake/build/doc/find
-            ./analysis/.lake/build/doc/*.*
-            !./analysis/.lake/build/doc/declarations/declaration-data-Analysis*
-          key: MathlibDoc-${{ hashFiles('lake-manifest.json') }}
-          restore-keys: MathlibDoc-
-
       - name: Build doc-gen
         run: ~/.elan/bin/lake -R -Kenv=dev build Analysis:docs
         working-directory: ./analysis
-
+      - name: Build metadata of project
+        run: ~/.elan/bin/lake build
+        working-directory: ./analysis
       - name: Build book
         run: |
           ~/.elan/bin/lake exe analysis-book 
@@ -57,6 +50,13 @@ jobs:
         run: |
           find _site/docs -name "*.trace" -delete
           find _site/docs -name "*.hash" -delete
+      - name: Save cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ./analysis/.lake
+            ./book/.lake
+          key: lake-${{ runner.os }}-${{ runner.arch}}-${{ hashFiles('lean-toolchain') }}-${{ hashFiles('lake-manifest.json') }}-${{ github.sha }}
       - name: Upload website
         uses: actions/upload-pages-artifact@v3
         with:
