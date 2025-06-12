@@ -61,7 +61,7 @@ theorem Sequence.le_sup {a:Sequence} {n:ℤ} (hn: n ≥ a.m) : a n ≤ a.sup := 
 theorem Sequence.sup_le_upper {a:Sequence} {M:EReal} (h: ∀ n ≥ a.m, a n ≤ M) : a.sup ≤ M := by sorry
 
 /-- Proposition 6.3.6 (Least upper bound property) / Exercise 6.3.2 -/
-theorem Sequence.exists_between_lt_sup {a:Sequence} {x: EReal} {y:EReal} (h: y < a.sup ) : ∃ n ≥ a.m, y < a n ∧ a n ≤ a.sup := by sorry
+theorem Sequence.exists_between_lt_sup {a:Sequence} {y:EReal} (h: y < a.sup ) : ∃ n ≥ a.m, y < a n ∧ a n ≤ a.sup := by sorry
 
 /-- Remark 6.3.7 -/
 theorem Sequence.ge_inf {a:Sequence} {n:ℤ} (hn: n ≥ a.m) : a n ≥ a.inf := by sorry
@@ -70,7 +70,7 @@ theorem Sequence.ge_inf {a:Sequence} {n:ℤ} (hn: n ≥ a.m) : a n ≥ a.inf := 
 theorem Sequence.inf_ge_lower {a:Sequence} {M:EReal} (h: ∀ n ≥ a.m, a n ≥ M) : a.inf ≥ M := by sorry
 
 /-- Remark 6.3.7 -/
-theorem Sequence.exists_between_gt_inf {a:Sequence} {x: EReal} {y:EReal} (h: y > a.inf ) : ∃ n ≥ a.m, y > a n ∧ a n ≥ a.inf := by sorry
+theorem Sequence.exists_between_gt_inf {a:Sequence} {y:EReal} (h: y > a.inf ) : ∃ n ≥ a.m, y > a n ∧ a n ≥ a.inf := by sorry
 
 abbrev Sequence.isMonotone (a:Sequence) : Prop := ∀ n ≥ a.m, a (n+1) ≥ a n
 
