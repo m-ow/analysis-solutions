@@ -42,7 +42,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Chapter 5 epilogue: Isomorphism with the Mathlib real numbers  (_Verso page_) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_epilogue.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_epilogue.lean))
 - Chapter 6: Limits of sequences
   - Section 6.1: Convergence and limit laws (_Verso page_) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_1.lean))
-  - _Section 6.2: The extended real number system (planned)_
+  - Section 6.2: The extended real number system (_Verso page_) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_2.lean))
   - _Section 6.3: Suprema and Infima of sequences (planned)_
   - _Section 6.4: Limsup, Liminf, and limit points (planned)_
   - _Section 6.5: Some standard limits (planned)_

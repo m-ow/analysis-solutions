@@ -10,7 +10,8 @@ I have attempted to make the translation as faithful a paraphrasing as possible 
 
 Main constructions and results of this section:
 
--
+- Definition of $ε$-closeness, $ε$-steadiness, and their eventual counterparts
+- Notion of a Cauchy sequence, convergent sequence, and bounded sequence of reals
 
 -/
 
