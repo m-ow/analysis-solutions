@@ -194,10 +194,7 @@ theorem Nat.succ_gt (n:Nat) : n++ > n := by
 
 (a) (Order is reflexive). -/
 theorem Nat.ge_refl (a:Nat) : a ≥ a := by
-  revert a; apply induction
-  . use 0; rfl
-  intro n ih
-  use 0; rw [add_comm, zero_add]
+  use 0; simp
 
 /-- (b) (Order is transitive) -/
 theorem Nat.ge_trans {a b c:Nat} (hab: a ≥ b) (hbc: b ≥ c) : a ≥ c := by
