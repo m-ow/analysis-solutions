@@ -224,13 +224,8 @@ theorem Sequence.tendsTo_zero_iff (a:Sequence) :
   a.tendsTo (0:ℝ) ↔ a.abs.tendsTo (0:ℝ) := by
   sorry
 
-/-- Theorem 6.4.18 (Completeness of the reals) -/
-theorem Sequence.Cauchy_iff_convergent (a:Sequence) :
-  a.isCauchy ↔ a.convergent := by
-  -- This proof is written to follow the structure of the original text.
-  refine ⟨ ?_, Cauchy_of_convergent ⟩
-  intro h
-  have hbound := bounded_of_cauchy h
+/-- This helper lemma, implicit in the textbook proofs of Theorem 6.4.18 and Theorem 6.6.8, is made explicit here. -/
+theorem Sequence.finite_limsup_liminf_of_bounded {a:Sequence} (hbound: a.isBounded) : (∃ L_plus:ℝ, a.limsup = L_plus) ∧ (∃ L_minus:ℝ, a.liminf = L_minus) := by
   obtain ⟨ M, hMpos, hbound ⟩ := hbound
   unfold Sequence.BoundedBy at hbound
   have hlimsup_bound : a.limsup ≤ M := by
@@ -246,24 +241,29 @@ theorem Sequence.Cauchy_iff_convergent (a:Sequence) :
     simp [←EReal.coe_neg]
     rw [neg_le]
     exact (neg_le_abs _).trans (hbound n)
-  have hL_minus : ∃ L_minus:ℝ, a.liminf = L_minus := by
-    use a.liminf.toReal
-    apply (EReal.coe_toReal _ _).symm
-    . replace hlimsup_bound := a.liminf_le_limsup.trans hlimsup_bound
-      contrapose! hlimsup_bound
-      simp [hlimsup_bound]
-    contrapose! hliminf_bound
-    simp [hliminf_bound, ←EReal.coe_neg]
-  have hL_plus : ∃ L_plus:ℝ, a.limsup = L_plus := by
-    use a.limsup.toReal
+  constructor
+  . use a.limsup.toReal
     apply (EReal.coe_toReal _ _).symm
     . contrapose! hlimsup_bound
       simp [hlimsup_bound]
     replace hliminf_bound := hliminf_bound.trans a.liminf_le_limsup
     contrapose! hliminf_bound
     simp [hliminf_bound, ←EReal.coe_neg]
-  obtain ⟨ L_minus, hL_minus ⟩ := hL_minus
-  obtain ⟨ L_plus, hL_plus ⟩ := hL_plus
+  use a.liminf.toReal
+  apply (EReal.coe_toReal _ _).symm
+  . replace hlimsup_bound := a.liminf_le_limsup.trans hlimsup_bound
+    contrapose! hlimsup_bound
+    simp [hlimsup_bound]
+  contrapose! hliminf_bound
+  simp [hliminf_bound, ←EReal.coe_neg]
+
+/-- Theorem 6.4.18 (Completeness of the reals) -/
+theorem Sequence.Cauchy_iff_convergent (a:Sequence) :
+  a.isCauchy ↔ a.convergent := by
+  -- This proof is written to follow the structure of the original text.
+  refine ⟨ ?_, Cauchy_of_convergent ⟩
+  intro h
+  obtain ⟨ ⟨ L_plus, hL_plus ⟩, ⟨ L_minus, hL_minus ⟩ ⟩ := finite_limsup_liminf_of_bounded (bounded_of_cauchy h)
   use L_minus
   rw [tendsTo_iff_eq_limsup_liminf]
   simp [hL_minus, hL_plus]
@@ -319,12 +319,11 @@ theorem Sequence.Cauchy_iff_convergent (a:Sequence) :
 theorem Sequence.sup_not_strict_mono : ∃ (a b:ℕ → ℝ), (∀ n, a n < b n) ∧ (a:Sequence).sup ≠ (b:Sequence).sup := by
   sorry
 
-/-- Exercise 6.4.7: prove one of these statements and delete the other. -/
-theorem Sequence.tendsTo_real_iff : ∀ (a:Sequence) (x:ℝ), a.tendsTo x ↔ a.abs.tendsTo x := by
-  sorry
+/- Exercise 6.4.7: uncomment and prove one of these statements and delete the other. -/
 
-theorem Sequence.not_tendsTo_real_iff : ¬ ∀ (a:Sequence) (x:ℝ), a.tendsTo x ↔ a.abs.tendsTo x := by
-  sorry
+-- theorem Sequence.tendsTo_real_iff : ∀ (a:Sequence) (x:ℝ), a.tendsTo x ↔ a.abs.tendsTo x := by sorry
+
+-- theorem Sequence.not_tendsTo_real_iff : ¬ ∀ (a:Sequence) (x:ℝ), a.tendsTo x ↔ a.abs.tendsTo x := by sorry
 
 /-- This definition is needed for Exercises 6.4.8 and 6.4.9. -/
 abbrev Sequence.extended_limit_point (a:Sequence) (x:EReal) : Prop := if x = ⊤ then ¬ a.bddAbove else if x = ⊥ then ¬ a.bddBelow else a.limit_point x.toReal

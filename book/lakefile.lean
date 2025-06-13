@@ -41,6 +41,9 @@ def sections := #[
   (`Analysis.Section_6_1, "Convergence and limit laws"),
   (`Analysis.Section_6_2, "The extended real number system"),
   (`Analysis.Section_6_3, "Suprema and Infima of sequences"),
+  (`Analysis.Section_6_4, "Limsup, Liminf, and limit points"),
+  (`Analysis.Section_6_5, "Some standard limits"),
+  (`Analysis.Section_6_6, "Subsequences"),
 ]
 
 /--
