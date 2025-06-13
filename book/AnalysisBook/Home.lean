@@ -37,3 +37,4 @@ Currently formalized sections:
 - [Section 6.4: Lim inf, lim sup, and limit points](./sec64/)
 - [Section 6.5: Some standard limits](./sec65/)
 - [Section 6.6: Subsequences](./sec66/)
+- [Section 6 epilogue: Connections with Mathlib limits](./sec6e/)

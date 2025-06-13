@@ -44,6 +44,7 @@ def sections := #[
   (`Analysis.Section_6_4, "Limsup, Liminf, and limit points"),
   (`Analysis.Section_6_5, "Some standard limits"),
   (`Analysis.Section_6_6, "Subsequences"),
+  (`Analysis.Section_6_epilogue, "Connections with Mathlib limits")
 ]
 
 /--

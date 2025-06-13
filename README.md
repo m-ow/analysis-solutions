@@ -51,7 +51,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Section 6.5: Some standard limits ([Verso page](https://teorth.github.io/analysis/sec65/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_5.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_5.lean))
   - Section 6.6: Subsequences ([Verso page](https://teorth.github.io/analysis/sec66/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_6.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_6.lean))
   - _Section 6.7: Real exponentiation, part II (possible future expansion)_
-  - _Chapter 6 epilogue: Connections with Mathlib limits (planned)_
+  - Chapter 6 epilogue: Connections with Mathlib limits ([Verso page](https://teorth.github.io/analysis/sec6e/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_epilogue.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_epilogue.lean))
 - Chapter 7: Series
   - _Section 7.1: Finite series (planned)_
   - _Section 7.2: Infinite series (planned)_
