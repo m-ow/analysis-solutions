@@ -35,3 +35,4 @@ Currently formalized sections:
 - [Section 6.2: The extended real number system](./sec62/)
 - [Section 6.3: Suprema and Infima of sequences](./sec63/)
 - [Section 6.4: Lim inf, lim sup, and limit points](./sec64/)
+- [Section 6.5: Some standard limits](./sec65/)
