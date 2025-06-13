@@ -44,7 +44,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Section 6.1: Convergence and limit laws ([Verso page](https://teorth.github.io/analysis/sec61/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_1.lean))
   - Section 6.2: The extended real number system ([Verso page](https://teorth.github.io/analysis/sec62/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_2.lean))
   - Section 6.3: Suprema and Infima of sequences ([Verso page](https://teorth.github.io/analysis/sec63/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_3.lean))
-  - _Section 6.4: Limsup, Liminf, and limit points (planned)_
+  - Section 6.4: Limsup, Liminf, and limit points ([Verso page](https://teorth.github.io/analysis/sec64/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_4.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_4.lean))
   - _Section 6.5: Some standard limits (planned)_
   - _Section 6.6: Subsequences (planned)_
   - _Chapter 6 epilogue: Connections with Mathlib limits (planned)_

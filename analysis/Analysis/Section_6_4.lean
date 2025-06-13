@@ -9,6 +9,7 @@ I have attempted to make the translation as faithful a paraphrasing as possible 
 Main constructions and results of this section:
 
 - Lim sup and lim inf of sequences
+- Limit points of sequences
 - Comparison and squeeze tests
 - Completeness of the reals
 
