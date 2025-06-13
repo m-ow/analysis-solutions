@@ -355,7 +355,35 @@ theorem SetTheory.Set.empty_union (A:Set) : ∅ ∪ A = A := by
 theorem SetTheory.Set.triple_eq (a b c:Object) : {a,b,c} = ({a}:Set) ∪ {b,c} := by rfl
 
 /-- Example 3.1.10 -/
-theorem SetTheory.Set.pair_union_pair (a b c:Object) : ({a,b}:Set) ∪ {b,c} = {a,b,c} := sorry
+theorem SetTheory.Set.pair_union_pair (a b c:Object) : ({a,b}:Set) ∪ {b,c} = {a,b,c} := by
+  rw [triple_eq]
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_union] at *
+    cases' h with hAB hBC
+    . rw [mem_pair] at hAB
+      cases' hAB with hA hB
+      . left
+        rw [mem_singleton]
+        exact hA
+      . right
+        rw [mem_pair]
+        left
+        exact hB
+    . right
+      exact hBC
+  . intro h
+    rw [mem_union] at *
+    cases' h with hA hBC
+    . left
+      rw [mem_pair]
+      left
+      rw [mem_singleton] at hA
+      exact hA
+    . right
+      exact hBC
 
 /-- Definition 3.1.14.   -/
 instance SetTheory.Set.uinstSubset : HasSubset Set where
@@ -579,7 +607,43 @@ theorem  SetTheory.Set.inter_union_distrib_left (A B C:Set) : A ∩ (B ∪ C) = 
         assumption
 
 /-- Proposition 3.1.27(f) -/
-theorem  SetTheory.Set.union_inter_distrib_left (A B C:Set) : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := sorry
+theorem  SetTheory.Set.union_inter_distrib_left (A B C:Set) : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_union] at h
+    cases' h with hA hBC
+    . rw [mem_inter]
+      constructor
+      . rw [mem_union]
+        left
+        exact hA
+      . rw [mem_union]
+        left
+        exact hA
+    . rw [mem_inter] at *
+      cases' hBC with hB hC
+      . constructor
+        . rw [mem_union]
+          right
+          exact hB
+        . rw [mem_union]
+          right
+          exact hC
+  . intro h
+    rw [mem_inter] at h
+    cases' h with hAB hAC
+    rw [mem_union] at *
+    cases' hAB with hA hB
+    . left
+      exact hA
+    . cases' hAC with hA hC
+      . left
+        exact hA
+      . right
+        rw [mem_inter]
+        exact ⟨hB, hC⟩
 
 /-- Proposition 3.1.27(f) -/
 theorem SetTheory.Set.union_compl {A X:Set} (hAX: A ⊆ X) : A ∪ (X \ A) = X := by
@@ -1055,7 +1119,52 @@ theorem SetTheory.Set.partition_right {A B X:Set} (h_union: A ∪ B = X) (h_inte
 theorem SetTheory.Set.pairwise_disjoint (A B:Set) : Pairwise (Function.onFun Disjoint ![A \ B, A ∩ B, B \ A]) := by sorry
 
 /-- Exercise 3.1.10 -/
-theorem SetTheory.Set.union_eq_partition (A B:Set) : A ∪ B = (A \ B) ∪ (A ∩ B) ∪ (B \ A) := by sorry
+theorem SetTheory.Set.union_eq_partition (A B:Set) : A ∪ B = (A \ B) ∪ (A ∩ B) ∪ (B \ A) := by
+  apply ext
+  intro x
+  apply Iff.intro
+  . intro h
+    rw [mem_union] at *
+    cases' h with hA hB
+    . by_cases hB' : x ∉ B
+      . left
+        rw [mem_union]
+        left
+        rw [mem_sdiff]
+        exact ⟨hA, hB'⟩
+      . simp at hB'
+        left
+        rw [mem_union]
+        right
+        rw [mem_inter]
+        exact ⟨hA, hB'⟩
+    . by_cases hA' : x ∉ A
+      . right
+        rw [mem_sdiff]
+        exact ⟨hB, hA'⟩
+      . simp at hA'
+        left
+        rw [mem_union]
+        right
+        rw [mem_inter]
+        exact ⟨hA', hB⟩
+  . intro h
+    rw [mem_union] at *
+    cases' h with hAB hBA
+    . rw [mem_union] at hAB
+      cases' hAB with hAN hAB
+      . rw [mem_sdiff] at hAN
+        cases' hAN with hA hNB
+        left
+        exact hA
+      . rw [mem_inter] at hAB
+        cases' hAB with hA hB
+        right
+        exact hB
+    . right
+      rw [mem_sdiff] at hBA
+      cases' hBA with hB hN
+      exact hB
 
 /-- Exercise 3.1.11.  The challenge is to prove this without using `Set.specify`, `Set.specification_axiom`, or `Set.specification_axiom'`. -/
 theorem SetTheory.Set.specification_from_replacement {A:Set} {P: A → Prop} : ∃ B, A ⊆ B ∧ ∀ x, x.val ∈ B ↔ P x := by sorry
