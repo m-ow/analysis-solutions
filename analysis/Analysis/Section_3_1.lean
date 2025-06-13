@@ -249,7 +249,41 @@ theorem SetTheory.Set.pair_self (a:Object) : ({a,a}:Set) = {a} := by
 
 /-- Exercise 3.1.1 -/
 theorem SetTheory.Set.pair_eq_pair {a b c d:Object} (h: ({a,b}:Set) = {c,d}) : a = c ∧ b = d ∨ a = d ∧ b = c := by
-  sorry
+  have ha : a ∈ ({a, b} : Set) := by rw [mem_pair]; left; rfl
+  have ha' : a ∈ ({c, d} : Set) := by rwa [h] at ha
+  rw [mem_pair] at ha'
+  have hb : b ∈ ({a, b} : Set) := by rw [mem_pair]; right; rfl
+  have hb' : b ∈ ({c, d} : Set) := by rwa [h] at hb
+  rw [mem_pair] at hb'
+  cases' ha' with hac had
+  . have hbd : b = d := by
+      by_contra h_not
+      cases' hb' with hbc hbd
+      . have : d ∈ ({c, d} : Set) := by rw [mem_pair]; right; rfl
+        rw [<- h] at this
+        rw [mem_pair] at this
+        cases' this with hda hdb
+        . have : b = a := by rw [hbc, hac]
+          have : b = d := by rw [this, hda]
+          contradiction
+        . have : b = d := Eq.symm hdb
+          contradiction
+      . contradiction
+    left; exact ⟨hac, hbd⟩
+  . have hbc : b = c := by
+      by_contra hN
+      cases' hb' with hbc hbd
+      . contradiction
+      . have : c ∈ ({c, d} : Set) := by rw [mem_pair]; left; rfl
+        rw [<- h] at this
+        rw [mem_pair] at this
+        cases' this with hca hcb
+        . rw [<- had] at hbd
+          rw [<- hca] at hbd
+          contradiction
+        . rw [hcb] at hN
+          contradiction
+    right; exact ⟨had, hbc⟩
 
 abbrev SetTheory.Set.empty : Set := ∅
 abbrev SetTheory.Set.singleton_empty : Set := {empty.toObject}
@@ -257,14 +291,29 @@ abbrev SetTheory.Set.pair_empty : Set := {empty.toObject, singleton_empty.toObje
 
 /-- Exercise 3.1.2-/
 theorem SetTheory.Set.emptyset_neq_singleton : empty ≠ singleton_empty := by
-  sorry
+  by_contra h
+  have : empty.toObject ∈ singleton_empty := by
+    rw [mem_singleton]
+  rw [<- h] at this
+  exact not_mem_empty _ this
 
 /-- Exercise 3.1.2-/
-theorem SetTheory.Set.emptyset_neq_pair : empty ≠ pair_empty := by sorry
+theorem SetTheory.Set.emptyset_neq_pair : empty ≠ pair_empty := by
+  by_contra h
+  have : empty.toObject ∈ pair_empty := by
+    rw [mem_pair]; left; rfl
+  rw [<- h] at this
+  exact not_mem_empty _ this
 
 /-- Exercise 3.1.2-/
 theorem SetTheory.Set.singleton_empty_neq_pair : singleton_empty ≠ pair_empty := by
-  sorry
+  by_contra h
+  have : singleton_empty.toObject ∈ pair_empty := by
+    rw [mem_pair]; right; rfl
+  rw [<- h, mem_singleton] at this
+  simp at this
+  have : empty = singleton_empty := Eq.symm this
+  exact emptyset_neq_singleton this
 
 /-- Remark 3.1.11.  (These results can be proven either by a direct rewrite, or by using extensionality.) -/
 theorem SetTheory.Set.union_congr_left (A A' B:Set) (h: A = A') : A ∪ B = A' ∪ B := by
