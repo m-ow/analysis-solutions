@@ -949,7 +949,16 @@ example : (5:Object) ≠ (3:Object) := by
 
 /-- Example 3.1.16 (simplified).  -/
 example : ({3, 5}:Set) ⊆ {1, 3, 5} := by
-  sorry
+  rw [SetTheory.Set.subset_def]
+  intro x h
+  rw [SetTheory.Set.mem_pair] at h
+  rw [SetTheory.Set.triple_eq, SetTheory.Set.mem_union]
+  right
+  cases' h with h3 h5
+  . rw [SetTheory.Set.mem_pair]
+    left; exact h3
+  . rw [SetTheory.Set.mem_pair]
+    right; exact h5
 
 /-- Example 3.1.17 (simplified). -/
 example : ({3, 5}:Set).specify (fun x ↦ x.val ≠ 3)
@@ -971,7 +980,6 @@ example : Disjoint (∅:Set) ∅ := by sorry
 /-- Definition 3.1.26 example -/
 
 example : ({1, 2, 3, 4}:Set) \ {2,4,6} = {1, 3} := by sorry
-
 /-- Example 3.1.30 -/
 
 example : ({3,5,9}:Set).replace (P := fun x y ↦ ∃ (n:ℕ), x.val = n ∧ y = (n+1:ℕ)) (by sorry) = {4,6,10} := by sorry
