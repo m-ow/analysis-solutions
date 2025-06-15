@@ -488,7 +488,7 @@ theorem SetTheory.Set.ssubset_trans (A B C:Set) (hAB:A ⊂ B) (hBC:B ⊂ C) : A 
   rw [ssubset_def] at *
   cases' hAB with hAB hN; cases' hBC with hBC hN'
   constructor
-  . exact subset_trans A B C hAB hBC
+  . exact subset_trans hAB hBC
   . by_contra h
     rw [h] at hAB
     have : C = B := by exact subset_antisymm C B hAB hBC
