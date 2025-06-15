@@ -283,9 +283,30 @@ theorem Rat.add_lt_add_right {x y:Rat} (z:Rat) (hxy: x < y) : x + z < y + z := b
 /-- Proposition 4.2.9(e) (positive multiplication preserves order) / Exercise 4.2.5 -/
 theorem Rat.mul_lt_mul_right {x y z:Rat} (hxy: x < y) (hz: z.isPos) : x * z < y * z := by sorry
 
-/-- (Not from textbook) The order is decidable.  This exercise is only recommended for Lean experts.  Alternatively, one can establish this fact in classical logic via `classical; exact Classical.decRel _` -/
+/-- (Not from textbook) Establish the decidability of this order. -/
 instance Rat.decidableRel : DecidableRel (· ≤ · : Rat → Rat → Prop) := by
-  sorry
+  intro n m
+  have : ∀ (n:PreRat) (m: PreRat), Decidable (Quotient.mk PreRat.instSetoid n ≤ Quotient.mk PreRat.instSetoid m) := by
+    intro ⟨ a,b,hb ⟩ ⟨ c,d,hd ⟩
+    -- at this point, the goal is morally `Decidable(a//b ≤ c//d)`, but there are technical issues due to the junk value of formal divisionwhen the denominator vanishes.  It may be more convenient to avoid formal division and work directly with `Quotient.mk`.
+    cases (0:ℤ).decLe (b*d) with
+      | isTrue hbd =>
+        cases (a * d).decLe (b * c) with
+          | isTrue h =>
+            apply isTrue
+            sorry
+          | isFalse h =>
+            apply isFalse
+            sorry
+      | isFalse hbd =>
+        cases (b * c).decLe (a * d) with
+          | isTrue h =>
+            apply isTrue
+            sorry
+          | isFalse h =>
+            apply isFalse
+            sorry
+  exact Quotient.recOnSubsingleton₂ n m this
 
 /-- (Not from textbook) Rat has the structure of a linear ordering. -/
 instance Rat.instLinearOrder : LinearOrder Rat where

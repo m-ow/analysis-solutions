@@ -19,7 +19,7 @@ def analysisRoot : System.FilePath := "../analysis"
 /--
 A mapping from module names in the Lean code to the titles to be used for their sections.
 
-A module is generated for each, containing the literate page. It's name is the module name from
+A module is generated for each, containing the literate page. Its name is the module name from
 `analysis` with `Book` prepended, so `Analysis.Section_2_1`'s literate page can be found by
 importing `Book.Analysis.Section_2_1`. The page itself is named identically to its module.
 -/
@@ -29,6 +29,7 @@ def sections := #[
   (`Analysis.Section_2_2, "Addition"),
   (`Analysis.Section_2_3, "Multiplication"),
   (`Analysis.Section_3_1, "Fundamentals"),
+  (`Analysis.Section_3_3, "Functions"),
   (`Analysis.Section_4_1, "The integers"),
   (`Analysis.Section_4_2, "The rationals"),
   (`Analysis.Section_4_3, "Absolute value and exponentiation"),
@@ -45,6 +46,7 @@ def sections := #[
   (`Analysis.Section_6_5, "Some standard limits"),
   (`Analysis.Section_6_6, "Subsequences"),
   (`Analysis.Section_6_epilogue, "Connections with Mathlib limits")
+--  (`Analysis.Section_7_1, "Finite series")
 ]
 
 /--

@@ -58,6 +58,15 @@ theorem Int.eq (a b c d:ℕ): a —— b = c —— d ↔ a + d = c + b := by
   . exact Quotient.exact
   intro h; exact Quotient.sound h
 
+/-- Decidability of equality -/
+instance Int.decidableEq : DecidableEq Int := by
+  intro a b
+  have : ∀ (n:PreInt) (m: PreInt), Decidable (Quotient.mk PreInt.instSetoid n = Quotient.mk PreInt.instSetoid m) := by
+    intro ⟨ a,b ⟩ ⟨ c,d ⟩
+    rw [eq]
+    exact decEq _ _
+  exact Quotient.recOnSubsingleton₂ a b this
+
 /-- Definition 4.1.1 (Integers) -/
 theorem Int.eq_diff (n:Int) : ∃ a b, n = a —— b := by
   apply Quot.ind _ n; intro ⟨ a, b ⟩
@@ -254,7 +263,7 @@ theorem Int.neg_gt_neg {a b:Int} (h: a > b) : -a < -b := by sorry
 theorem Int.gt_trans {a b c:Int} (hab: a > b) (hbc: b > c) : a > c := by sorry
 
 /-- Lemma 4.1.11(f) (Order trichotomy) / Exercise 4.1.7 -/
-theorem Int.trichotomous' (a b c:Int) : a > b ∨ a < b ∨ a = b := by sorry
+theorem Int.trichotomous' (a b:Int) : a > b ∨ a < b ∨ a = b := by sorry
 
 /-- Lemma 4.1.11(f) (Order trichotomy) / Exercise 4.1.7 -/
 theorem Int.not_gt_and_lt (a b:Int) : ¬ (a > b ∧ a < b):= by sorry
@@ -265,9 +274,20 @@ theorem Int.not_gt_and_eq (a b:Int) : ¬ (a > b ∧ a = b):= by sorry
 /-- Lemma 4.1.11(f) (Order trichotomy) / Exercise 4.1.7 -/
 theorem Int.not_lt_and_eq (a b:Int) : ¬ (a < b ∧ a = b):= by sorry
 
-/-- (Not from textbook) The order is decidable.  This exercise is only recommended for Lean experts. Alternatively, one can establish this fact in classical logic via `classical; exact Classical.decRel _`.  -/
+/-- (Not from textbook) Establish the decidability of this order. -/
 instance Int.decidableRel : DecidableRel (· ≤ · : Int → Int → Prop) := by
-  sorry
+  intro n m
+  have : ∀ (n:PreInt) (m: PreInt), Decidable (Quotient.mk PreInt.instSetoid n ≤ Quotient.mk PreInt.instSetoid m) := by
+    intro ⟨ a,b ⟩ ⟨ c,d ⟩
+    change Decidable (a —— b ≤ c —— d)
+    cases (a + d).decLe (b + c) with
+      | isTrue h =>
+        apply isTrue
+        sorry
+      | isFalse h =>
+        apply isFalse
+        sorry
+  exact Quotient.recOnSubsingleton₂ n m this
 
 /-- (Not from textbook) Int has the structure of a linear ordering. -/
 instance Int.instLinearOrder : LinearOrder Int where

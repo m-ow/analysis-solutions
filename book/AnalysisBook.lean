@@ -50,6 +50,7 @@ def demoSite : Site := site AnalysisBook.Home /
   "sec22" Book.Analysis.Section_2_2
   "sec23" Book.Analysis.Section_2_3
   "sec31" Book.Analysis.Section_3_1
+  "sec33" Book.Analysis.Section_3_3
   "sec41" Book.Analysis.Section_4_1
   "sec42" Book.Analysis.Section_4_2
   "sec43" Book.Analysis.Section_4_3
@@ -62,6 +63,11 @@ def demoSite : Site := site AnalysisBook.Home /
   "sec61" Book.Analysis.Section_6_1
   "sec62" Book.Analysis.Section_6_2
   "sec63" Book.Analysis.Section_6_3
+  "sec64" Book.Analysis.Section_6_4
+  "sec65" Book.Analysis.Section_6_5
+  "sec66" Book.Analysis.Section_6_6
+  "sec6e" Book.Analysis.Section_6_epilogue
+--  "sec71" Book.Analysis.Section_7_1
 
 def baseUrl := "https://teorth.github.io/analysis/docs/"
 

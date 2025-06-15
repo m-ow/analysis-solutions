@@ -25,7 +25,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
 - Chapter 3: Set theory
   - Section 3.1: Fundamentals ([Verso page](https://teorth.github.io/analysis/sec31/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_3_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_3_1.lean))
   - _Section 3.2: Russell's paradox (possible future expansion)_
-  - _Section 3.3: Functions (planned)_
+  - Section 3.3: Functions ([Verso page](https://teorth.github.io/analysis/sec33/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_3_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_3_3.lean))
   - _Section 3.4: Images and inverse images (planned)_
   - _Section 3.5: Cartesian products (planned)_
   - _Section 3.6: Cardinality of sets (planned)_
@@ -34,7 +34,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Section 4.1: The integers ([Verso page](https://teorth.github.io/analysis/sec41/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_1.lean))
   - Section 4.2: The rationals ([Verso page](https://teorth.github.io/analysis/sec42/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_2.lean))
   - Section 4.3: Absolute value and exponentiation ([Verso page](https://teorth.github.io/analysis/sec43/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_3.lean))
-  - _Section 4.4: Gaps in the rational numbers (planned)_ 
+  - _Section 4.4: Gaps in the rational numbers (possible future expansion)_ 
 - Chapter 5: The Real numbers
   - Section 5.1: Cauchy sequences of rationals ([Verso page](https://teorth.github.io/analysis/sec51/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_1.lean))
   - Section 5.2: Equivalent Cauchy sequences ([Verso page](https://teorth.github.io/analysis/sec52/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_2.lean))
@@ -53,12 +53,12 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - _Section 6.7: Real exponentiation, part II (possible future expansion)_
   - Chapter 6 epilogue: Connections with Mathlib limits ([Verso page](https://teorth.github.io/analysis/sec6e/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_epilogue.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_epilogue.lean))
 - Chapter 7: Series
-  - _Section 7.1: Finite series (planned)_
+  - Section 7.1: Finite series ([Verso page](https://teorth.github.io/analysis/sec71/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_7_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_7_1.lean))
   - _Section 7.2: Infinite series (planned)_
   - _Section 7.3: Sums of non-negative numbers (planned)_
   - _Section 7.4: Rearrangement of series (planned)_
   - _Section 7.5: The root and ratio tests (planned)_
-- _Chapter 8: Infinite sets (planned)_
+- _Chapter 8: Infinite sets (possible future expansion)_
 - _Chapter 9: Continuous functions on `ℝ` (planned)_
 - _Chapter 10: Differentiation of functions (planned)_
 - _Chapter 11: The Riemann integral (planned)_

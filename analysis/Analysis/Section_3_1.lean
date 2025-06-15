@@ -90,6 +90,7 @@ instance SetTheory.Set.instEmpty : EmptyCollection Set where
   emptyCollection := SetTheory.emptyset
 
 /-- Axiom 3.3 (empty set).  Note: one may have to explicitly cast ∅ to Set due to Mathlib's existing set theory notation. -/
+@[simp]
 theorem SetTheory.Set.not_mem_empty : ∀ x, x ∉ (∅:Set) := SetTheory.emptyset_mem
 
 /-- Empty set is unique -/
@@ -139,6 +140,7 @@ instance SetTheory.Set.instSingleton : Singleton Object Set where
   singleton := SetTheory.singleton
 
 /-- Axiom 3.3(a) (singleton).  Note one may have to explicitly cast {a} to Set due to Mathlib's existing set theory notation. -/
+@[simp]
 theorem SetTheory.Set.mem_singleton (x a:Object) : x ∈ ({a}:Set) ↔ x = a := by
   exact SetTheory.singleton_axiom x a
 
@@ -156,6 +158,7 @@ instance SetTheory.Set.instInsert : Insert Object Set where
 theorem SetTheory.Set.pair_eq (a b:Object) : ({a,b}:Set) = {a} ∪ {b} := by rfl
 
 /-- Axiom 3.3(b) (pair).  Note that one often has to cast {a,b} to Set -/
+@[simp]
 theorem SetTheory.Set.mem_pair (x a b:Object) : x ∈ ({a,b}:Set) ↔ (x = a ∨ x = b) := by
   rw [pair_eq, mem_union, mem_singleton, mem_singleton]
 
@@ -463,7 +466,7 @@ theorem SetTheory.Set.empty_subset (A:Set) : ∅ ⊆ A := by
   contradiction
 
 /-- Proposition 3.1.17 (Partial ordering by set inclusion) -/
-theorem SetTheory.Set.subset_trans (A B C:Set) (hAB:A ⊆ B) (hBC:B ⊆ C) : A ⊆ C := by
+theorem SetTheory.Set.subset_trans {A B C:Set} (hAB:A ⊆ B) (hBC:B ⊆ C) : A ⊆ C := by
   -- this proof is written to follow the structure of the original text.
   rw [subset_def]
   intro x hx
@@ -536,6 +539,7 @@ instance SetTheory.Set.instIntersection : Inter Set where
   inter X Y := X.specify (fun x ↦ x.val ∈ Y)
 
 /-- Definition 3.1.22 (Intersections) -/
+@[simp]
 theorem SetTheory.Set.mem_inter (x:Object) (X Y:Set) : x ∈ (X ∩ Y) ↔ (x ∈ X ∧ x ∈ Y) := by
   constructor
   . intro h
@@ -549,6 +553,7 @@ instance SetTheory.Set.instSDiff : SDiff Set where
   sdiff X Y := X.specify (fun x ↦ x.val ∉ Y)
 
 /-- Definition 3.1.26 (Difference sets) -/
+@[simp]
 theorem SetTheory.Set.mem_sdiff (x:Object) (X Y:Set) : x ∈ (X \ Y) ↔ (x ∈ X ∧ x ∉ Y) := by
   constructor
   . intro h
@@ -821,7 +826,7 @@ theorem SetTheory.Set.compl_inter {A B X:Set} (hAX: A ⊆ X) (hBX: B ⊆ X) : X 
 instance SetTheory.Set.instDistribLattice : DistribLattice Set where
   le := (· ⊆ ·)
   le_refl := subset_self
-  le_trans := subset_trans
+  le_trans := fun _ _ _ ↦ subset_trans
   le_antisymm := subset_antisymm
   inf := (· ∩ ·)
   sup := (· ∪ ·)
@@ -934,6 +939,11 @@ theorem SetTheory.Set.ofNat_inj' (n m:ℕ) :
     (ofNat(n) : Object) = (ofNat(m) : Object) ↔ ofNat(n) = ofNat(m) := by
       simp only [←Object.ofnat_eq, Object.ofnat_eq', Set.coe_inj, Set.nat_equiv_inj]
       rfl
+
+@[simp]
+theorem SetTheory.Object.natCast_inj (n m:ℕ) :
+    (n : Object) = (m : Object) ↔ n = m := by
+      simp [←ofnat_eq, Subtype.val_inj]
 
 @[simp]
 lemma SetTheory.Set.nat_equiv_coe_of_coe (n:ℕ) : ((n:Nat):ℕ) = n := Equiv.symm_apply_apply nat_equiv n

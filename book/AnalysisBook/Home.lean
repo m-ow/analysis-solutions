@@ -22,6 +22,7 @@ Currently formalized sections:
 - [Section 2.3: Multiplication](./sec23/)
 - [Chapter 2 epilogue: Isomorphism with the Mathlib natural numbers](./sec2e)
 - [Section 3.1: Set theory fundamentals](./sec31/)
+- [Section 3.3: Functions](./sec33/)
 - [Section 4.1: The integers](./sec41/)
 - [Section 4.2: The rationals](./sec42/)
 - [Section 4.3: Absolute value and exponentiation](./sec43/)
@@ -38,3 +39,4 @@ Currently formalized sections:
 - [Section 6.5: Some standard limits](./sec65/)
 - [Section 6.6: Subsequences](./sec66/)
 - [Section 6 epilogue: Connections with Mathlib limits](./sec6e/)
+- [Section 7.1: Finite series](./sec71/)
