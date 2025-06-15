@@ -114,18 +114,9 @@ theorem SetTheory.Set.eq_empty_iff_forall_notMem {X:Set} : X = ∅ ↔ (∀ x, �
 theorem SetTheory.Set.empty_unique : ∃! (X:Set), ∀ x, ¬ x ∈ X := by
   use (∅:Set)
   simp
-  constructor
-  . exact not_mem_empty
-  . intro X h
-    apply ext
-    intro x
-    apply Iff.intro
-    . intro h'
-      specialize h x
-      contradiction
-    . intro h'
-      have hX : x ∉ (∅:Set) := by exact not_mem_empty x
-      contradiction
+  intro X h
+  rw [eq_empty_iff_forall_notMem]
+  exact h
 
 /-- Lemma 3.1.5 (Single choice) -/
 lemma SetTheory.Set.nonempty_def {X:Set} (h: X ≠ ∅) : ∃ x, x ∈ X := by
@@ -166,68 +157,21 @@ theorem SetTheory.Set.mem_pair (x a b:Object) : x ∈ ({a,b}:Set) ↔ (x = a ∨
 theorem SetTheory.Set.singleton_uniq (a:Object) : ∃! (X:Set), ∀ x, x ∈ X ↔ x = a := by
   use ({a}:Set)
   simp
-  constructor
-  . intro x
-    exact mem_singleton x a
-  . intro X h
-    apply ext
-    intro x
-    specialize h x
-    rw [h]
-    symm
-    exact mem_singleton x a
+  intro X h
+  apply ext
+  intro x
+  specialize h x
+  rwa [mem_singleton]
 
 /-- Remark 3.1.8 -/
 theorem SetTheory.Set.pair_uniq (a b:Object) : ∃! (X:Set), ∀ x, x ∈ X ↔ x = a ∨ x = b := by
   use ({a,b}:Set)
   simp
-  constructor
-  . intro x
-    apply Iff.intro
-    . intro h
-      rw [pair_eq, mem_union] at h
-      cases' h with hA hB
-      . left
-        have h : x = a := by exact (mem_singleton x a).1 hA
-        assumption
-      . right
-        have h : x = b := by exact (mem_singleton x b).1 hB
-        assumption
-    . intro h
-      rw [pair_eq, mem_union]
-      cases' h with  hA hB
-      . left
-        have h : x ∈ ({a}:Set) := by exact (mem_singleton x a).2 hA
-        assumption
-      . right
-        have h : x ∈ ({b}:Set) := by exact (mem_singleton x b).2 hB
-        assumption
-  . intro X h
-    apply ext
-    intro x
-    apply Iff.intro
-    . intro h'
-      specialize h x
-      rw [h] at h'
-      rw [pair_eq, mem_union]
-      cases' h' with hA hB
-      . left
-        have h : x ∈ ({a}:Set) := by exact (mem_singleton x a).2 hA
-        assumption
-      . right
-        have h : x ∈ ({b}:Set) := by exact (mem_singleton x b).2 hB
-        assumption
-    . intro h'
-      specialize h x
-      rw [h]
-      rw [pair_eq, mem_union] at h'
-      cases' h' with hA hB
-      . left
-        have h : x = a := by exact (mem_singleton x a).1 hA
-        assumption
-      . right
-        have h : x = b := by exact (mem_singleton x b).1 hB
-        assumption
+  intro X h
+  apply ext
+  intro x
+  specialize h x
+  rwa [mem_pair]
 
 /-- Remark 3.1.8 -/
 theorem SetTheory.Set.pair_comm (a b:Object) : ({a,b}:Set) = {b,a} := by
