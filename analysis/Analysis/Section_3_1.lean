@@ -986,13 +986,108 @@ example : ({1, 2}:Set) ∩ {3,4} = ∅ := by
     have hX : x ∉ (∅:Set) := by exact SetTheory.Set.not_mem_empty x
     contradiction
 
-example : ¬ Disjoint  ({1, 2, 3}:Set)  {2,3,4} := by sorry
+example : ¬ Disjoint  ({1, 2, 3}:Set)  {2,3,4} := by
+  intro h
+  rw [SetTheory.Set.disjoint_iff] at h
+  have : ({1, 2, 3}:Set) ∩ {2, 3, 4} = {2,3} := by
+    apply SetTheory.Set.ext
+    intro x; apply Iff.intro
+    . intro h'; rw [SetTheory.Set.mem_inter] at h'
+      cases' h' with h123 h234
+      rw [SetTheory.Set.triple_eq, SetTheory.Set.mem_union] at h123 h234
+      cases' h123 with h1 h23
+      . cases' h234 with h2 h34
+        . rw [SetTheory.Set.mem_singleton] at h1 h2
+          rw [h2] at h1; simp at h1
+        . rw [SetTheory.Set.mem_pair] at h34
+          cases' h34 with h3 h4
+          . rw [SetTheory.Set.mem_singleton] at h1
+            rw [h3] at h1; simp at h1
+          . rw [SetTheory.Set.mem_singleton] at h1
+            rw [h4] at h1; simp at h1
+      . cases' h234 with h2 h34
+        . rw [SetTheory.Set.mem_pair]
+          rw [SetTheory.Set.mem_singleton] at h2
+          left; exact h2
+        . exact h23
+    . intro h'
+      rw [SetTheory.Set.mem_inter]
+      constructor
+      . rw [SetTheory.Set.triple_eq, SetTheory.Set.mem_union]
+        right; assumption
+      . rw [SetTheory.Set.mem_pair] at h'
+        cases' h' with h2 h3
+        . rw [SetTheory.Set.triple_eq, SetTheory.Set.mem_union]
+          left; rw [SetTheory.Set.mem_singleton]
+          exact h2
+        . rw [SetTheory.Set.triple_eq, SetTheory.Set.mem_union]
+          right; rw [SetTheory.Set.mem_pair]
+          left; exact h3
+  rw [this] at h
+  have : 2 ∈ (∅:Set) := by
+    rw [<- h, SetTheory.Set.mem_pair]
+    left; rfl
+  simp at this
 
-example : Disjoint (∅:Set) ∅ := by sorry
+example : Disjoint (∅:Set) ∅ := by simp; rfl
 
 /-- Definition 3.1.26 example -/
 
-example : ({1, 2, 3, 4}:Set) \ {2,4,6} = {1, 3} := by sorry
+example : ({1, 2, 3, 4}:Set) \ {2,4,6} = {1, 3} := by
+  rw [SetTheory.Set.ext_iff]
+  intro x; constructor
+  . intro h
+    rw [SetTheory.Set.mem_sdiff] at h
+    cases' h with h1234 hN
+    have h' : x ∈ ({1}:Set) ∪ {2,3,4} := by
+      change x ∈ ({1,2,3,4}:Set)
+      exact h1234
+    rw [SetTheory.Set.mem_union] at h'
+    cases' h' with h1 h234
+    . rw [SetTheory.Set.mem_pair]
+      rw [SetTheory.Set.mem_singleton] at h1
+      left; exact h1
+    . rw [SetTheory.Set.triple_eq, SetTheory.Set.mem_union] at h234 hN
+      simp at hN
+      cases' hN with hN2 hN46
+      cases' hN46 with hN4 hN6
+      cases' h234 with h2 h34
+      . rw [SetTheory.Set.mem_singleton] at h2
+        contradiction
+      . rw [SetTheory.Set.mem_pair] at *
+        cases' h34 with h3 h4
+        . right; exact h3
+        . contradiction
+  . intro h
+    rw [SetTheory.Set.mem_sdiff]; constructor
+    . change x ∈ ({1}:Set) ∪ {2,3,4}
+      rw [SetTheory.Set.mem_union]
+      rw [SetTheory.Set.mem_pair] at h
+      cases' h with h1 h3
+      . left; rw [SetTheory.Set.mem_singleton]
+        exact h1
+      . right; rw [SetTheory.Set.triple_eq, SetTheory.Set.mem_union]
+        right; rw [SetTheory.Set.mem_pair]
+        left; exact h3
+    . intro h'
+      rw [SetTheory.Set.mem_pair] at h
+      cases' h with h1 h3
+      . rw [SetTheory.Set.triple_eq, SetTheory.Set.mem_union] at h'
+        cases' h' with h2 h46
+        . rw [SetTheory.Set.mem_singleton] at h2
+          rw [h2] at h1; simp at h1
+        . rw [SetTheory.Set.mem_pair] at h46
+          cases' h46 with h4 h6
+          . rw [h4] at h1; simp at h1
+          . rw [h6] at h1; simp at h1
+      . rw [SetTheory.Set.triple_eq, SetTheory.Set.mem_union] at h'
+        cases' h' with h2 h46
+        . rw [SetTheory.Set.mem_singleton] at h2
+          rw [h3] at h2; simp at h2
+        . rw [SetTheory.Set.mem_pair] at h46
+          cases' h46 with h4 h6
+          . rw [h4] at h3; simp at h3
+          . rw [h6] at h3; simp at h3
 
 /-- Example 3.1.30 -/
 
