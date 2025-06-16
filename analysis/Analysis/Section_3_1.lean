@@ -921,11 +921,70 @@ example : ({3, 5}:Set).specify (fun x ↦ x.val ≠ 3)
 
 /-- Example 3.1.24 -/
 
-example : ({1, 2, 4}:Set) ∩ {2,3,4} = {2, 4} := by sorry
+example : ({1, 2, 4}:Set) ∩ {2,3,4} = {2, 4} := by
+  have h1 : ({2, 4}:Set) ⊆ {1, 2, 4} ∩ {2,3,4} := by
+    rw [SetTheory.Set.subset_def]
+    intro x h
+    rw [SetTheory.Set.mem_inter]
+    constructor
+    . rw [SetTheory.Set.triple_eq, SetTheory.Set.mem_union]
+      right; exact h
+    . rw [SetTheory.Set.mem_pair] at h
+      cases' h with h2 h4
+      . rw [SetTheory.Set.triple_eq, SetTheory.Set.mem_union]
+        left
+        rw [SetTheory.Set.mem_singleton]
+        exact h2
+      . rw [SetTheory.Set.triple_eq, SetTheory.Set.mem_union]
+        right
+        rw [SetTheory.Set.mem_pair]
+        right; exact h4
+  have h2 : ({1, 2, 4}:Set) ∩ {2,3,4} ⊆ {2, 4} := by
+    rw [SetTheory.Set.subset_def]
+    intro x h
+    rw [SetTheory.Set.mem_inter] at h
+    cases' h with h1 h2
+    rw [SetTheory.Set.triple_eq, SetTheory.Set.mem_union] at h1 h2
+    cases' h1 with h1 h24
+    . cases' h2 with h2 h34
+      . rw [SetTheory.Set.mem_pair]
+        left
+        rw [SetTheory.Set.mem_singleton] at h2
+        exact h2
+      . rw [SetTheory.Set.mem_pair] at h34
+        cases' h34 with h3 h4
+        . rw [SetTheory.Set.mem_singleton] at h1
+          rw [h3] at h1
+          simp at h1
+        . rw [SetTheory.Set.mem_pair]
+          right; exact h4
+    . exact h24
+  exact SetTheory.Set.subset_antisymm _ _ h2 h1
 
 /-- Example 3.1.24 -/
 
-example : ({1, 2}:Set) ∩ {3,4} = ∅ := by sorry
+example : ({1, 2}:Set) ∩ {3,4} = ∅ := by
+  apply SetTheory.Set.ext
+  intro x
+  constructor
+  . intro h
+    rw [SetTheory.Set.mem_inter] at h
+    cases' h with h12 h34
+    rw [SetTheory.Set.mem_pair] at h12 h34
+    cases' h12 with h1 h2
+    . cases' h34 with h3 h4
+      . rw [h3] at h1
+        simp at h1
+      . rw [h4] at h1
+        simp at h1
+    . cases' h34 with h3 h4
+      . rw [h3] at h2
+        simp at h2
+      . rw [h4] at h2
+        simp at h2
+  . intro h
+    have hX : x ∉ (∅:Set) := by exact SetTheory.Set.not_mem_empty x
+    contradiction
 
 example : ¬ Disjoint  ({1, 2, 3}:Set)  {2,3,4} := by sorry
 
@@ -934,6 +993,7 @@ example : Disjoint (∅:Set) ∅ := by sorry
 /-- Definition 3.1.26 example -/
 
 example : ({1, 2, 3, 4}:Set) \ {2,4,6} = {1, 3} := by sorry
+
 /-- Example 3.1.30 -/
 
 example : ({3,5,9}:Set).replace (P := fun x y ↦ ∃ (n:ℕ), x.val = n ∧ y = (n+1:ℕ)) (by sorry) = {4,6,10} := by sorry
