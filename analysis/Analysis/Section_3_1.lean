@@ -19,6 +19,7 @@ Main constructions and results of this section:
 - The replacement `A.replace hP` of a set `A` via a predicate
 `P: A.toSubtype → Object → Prop` obeying a uniqueness condition `∀ x y y', P x y ∧ P x y' → y = y'`, and the axiom of replacement.
 - A bijective correspondence between the Mathlib natural numbers `ℕ` and a set `Chapter3.Nat : Chapter3.Set` (the axiom of infinity).
+- Connections with Mathlib's notion of a set
 
 The other axioms of Zermelo-Frankel set theory are discussed in later sections.
 
@@ -33,23 +34,28 @@ namespace Chapter3
 
 /-- Some of the axioms of Zermelo-Frankel theory with atoms  -/
 class SetTheory where
-  Set : Type
-  Object : Type
-  set_to_object : Set ↪ Object
-  mem : Object → Set → Prop
-  emptyset: Set
-  emptyset_mem x : ¬ mem x emptyset
-  extensionality X Y : (∀ x, mem x X ↔ mem x Y) → X = Y
-  singleton : Object → Set
-  singleton_axiom x y : mem x (singleton y) ↔ x = y
-  union_pair : Set → Set → Set
-  union_pair_axiom X Y x : mem x (union_pair X Y) ↔ (mem x X ∨ mem x Y)
-  specify A (P: Subtype (fun x ↦ mem x A) → Prop) : Set
-  specification_axiom A (P: Subtype (fun x ↦ mem x A) → Prop) : (∀ x, mem x (specify A P) → mem x A) ∧ ∀ x, mem x.val (specify A P) ↔ P x
-  replace A (P: Subtype (fun x ↦ mem x A) → Object → Prop) (hP: ∀ x y y', P x y ∧ P x y' → y = y') : Set
-  replacement_axiom A (P: Subtype (fun x ↦ mem x A) → Object → Prop) (hP: ∀ x y y', P x y ∧ P x y' → y = y') : ∀ y, mem y (replace A P hP) ↔ ∃ x, P x y
-  nat : Set
-  nat_equiv : ℕ ≃ Subtype (fun x ↦ mem x nat)
+  Set : Type -- Axiom 3.1
+  Object : Type -- Axiom 3.1
+  set_to_object : Set ↪ Object -- Axiom 3.1
+  mem : Object → Set → Prop -- Axiom 3.1
+  extensionality X Y : (∀ x, mem x X ↔ mem x Y) → X = Y -- Axiom 3.2
+  emptyset: Set -- Axiom 3.3
+  emptyset_mem x : ¬ mem x emptyset -- Axiom 3.3
+  singleton : Object → Set -- Axiom 3.4
+  singleton_axiom x y : mem x (singleton y) ↔ x = y -- Axiom 3.4
+  union_pair : Set → Set → Set -- Axiom 3.5
+  union_pair_axiom X Y x : mem x (union_pair X Y) ↔ (mem x X ∨ mem x Y) -- Axiom 3.5
+  specify A (P: Subtype (mem . A) → Prop) : Set -- Axiom 3.6
+  specification_axiom A (P: Subtype (mem . A) → Prop) : (∀ x, mem x (specify A P) → mem x A) ∧ ∀ x, mem x.val (specify A P) ↔ P x -- Axiom 3.6
+  replace A (P: Subtype (mem . A) → Object → Prop) (hP: ∀ x y y', P x y ∧ P x y' → y = y') : Set -- Axiom 3.7
+  replacement_axiom A (P: Subtype (mem . A) → Object → Prop) (hP: ∀ x y y', P x y ∧ P x y' → y = y') : ∀ y, mem y (replace A P hP) ↔ ∃ x, P x y -- Axiom 3.7
+  nat : Set -- Axiom 3.8
+  nat_equiv : ℕ ≃ Subtype (mem . nat) -- Axiom 3.8
+  pow : Set → Set → Set -- Axiom 3.11
+  function_to_object (X: Set) (Y: Set) : (Subtype (mem . X) → Subtype (mem . Y)) ↪ Object -- Axiom 3.11
+  power_set_axiom (X: Set) (Y: Set) (F:Object) : mem F (pow X Y) ↔ ∃ f: Subtype (mem . X) → Subtype (mem . Y), function_to_object X Y f = F -- Axiom 3.11
+  union : Set → Set -- Axiom 3.12
+  union_axiom A x : mem x (union A) ↔ ∃ S, mem x S ∧ mem (set_to_object S) A -- Axiom 3.12
 
 export SetTheory (Set Object)
 
@@ -140,6 +146,7 @@ instance SetTheory.Set.instUnion : Union Set where
   union := SetTheory.union_pair
 
 /-- Axiom 3.4 (Pairwise union)-/
+@[simp]
 theorem SetTheory.Set.mem_union (x:Object) (X Y:Set) : x ∈ (X ∪ Y) ↔ (x ∈ X ∨ x ∈ Y) := SetTheory.union_pair_axiom X Y x
 
 instance SetTheory.Set.instInsert : Insert Object Set where
@@ -1367,5 +1374,53 @@ theorem SetTheory.Set.subset_diff_subset_counter : ∃ (A B A' B':Set), (A' ⊆ 
 
 /-- Exercise 3.1.13 -/
 theorem SetTheory.Set.singleton_iff (A:Set) (hA: A ≠ ∅) : ¬ ∃ B, B ⊂ A ↔ ∃ x, A = {x} := by sorry
+
+
+/- Now we introduce connections between this notion of a set, and Mathlib's notion.  The exercise below will acquiant you with the API for Mathlib's sets. -/
+
+instance SetTheory.Set.inst_coe_set : Coe Set (_root_.Set Object) where
+  coe X := { x | x ∈ X }
+
+/-- Injectivity of the coercion.  Note however that we do NOT assert that the coercion is surjective (and indeed Russell's paradox prevents this) -/
+@[simp]
+theorem SetTheory.Set.coe_inj' (X Y:Set) : (X : _root_.Set Object) = (Y : _root_.Set Object) ↔ X = Y := by
+  constructor
+  . intro h; apply ext; intro x
+    apply_fun (fun S ↦ x ∈ S) at h
+    simp at h; assumption
+  intro h; subst h; rfl
+
+/-- Compatibility of the membership operation ∈ -/
+theorem SetTheory.Set.mem_coe (X:Set) (x:Object) : x ∈ (X : _root_.Set Object) ↔ x ∈ X := by
+  simp [Coe.coe]
+
+/-- Compatibility of the emptyset -/
+theorem SetTheory.Set.coe_empty : ((∅:Set) : _root_.Set Object) = ∅ := by sorry
+
+/-- Compatibility of subset -/
+theorem SetTheory.Set.coe_subset (X Y:Set) : (X : _root_.Set Object) ⊆ (Y : _root_.Set Object) ↔ X ⊆ Y := by sorry
+
+theorem SetTheory.Set.coe_ssubset (X Y:Set) : (X : _root_.Set Object) ⊂ (Y : _root_.Set Object) ↔ X ⊂ Y := by sorry
+
+/-- Compatibility of singleton -/
+theorem SetTheory.Set.coe_singleton (x: Object) : ({x} : _root_.Set Object) = {x} := by sorry
+
+/-- Compatibility of union -/
+theorem SetTheory.Set.coe_union (X Y: Set) : (X ∪ Y : _root_.Set Object) = (X : _root_.Set Object) ∪ (Y : _root_.Set Object) := by sorry
+
+/-- Compatibility of pair -/
+theorem SetTheory.Set.coe_pair (x y: Object) : ({x, y} : _root_.Set Object) = {x, y} := by sorry
+
+/-- Compatibility of subtype -/
+theorem SetTheory.Set.coe_subtype (X: Set) :  (X : _root_.Set Object) = X.toSubtype := by sorry
+
+/-- Compatibility of intersection -/
+theorem SetTheory.Set.coe_intersection (X Y: Set) : (X ∩ Y : _root_.Set Object) = (X : _root_.Set Object) ∩ (Y : _root_.Set Object) := by sorry
+
+/-- Compatibility of set difference-/
+theorem SetTheory.Set.coe_diff (X Y: Set) : (X \ Y : _root_.Set Object) = (X : _root_.Set Object) \ (Y : _root_.Set Object) := by sorry
+
+/-- Compatibility of disjointness -/
+theorem SetTheory.Set.coe_Disjoint (X Y: Set) : Disjoint (X : _root_.Set Object) (Y : _root_.Set Object) ↔ Disjoint X Y := by sorry
 
 end Chapter3

@@ -29,7 +29,6 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - _Section 3.4: Images and inverse images (planned)_
   - _Section 3.5: Cartesian products (planned)_
   - _Section 3.6: Cardinality of sets (planned)_
-  - _Chapter 3 epilogue: Connections with Mathlib sets (planned)_
 - Chapter 4: Integers and rationals
   - Section 4.1: The integers ([Verso page](https://teorth.github.io/analysis/sec41/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_1.lean))
   - Section 4.2: The rationals ([Verso page](https://teorth.github.io/analysis/sec42/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_2.lean))

@@ -340,7 +340,7 @@ theorem Nat.trichotomous (a b:Nat) : a < b ∨ a = b ∨ a > b := by
   tauto
 
 /-- (Not from textbook) Establish the decidability of this order computably.  The portion of the proof involving decidability has been provided; the remaining sorries involve claims about the natural numbers.  One could also have established this result by the `classical` tactic followed by `exact Classical.decRel _`, but this would make this definition (as well as some instances below) noncomputable. -/
-def le_dec : (a b : Nat) → Decidable (a ≤ b)
+def Nat.le_dec : (a b : Nat) → Decidable (a ≤ b)
   | 0, b => by
     apply isTrue
     sorry
@@ -358,7 +358,7 @@ def le_dec : (a b : Nat) → Decidable (a ≤ b)
       apply isFalse
       sorry
 
-instance Nat.decidableRel : DecidableRel (· ≤ · : Nat → Nat → Prop) := le_dec
+instance Nat.decidableRel : DecidableRel (· ≤ · : Nat → Nat → Prop) := Nat.le_dec
 
 
 /-- (Not from textbook) Nat has the structure of a linear ordering. -/
