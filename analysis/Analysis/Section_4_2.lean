@@ -54,6 +54,9 @@ theorem Rat.eq_diff (n:Rat) : ∃ a b, b ≠ 0 ∧ n = a // b := by
   simp [formalDiv, h]
   rfl
 
+/-- Decidability of equality.  Hint: modify the proof of `DecidableEq Int` from the previous section.  However, because formal division handles the case of zero denominator separately, it may be more convenient to avoid that operation and work directly with the `Quotient` API. -/
+instance Rat.decidableEq : DecidableEq Rat := by
+  sorry
 
 /-- Lemma 4.2.3 (Addition well-defined) -/
 instance Rat.add_inst : Add Rat where
