@@ -24,11 +24,11 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Chapter 2 epilogue: Isomorphism with the Mathlib natural numbers ([Verso page](https://teorth.github.io/analysis/sec2e/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_2_analysis/docs/.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_2_epilogue.lean))
 - Chapter 3: Set theory
   - Section 3.1: Fundamentals ([Verso page](https://teorth.github.io/analysis/sec31/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_3_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_3_1.lean))
-  - _Section 3.2: Russell's paradox (possible future expansion)_
+  - Section 3.2: Russell's paradox ([Verso page](https://teorth.github.io/analysis/sec32/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_3_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_3_2.lean))
   - Section 3.3: Functions ([Verso page](https://teorth.github.io/analysis/sec33/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_3_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_3_3.lean))
-  - _Section 3.4: Images and inverse images (planned)_
-  - _Section 3.5: Cartesian products (planned)_
-  - _Section 3.6: Cardinality of sets (planned)_
+  - Section 3.4: Images and inverse images ([Verso page](https://teorth.github.io/analysis/sec34/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_3_4.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_3_4.lean))
+  - Section 3.5: Cartesian products ([Verso page](https://teorth.github.io/analysis/sec35/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_3_5.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_3_5.lean))
+  - Section 3.6: Cardinality of sets ([Verso page](https://teorth.github.io/analysis/sec36/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_3_6.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_3_6.lean))
 - Chapter 4: Integers and rationals
   - Section 4.1: The integers ([Verso page](https://teorth.github.io/analysis/sec41/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_1.lean))
   - Section 4.2: The rationals ([Verso page](https://teorth.github.io/analysis/sec42/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_2.lean))
@@ -104,7 +104,7 @@ More resource suggestions welcome!
 
 ### Building the project
 
-To build this project after [installing Lean](https://www.lean-lang.org/lean-get-started) and cloning this repository, follow these steps:
+To build this project after [installing Lean](https://lean-lang.org/documentation/setup/) and cloning this repository, follow these steps:
 
 ```
 % cd analysis/
@@ -115,7 +115,7 @@ To build this project after [installing Lean](https://www.lean-lang.org/lean-get
 
 ### Building the project's web page
 
-To build the project's web page after [installing Lean](https://www.lean-lang.org/lean-get-started) and cloning this repository, follow these steps:
+To build the project's web page after [installing Lean](https://lean-lang.org/documentation/setup/) and cloning this repository, follow these steps:
 
 ```
 % cd analysis/

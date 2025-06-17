@@ -19,6 +19,7 @@ Main constructions and results of this section:
 - The replacement `A.replace hP` of a set `A` via a predicate
 `P: A.toSubtype → Object → Prop` obeying a uniqueness condition `∀ x y y', P x y ∧ P x y' → y = y'`, and the axiom of replacement.
 - A bijective correspondence between the Mathlib natural numbers `ℕ` and a set `Chapter3.Nat : Chapter3.Set` (the axiom of infinity).
+- Axioms of regularity, power set, and union (used in later sections of this chapter, but not required here)
 - Connections with Mathlib's notion of a set
 
 The other axioms of Zermelo-Frankel set theory are discussed in later sections.
@@ -51,9 +52,10 @@ class SetTheory where
   replacement_axiom A (P: Subtype (mem . A) → Object → Prop) (hP: ∀ x y y', P x y ∧ P x y' → y = y') : ∀ y, mem y (replace A P hP) ↔ ∃ x, P x y -- Axiom 3.7
   nat : Set -- Axiom 3.8
   nat_equiv : ℕ ≃ Subtype (mem . nat) -- Axiom 3.8
+  regularity_axiom A (hA : ∃ x, mem x A) : ∃ x, mem x A ∧ ∀ S, x = set_to_object S → ¬ ∃ y, mem y A ∧ mem y S -- Axiom 3.9
   pow : Set → Set → Set -- Axiom 3.11
   function_to_object (X: Set) (Y: Set) : (Subtype (mem . X) → Subtype (mem . Y)) ↪ Object -- Axiom 3.11
-  power_set_axiom (X: Set) (Y: Set) (F:Object) : mem F (pow X Y) ↔ ∃ f: Subtype (mem . X) → Subtype (mem . Y), function_to_object X Y f = F -- Axiom 3.11
+  power_set_axiom (X: Set) (Y: Set) (F:Object) : mem F (pow X Y) ↔ ∃ f: Subtype (mem . Y) → Subtype (mem . X), function_to_object Y X f = F -- Axiom 3.11
   union : Set → Set -- Axiom 3.12
   union_axiom A x : mem x (union A) ↔ ∃ S, mem x S ∧ mem (set_to_object S) A -- Axiom 3.12
 
@@ -133,6 +135,11 @@ lemma SetTheory.Set.nonempty_def {X:Set} (h: X ≠ ∅) : ∃ x, x ∈ X := by
   replace claim := ext claim
   contradiction
 
+theorem SetTheory.Set.nonempty_of_inhabited {X:Set} {x:Object} (h:x ∈ X) : X ≠ ∅ := by
+  contrapose! h
+  rw [eq_empty_iff_forall_notMem] at h
+  exact h x
+
 instance SetTheory.Set.instSingleton : Singleton Object Set where
   singleton := SetTheory.singleton
 
@@ -158,7 +165,11 @@ theorem SetTheory.Set.pair_eq (a b:Object) : ({a,b}:Set) = {a} ∪ {b} := by rfl
 /-- Axiom 3.3(b) (pair).  Note that one often has to cast {a,b} to Set -/
 @[simp]
 theorem SetTheory.Set.mem_pair (x a b:Object) : x ∈ ({a,b}:Set) ↔ (x = a ∨ x = b) := by
-  rw [pair_eq, mem_union, mem_singleton, mem_singleton]
+  simp [pair_eq, mem_union, mem_singleton]
+
+@[simp]
+theorem SetTheory.Set.mem_triple (x a b:Object) : x ∈ ({a,b,c}:Set) ↔ (x = a ∨ x = b ∨ x = c) := by
+  simp [Insert.insert, mem_union, mem_singleton]
 
 /-- Remark 3.1.8 -/
 theorem SetTheory.Set.singleton_uniq (a:Object) : ∃! (X:Set), ∀ x, x ∈ X ↔ x = a := by
@@ -482,6 +493,18 @@ theorem SetTheory.Set.specify_subset {A:Set} (P: A → Prop) : A.specify P ⊆ A
   intro x h
   apply specification_axiom at h
   assumption
+/-- Axiom 3.6 (axiom of specification) -/
+theorem SetTheory.Set.specification_axiom'' {A:Set} (P: A → Prop) (x:Object) : x ∈ A.specify P ↔ ∃ h:x ∈ A, P ⟨ x, h ⟩ := by
+  constructor
+  . intro h
+    have h' := specification_axiom h
+    use h'
+    rw [←specification_axiom' P ⟨ x, h' ⟩ ]
+    simp [h]
+  intro h
+  obtain ⟨ h, hP ⟩ := h
+  rw [←specification_axiom' P ⟨ x,h ⟩ ] at hP
+  simp at hP; assumption
 
 /-- This exercise may require some understanding of how  subtypes are implemented in Lean. -/
 theorem SetTheory.Set.specify_congr {A A':Set} (hAA':A = A') {P: A → Prop} {P': A' → Prop} (hPP': (x:Object) → (h:x ∈ A) → (h':x ∈ A') → P ⟨ x, h⟩ ↔ P' ⟨ x, h'⟩ ) : A.specify P = A'.specify P' := by sorry

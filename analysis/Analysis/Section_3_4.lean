@@ -74,7 +74,7 @@ instance SetTheory.Set.inst_pow : Pow Set Set where
 /-- I could not make this a coercion because of a technical `semiOutParam` issue. -/
 abbrev SetTheory.Set.object_of {X Y:Set} (f: X → Y) : Object := function_to_object X Y f
 
-theorem SetTheory.Set.power_set_axiom {X Y:Set} (F:Object) : F ∈ (X ^ Y) ↔ ∃ f: X → Y, object_of f = F := SetTheory.power_set_axiom X Y F
+theorem SetTheory.Set.power_set_axiom {X Y:Set} (F:Object) : F ∈ (X ^ Y) ↔ ∃ f: Y → X, object_of f = F := SetTheory.power_set_axiom X Y F
 
 
 /-- Example 3.4.8 -/
@@ -110,6 +110,24 @@ theorem SetTheory.Set.union_eq (A: Set) : (union A : _root_.Set Object) = ⋃₀
 
 /-- Indexed union -/
 abbrev SetTheory.Set.iUnion (I: Set) (A: I → Set) : Set := union (I.replace (P := fun α S ↦ S = A α) (by intro x y y' ⟨ h1, h2⟩; simp at h1 h2; rw [h1,h2]))
+
+theorem SetTheory.Set.mem_iUnion {I:Set} (A: I → Set) (x:Object) : x ∈ iUnion I A ↔ ∃ α:I, x ∈ A α := by
+  rw [union_axiom]
+  constructor
+  . intro h
+    obtain ⟨ S, hx, hS ⟩ := h
+    rw [replacement_axiom] at hS
+    obtain ⟨ α, hα ⟩ := hS
+    simp at hα
+    rw [hα] at hx
+    use α
+  intro h
+  obtain ⟨ α, hx ⟩ := h
+  use A α
+  constructor
+  . exact hx
+  rw [replacement_axiom]
+  use α
 
 open Classical in
 noncomputable abbrev SetTheory.Set.index_example : ({1,2,3}:Set) → Set := fun i ↦ if i.val = 1 then {2,3} else if i.val = 2 then {3,4} else {4,5}

@@ -26,7 +26,7 @@ noncomputable abbrev Sequence.inf (a:Sequence) : EReal := sInf { x | ∃ n ≥ a
 example : ((fun (n:ℕ) ↦ (-1:ℝ)^(n+1)):Sequence).sup = 1 := by sorry
 
 /-- Example 6.3.3 -/
-example : ((fun (n:ℕ) ↦ (-1:ℝ)^(n+1)):Sequence).inf = 1 := by sorry
+example : ((fun (n:ℕ) ↦ (-1:ℝ)^(n+1)):Sequence).inf = -1 := by sorry
 
 /-- Example 6.3.4 / Exercise 6.3.1 -/
 example : ((fun (n:ℕ) ↦ 1/((n:ℝ)+1)):Sequence).sup = 1 := by sorry

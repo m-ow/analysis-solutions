@@ -136,6 +136,12 @@ theorem Nat.add_eq_zero (a b:Nat) (hab: a + b = 0) : a = 0 ∧ b = 0 := by
   have : (a + b).isPos := add_pos _ hb
   contradiction
 
+-- The following API for ∃! may be useful for the next problem.  Also, the `obtain` tactic is useful for extracting witnesses from existential statements; for instance, `obtain ⟨ x, hx ⟩ := h` extracts a witness `x` and a proof `hx : P x` of the property from a hypothesis `h : ∃ x, P x`.
+
+#check existsUnique_of_exists_of_unique
+#check ExistsUnique.exists
+#check ExistsUnique.unique
+
 /-- Lemma 2.2.10 (unique predecessor) / Exercise 2.2.2 -/
 lemma Nat.uniq_succ_eq (a:Nat) (ha: a.isPos) : ∃! b, b++ = a := by
   revert a; apply induction
@@ -196,7 +202,7 @@ theorem Nat.succ_gt (n:Nat) : n++ > n := by
 theorem Nat.ge_refl (a:Nat) : a ≥ a := by
   use 0; simp
 
-/-- (b) (Order is transitive) -/
+/-- (b) (Order is transitive).  The `obtain` tactic will be useful here. -/
 theorem Nat.ge_trans {a b c:Nat} (hab: a ≥ b) (hbc: b ≥ c) : a ≥ c := by
   revert a; apply induction
   . intro h0b; cases' hbc with x hx; cases' h0b with z hz;

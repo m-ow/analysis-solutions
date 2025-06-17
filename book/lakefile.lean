@@ -1,7 +1,9 @@
 import Lake
 open Lake DSL
 
-require verso from git "https://github.com/pimotte/verso.git"@"analysis"
+require verso from git "https://github.com/leanprover/verso.git"@"main"
+require subverso from git
+  "https://github.com/leanprover/subverso.git" @ "c0fc43dce384e563afdef19288daa35befaf4f86"
 
 package "analysis-book" where
   version := v!"0.1.0"
@@ -29,8 +31,11 @@ def sections := #[
   (`Analysis.Section_2_2, "Addition"),
   (`Analysis.Section_2_3, "Multiplication"),
   (`Analysis.Section_3_1, "Fundamentals"),
+  (`Analysis.Section_3_2, "Russell's paradox"),
   (`Analysis.Section_3_3, "Functions"),
   (`Analysis.Section_3_4, "Images and inverse images"),
+  (`Analysis.Section_3_5, "Cartesian products"),
+  (`Analysis.Section_3_6, "Cardinality of sets"),
   (`Analysis.Section_4_1, "The integers"),
   (`Analysis.Section_4_2, "The rationals"),
   (`Analysis.Section_4_3, "Absolute value and exponentiation"),
@@ -46,8 +51,8 @@ def sections := #[
   (`Analysis.Section_6_4, "Limsup, Liminf, and limit points"),
   (`Analysis.Section_6_5, "Some standard limits"),
   (`Analysis.Section_6_6, "Subsequences"),
-  (`Analysis.Section_6_epilogue, "Connections with Mathlib limits")
---  (`Analysis.Section_7_1, "Finite series")
+  (`Analysis.Section_6_epilogue, "Connections with Mathlib limits"),
+  (`Analysis.Section_7_1, "Finite series")
 ]
 
 /--

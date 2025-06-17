@@ -9,6 +9,25 @@ open SubVerso.Module
 open SubVerso.Highlighting
 open Lean
 
+section
+variable [Monad m] [MonadError m] [MonadQuotation m]
+
+
+
+partial def getCommentString' (pref : String) (hl : Highlighted) : m String := do
+  let str := (← getString hl).trim
+  let str := str.stripPrefix pref |>.stripSuffix "-/" |>.trim
+  pure str
+where getString : Highlighted → m String
+  | .text txt => pure txt
+  | .tactics .. => throwError "Tactics found in module docstring!"
+  | .point .. => pure ""
+  | .span _ hl => getCommentString' pref hl
+  | .seq hls => do return (← hls.mapM getString).foldl (init := "") (· ++ ·)
+  | .token ⟨_, txt⟩ => pure txt
+
+partial def getDocCommentString : Highlighted -> m String := getCommentString' "/--"
+end
 
 def loadModuleContent (mod : String) (leanProject : System.FilePath := "../analysis")
     (overrideToolchain : Option String := none) : IO (Array (ModuleItem × Array (String × Highlighted))) := do
@@ -278,9 +297,9 @@ def elabAnalysisPage (x : Ident) (mod : Ident) (config : LitPageConfig) (title :
   let items ← withTraceNode `verso.blog.literate.loadMod (fun _ => pure m!"Loading '{mod}'") <|
     loadModuleContent mod.getId.toString
 
-  let _g ← runTermElabM fun _ => Term.elabTerm genre (some (.const ``Doc.Genre []))
+  let g ← runTermElabM fun _ => Term.elabTerm genre (some (.const ``Doc.Genre []))
 
-  let ((), _st, st') ← liftTermElabM <| PartElabM.run {} initState <| do
+  let ((), _st, st') ← liftTermElabM <| PartElabM.run genre g {} initState <| do
     setTitle titleString (← liftDocElabM <| titleParts.mapM (elabInline ⟨·⟩))
     if let some metadata := metadata? then
       modifyThe PartElabM.State fun st => {st with partContext.metadata := some metadata}
@@ -300,7 +319,7 @@ def elabAnalysisPage (x : Ident) (mod : Ident) (config : LitPageConfig) (title :
       | _ => p
     else finished
 
-  elabCommand <| ← `(def $x : Part $genre := $(← finished.toSyntax' genre {} {}))
+  elabCommand <| ← `(def $x : Part $genre := $(← finished.toSyntax' genre))
 
 open Verso.Genre.Blog.Literate in
 open Lean.Parser.Tactic in

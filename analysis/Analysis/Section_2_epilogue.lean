@@ -109,7 +109,8 @@ abbrev Equiv.trans (equiv1 : Equiv P Q) (equiv2 : Equiv Q R) : Equiv P R where
   equiv_zero := by sorry
   equiv_succ n := by sorry
 
-abbrev Equiv.fromNat (P : PeanoAxioms) : Equiv Mathlib.Nat P where
+/-- Note: I suspect that this construction is non-computable and requires classical logic. -/
+noncomputable abbrev Equiv.fromNat (P : PeanoAxioms) : Equiv Mathlib.Nat P where
   equiv := {
     toFun := P.natCast
     invFun := by sorry
@@ -119,7 +120,7 @@ abbrev Equiv.fromNat (P : PeanoAxioms) : Equiv Mathlib.Nat P where
   equiv_zero := by sorry
   equiv_succ n := by sorry
 
-abbrev Equiv.mk' (P Q : PeanoAxioms) : Equiv P Q := by sorry
+noncomputable abbrev Equiv.mk' (P Q : PeanoAxioms) : Equiv P Q := by sorry
 
 theorem Equiv.uniq {P Q : PeanoAxioms} (equiv1 equiv2 : PeanoAxioms.Equiv P Q) : equiv1 = equiv2 := by
   sorry

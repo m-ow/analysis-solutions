@@ -100,7 +100,7 @@ theorem finite_series_of_rearrange {n:ℕ} {X':Type*} (X: Finset X') (hcard: X.c
   rw [sum_of_nonempty (by linarith) _]
   set x := g (π (n+1))
 
-  obtain ⟨ ⟨ j, hj' ⟩, hj ⟩ := Function.Bijective.surjective hh x
+  obtain ⟨⟨j, hj'⟩, hj⟩ := Function.Bijective.surjective hh x
   simp at hj'
   obtain ⟨ hj1, hj2 ⟩ := hj'
   set h' : ℤ → X := fun i ↦ if (i:ℤ) < j then h (π i) else h (π (i+1))
@@ -180,7 +180,7 @@ theorem finite_series_eq {n:ℕ} {Y:Type*} (X: Finset Y) (f: Y → ℝ) (g: Icc 
   . intro i hi j hj h
     simp [Subtype.val_inj, (Function.Bijective.injective hg).eq_iff] at h; assumption
   . intro b hb
-    obtain ⟨ ⟨ i, hi ⟩, h ⟩ := (Function.Bijective.surjective hg) ⟨ b, hb ⟩
+    obtain ⟨⟨i, hi⟩, h⟩ := (Function.Bijective.surjective hg) ⟨ b, hb ⟩
     use i, hi; simp [h]
   intro i hi; simp [hi]
 
@@ -247,7 +247,7 @@ theorem finite_series_of_finite_series {XX YY:Type*} (X: Finset XX) (Y: Finset Y
         intro ⟨ y, hy ⟩
         use ⟨ (x₀, y), by simp [hy] ⟩
       convert map_finite_series _ hπ with z
-      obtain ⟨ ⟨ x, y ⟩, hz ⟩ := z
+      obtain ⟨⟨x, y⟩, hz ⟩ := z
       simp at hz ⊢; tauto
     _ = _ := by
       convert (finite_series_of_disjoint_union _ _).symm
