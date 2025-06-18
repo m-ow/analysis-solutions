@@ -118,10 +118,14 @@ theorem SetTheory.Set.not_mem_mem (A B:Set) : (A:Object) ∉ B ∨ (B:Object) �
 
 /-- Exercise 3.2.3 -/
 theorem SetTheory.Set.univ_imp (U: Set) (hU: ∀ x, x ∈ U) :
-    axiom_of_universal_specification := by sorry
+    axiom_of_universal_specification := by
+  specialize hU U
+  have : set_to_object U ∉ U := not_mem_self U
+  contradiction
 
 /-- Exercise 3.2.3 -/
-theorem SetTheory.Set.no_univ : ¬ ∃ (U:Set), ∀ (x:Object), x ∈ U := by sorry
-
+theorem SetTheory.Set.no_univ : ¬ ∃ (U:Set), ∀ (x:Object), x ∈ U := by
+  simp; intro A
+  use A; exact not_mem_self A
 
 end Chapter3

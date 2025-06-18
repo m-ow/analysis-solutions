@@ -1608,7 +1608,7 @@ theorem SetTheory.Set.coe_singleton (x: Object) : ({x} : _root_.Set Object) = {x
 
 /-- Compatibility of union -/
 theorem SetTheory.Set.coe_union (X Y: Set) :
-    (X ∪ Y : _root_.Set Object) = (X : _root_.Set Object) ∪ (Y : _root_.Set Object) := by sorry
+    (X ∪ Y : _root_.Set Object) = (X : _root_.Set Object) ∪ (Y : _root_.Set Object) := by rfl
 
 /-- Compatibility of pair -/
 theorem SetTheory.Set.coe_pair (x y: Object) : ({x, y} : _root_.Set Object) = {x, y} := by rfl
@@ -1618,14 +1618,13 @@ theorem SetTheory.Set.coe_subtype (X: Set) :  (X : _root_.Set Object) = X.toSubt
 
 /-- Compatibility of intersection -/
 theorem SetTheory.Set.coe_intersection (X Y: Set) :
-    (X ∩ Y : _root_.Set Object) = (X : _root_.Set Object) ∩ (Y : _root_.Set Object) := by sorry
+    (X ∩ Y : _root_.Set Object) = (X : _root_.Set Object) ∩ (Y : _root_.Set Object) := by rfl
 
 /-- Compatibility of set difference-/
 theorem SetTheory.Set.coe_diff (X Y: Set) :
-    (X \ Y : _root_.Set Object) = (X : _root_.Set Object) \ (Y : _root_.Set Object) := by sorry
+    (X \ Y : _root_.Set Object) = (X : _root_.Set Object) \ (Y : _root_.Set Object) := by rfl
 
 /-- Compatibility of disjointness -/
 theorem SetTheory.Set.coe_Disjoint (X Y: Set) :
     Disjoint (X : _root_.Set Object) (Y : _root_.Set Object) ↔ Disjoint X Y := by sorry
-
 end Chapter3
