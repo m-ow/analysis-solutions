@@ -52,7 +52,8 @@ def sections := #[
   (`Analysis.Section_6_5, "Some standard limits"),
   (`Analysis.Section_6_6, "Subsequences"),
   (`Analysis.Section_6_epilogue, "Connections with Mathlib limits"),
-  (`Analysis.Section_7_1, "Finite series")
+  (`Analysis.Section_7_1, "Finite series"),
+  (`Analysis.Section_7_2, "Infinite series")
 ]
 
 /--

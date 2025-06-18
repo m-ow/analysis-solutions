@@ -1,4 +1,5 @@
 import Mathlib.Tactic
+import Mathlib.Algebra.Field.Power
 
 /-!
 # Analysis I, Section 7.2
@@ -37,7 +38,7 @@ abbrev Series.mk' {m:ℤ} (a: { n // n ≥ m } → ℝ) : Series where
     intro n hn
     simp [hn]
 
-theorem Series.eval_mk' {m:ℤ} (a : { n // n ≥ m } → ℝ) {n : ℤ} (h:n ≥ m) : (Series.mk' a).seq n = a ⟨ n, h ⟩ := by simp [h] 
+theorem Series.eval_mk' {m:ℤ} (a : { n // n ≥ m } → ℝ) {n : ℤ} (h:n ≥ m) : (Series.mk' a).seq n = a ⟨ n, h ⟩ := by simp [h]
 
 /-- Definition 7.2.2 (Convergence of series) -/
 abbrev Series.partial (s : Series) (N:ℤ) : ℝ := ∑ n ∈ Finset.Icc s.m N, s.seq n
@@ -104,16 +105,66 @@ theorem Series.converges_of_absConverges {s:Series} (h : s.absConverges) : s.con
 theorem Series.abs_le {s:Series} (h : s.absConverges) : |s.sum| ≤ s.abs.sum := by sorry
 
 /-- Proposition 7.2.12 (Alternating series test) -/
-theorem Series.converges_of_alternating {m:ℤ} {a: { n // n ≥ m} → ℝ} (ha: ∀ n, a n ≥ 0) (ha': Antitone a) : ((mk' (m:=m) (fun n ↦ (-1)^(n:ℤ) * a n)).converges ↔ Filter.Tendsto a Filter.atTop (nhds 0)) := by
+theorem Series.converges_of_alternating {m:ℤ} {a: { n // n ≥ m} → ℝ} (ha: ∀ n, a n ≥ 0) (ha': Antitone a) : ((mk' (fun n ↦ (-1)^(n:ℤ) * a n)).converges ↔ Filter.Tendsto a Filter.atTop (nhds 0)) := by
   -- This proof is written to follow the structure of the original text.
   constructor
   . intro h
     replace h := decay_of_converges h
-    sorry -- TODO
+    rw [tendsto_iff_dist_tendsto_zero] at h ⊢
+    rw [←Filter.tendsto_comp_val_Ici_atTop (a := m)] at h
+    convert h using 2 with heq n
+    simp [n.property]
   intro h
   unfold converges convergesTo
-  set S := (mk' fun n ↦ (-1) ^ (n:ℤ) * a n).partial
-  sorry -- TODO
+  set b := mk' fun n ↦ (-1) ^ (n:ℤ) * a n
+  set S := b.partial
+  have claim0 {N:ℤ} (hN: N ≥ m) : S (N+1) = S N + (-1)^(N+1) * a ⟨ N+1, by linarith ⟩ := by
+    unfold S Series.partial
+    rw [add_comm (S N) _]
+    have : N+1 ∉ Finset.Icc b.m N := by simp
+    convert Finset.sum_insert this
+    . refine (Finset.insert_Icc_right_eq_Icc_add_one ?_).symm
+      simp [b, mk']
+      linarith
+    have : m ≤ N+1 := by linarith
+    simp [b, this]
+  have claim1 {N:ℤ} (hN: N ≥ m) : S (N+2) = S N + (-1)^(N+1) * (a ⟨ N+1, by linarith ⟩ - a ⟨ N+2, by linarith ⟩) := calc
+      S (N+2) = S N + (-1)^(N+1) * a ⟨ N+1, by linarith ⟩ + (-1)^(N+2) * a ⟨ N+2, by linarith ⟩ := by
+        have hN2 : N+2 = N+1+1 := by abel
+        simp_rw [←claim0 hN, hN2]
+        exact claim0 (show N+1 ≥ m by linarith)
+      _ = S N + (-1)^(N+1) * a ⟨ N+1, by linarith ⟩ + (-1) * (-1)^(N+1) * a ⟨ N+2, by linarith ⟩ := by
+        congr
+        rw [←zpow_one_add₀ (by norm_num)]
+        congr 1; abel
+      _ = _ := by ring
+  have claim2 {N:ℤ} (hN: N ≥ m) (h': Odd N) : S (N+2) ≥ S N := by
+    rw [claim1 hN]
+    simp [Even.neg_one_zpow (Odd.add_one h')]
+    apply ha'
+    simp
+  have claim3 {N:ℤ} (hN: N ≥ m) (h': Even N) : S (N+2) ≤ S N := by
+    rw [claim1 hN]
+    simp [Odd.neg_one_zpow (Even.add_one h')]
+    apply ha'
+    simp
+  have why1 {N:ℤ} (hN: N ≥ m) (h': Even N) (k:ℕ) : S (N+2*k) ≤ S N := by sorry
+  have why2 {N:ℤ} (hN: N ≥ m) (h': Even N) (k:ℕ) : S (N+2*k+1) ≥ S N - a ⟨ N+1, by linarith ⟩ := by sorry
+  have why3 {N:ℤ} (hN: N ≥ m) (h': Even N) (k:ℕ) : S (N+2*k+1) ≤ S (N+2*k) := by sorry
+  have claim4 {N:ℤ} (hN: N ≥ m) (h': Even N) (k:ℕ) : S N -
+ a ⟨ N+1, by linarith ⟩ ≤ S (N + 2*k + 1) ∧ S (N + 2*k + 1) ≤ S (N + 2*k) ∧ S (N + 2*k) ≤ S N := ⟨ ge_iff_le.mp (why2 hN h' k), why3 hN h' k, why1 hN h' k ⟩
+  have why4 {N n:ℤ} (hN: N ≥ m) (h': Even N) (hn: n ≥ N) : S N - a ⟨ N+1, by linarith ⟩ ≤ S n ∧ S n ≤ S N := by
+    sorry
+  have why5 {ε:ℝ} (hε: ε > 0) : ∃ N, ∀ n ≥ N, ∀ m ≥ N, |S n - S m| ≤ ε := by sorry
+  have : CauchySeq S := by
+    rw [Metric.cauchySeq_iff']
+    intro ε hε
+    obtain ⟨ N, hN ⟩ := why5 (half_pos hε)
+    use N
+    intro n hn
+    specialize hN n hn N (le_refl _)
+    rw [Real.dist_eq]; linarith
+  exact cauchySeq_tendsto_of_complete this
 
 /-- Example 7.2.13 -/
 noncomputable abbrev Series.example_7_2_13 : Series := (mk' (m:=1) (fun n ↦ (-1:ℝ)^(n:ℤ) / (n:ℤ)))
