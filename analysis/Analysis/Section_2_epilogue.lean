@@ -4,13 +4,23 @@ import Analysis.Section_2_3
 /-!
 # Analysis I, Chapter 2 epilogue
 
-In this (technical) epilogue, we show that the "Chapter 2" natural numbers `Chapter2.Nat` are isomorphic in various standard senses to the standard natural numbers `ℕ`.
+In this (technical) epilogue, we show that the "Chapter 2" natural numbers `Chapter2.Nat` are
+isomorphic in various standard senses to the standard natural numbers `ℕ`.
 
-From this point onwards, `Chapter2.Nat` will be deprecated, and we will use the standard natural numbers `ℕ` instead.  In particular, one should use the full Mathlib API for `ℕ` for all subsequent chapters, in lieu of the `Chapter2.Nat` API.
+From this point onwards, `Chapter2.Nat` will be deprecated, and we will use the standard natural
+numbers `ℕ` instead.  In particular, one should use the full Mathlib API for `ℕ` for all
+subsequent chapters, in lieu of the `Chapter2.Nat` API.
 
-Filling the sorries here requires both the Chapter2.Nat API and the Mathlib API for the standard natural numbers `ℕ`.  As such, they are excellent exercises to prepare you for the aforementioned transition.
+Filling the sorries here requires both the Chapter2.Nat API and the Mathlib API for the standard
+natural numbers `ℕ`.  As such, they are excellent exercises to prepare you for the aforementioned
+transition.
 
-In second half of this section we also give a fully axiomatic treatment of the natural numbers via the Peano axioms.  The treatment in the preceding three sections was only partially axiomatic, because we used a specific construction `Chapter2.Nat` of the natural numbers that was an inductive type, and used that inductive type to construct a recursor.  Here, we give some exercises to show how one can accomplish the same tasks directly from the Peano axioms, without knowing the specific implementation of the natural numbers.
+In second half of this section we also give a fully axiomatic treatment of the natural numbers
+via the Peano axioms. The treatment in the preceding three sections was only partially
+axiomatic, because we used a specific construction `Chapter2.Nat` of the natural numbers that was
+an inductive type, and used that inductive type to construct a recursor.  Here, we give some
+exercises to show how one can accomplish the same tasks directly from the Peano axioms, without
+knowing the specific implementation of the natural numbers.
 -/
 
 abbrev Chapter2.Nat.toNat (n : Chapter2.Nat) : ℕ := match n with
@@ -48,7 +58,8 @@ abbrev Chapter2.Nat.equivNat_ordered_ring : Chapter2.Nat ≃+*o ℕ where
     sorry
   map_le_map_iff' := by sorry
 
-lemma Chapter2.Nat.pow_eq_pow (n m : Chapter2.Nat) : n.toNat ^ m.toNat = n^m := by
+lemma Chapter2.Nat.pow_eq_pow (n m : Chapter2.Nat) :
+    n.toNat ^ m.toNat = n^m := by
   sorry
 
 
@@ -60,7 +71,8 @@ class PeanoAxioms where
   succ : Nat → Nat -- Axiom 2.2
   succ_ne : ∀ n : Nat, succ n ≠ zero -- Axiom 2.3
   succ_cancel : ∀ {n m : Nat}, succ n = succ m → n = m -- Axiom 2.4
-  induction : ∀ (P : Nat → Prop), P zero → (∀ n : Nat, P n → P (succ n)) → ∀ n : Nat, P n -- Axiom 2.5
+  induction : ∀ (P : Nat → Prop),
+    P zero → (∀ n : Nat, P n → P (succ n)) → ∀ n : Nat, P n -- Axiom 2.5
 
 namespace PeanoAxioms
 
@@ -122,11 +134,13 @@ noncomputable abbrev Equiv.fromNat (P : PeanoAxioms) : Equiv Mathlib.Nat P where
 
 noncomputable abbrev Equiv.mk' (P Q : PeanoAxioms) : Equiv P Q := by sorry
 
-theorem Equiv.uniq {P Q : PeanoAxioms} (equiv1 equiv2 : PeanoAxioms.Equiv P Q) : equiv1 = equiv2 := by
+theorem Equiv.uniq {P Q : PeanoAxioms} (equiv1 equiv2 : PeanoAxioms.Equiv P Q) :
+    equiv1 = equiv2 := by
   sorry
 
 /-- A sample result: recursion is well-defined on any structure obeying the Peano axioms-/
-theorem Nat.recurse_uniq {P : PeanoAxioms} (f: P.Nat → P.Nat → P.Nat) (c: P.Nat) : ∃! (a: P.Nat → P.Nat), a P.zero = c ∧ ∀ n, a (P.succ n) = f n (a n) := by
+theorem Nat.recurse_uniq {P : PeanoAxioms} (f: P.Nat → P.Nat → P.Nat) (c: P.Nat) :
+    ∃! (a: P.Nat → P.Nat), a P.zero = c ∧ ∀ n, a (P.succ n) = f n (a n) := by
   sorry
 
 end PeanoAxioms

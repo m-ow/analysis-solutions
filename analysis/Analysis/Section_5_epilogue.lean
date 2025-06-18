@@ -4,11 +4,17 @@ import Analysis.Section_5_5
 /-!
 # Analysis I, Chapter 5 epilogue
 
-In this (technical) epilogue, we show that the "Chapter 5" real numbers `Chapter5.Real` are isomorphic in various standard senses to the standard real numbers `ℝ`.  This we do by matching both structures with Dedekind cuts of the (Mathlib) rational numbers `ℚ`.
+In this (technical) epilogue, we show that the "Chapter 5" real numbers `Chapter5.Real` are
+isomorphic in various standard senses to the standard real numbers `ℝ`.  This we do by matching
+both structures with Dedekind cuts of the (Mathlib) rational numbers `ℚ`.
 
-From this point onwards, `Chapter5.Real` will be deprecated, and we will use the standard real numbers `ℝ` instead.  In particular, one should use the full Mathlib API for `ℝ` for all subsequent chapters, in lieu of the `Chapter5.Real` API.
+From this point onwards, `Chapter5.Real` will be deprecated, and we will use the standard real
+numbers `ℝ` instead.  In particular, one should use the full Mathlib API for `ℝ` for all
+subsequent chapters, in lieu of the `Chapter5.Real` API.
 
-Filling the sorries here requires both the Chapter5.Real API and the Mathlib API for the standard natural numbers `ℝ`.  As such, they are excellent exercises to prepare you for the aforementioned transition.
+Filling the sorries here requires both the Chapter5.Real API and the Mathlib API for the standard
+natural numbers `ℝ`.  As such, they are excellent exercises to prepare you for the aforementioned
+transition.
 
 --/
 
@@ -22,7 +28,8 @@ structure DedekindCut where
   lower: IsLowerSet E
   nomax : ∀ q ∈ E, ∃ r ∈ E, r > q
 
-theorem isLowerSet_iff (E: Set ℚ) : IsLowerSet E ↔ ∀ q r, r < q → q ∈ E → r ∈ E := isLowerSet_iff_forall_lt
+theorem isLowerSet_iff (E: Set ℚ) : IsLowerSet E ↔ ∀ q r, r < q → q ∈ E → r ∈ E :=
+  isLowerSet_iff_forall_lt
 
 abbrev Real.toSet_Rat (x:Real) : Set ℚ := { q | (q:Real) < x }
 
@@ -51,7 +58,8 @@ lemma DedekindCut.toSet_Real_bounded (c: DedekindCut) : BddAbove c.toSet_Real :=
 
 noncomputable abbrev DedekindCut.toReal (c: DedekindCut) : Real := sSup c.toSet_Real
 
-lemma DedekindCut.toReal_isLUB (c: DedekindCut) : IsLUB c.toSet_Real c.toReal := ExtendedReal.sSup_of_bounded c.toSet_Real_nonempty c.toSet_Real_bounded
+lemma DedekindCut.toReal_isLUB (c: DedekindCut) : IsLUB c.toSet_Real c.toReal :=
+  ExtendedReal.sSup_of_bounded c.toSet_Real_nonempty c.toSet_Real_bounded
 
 noncomputable abbrev Real.equivCut : Real ≃ DedekindCut where
   toFun := Real.toCut
@@ -94,7 +102,8 @@ lemma DedekindCut.toSet_R_bounded (c: DedekindCut) : BddAbove c.toSet_R := by so
 
 noncomputable abbrev DedekindCut.toR (c: DedekindCut) : ℝ := sSup c.toSet_R
 
-lemma DedekindCut.toR_isLUB (c: DedekindCut) : IsLUB c.toSet_R c.toR := isLUB_csSup c.toSet_R_nonempty c.toSet_R_bounded
+lemma DedekindCut.toR_isLUB (c: DedekindCut) : IsLUB c.toSet_R c.toR :=
+  isLUB_csSup c.toSet_R_nonempty c.toSet_R_bounded
 
 end Chapter5
 

@@ -3,20 +3,28 @@ import Mathlib.Tactic
 /-!
 # Analysis I, Section 7.1
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original text.  When there is a choice between a more idiomatic Lean solution and a more faithful translation, I have generally chosen the latter.  In particular, there will be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing so.
+I have attempted to make the translation as faithful a paraphrasing as possible of the original
+text. hen there is a choice between a more idiomatic Lean solution and a more faithful
+translation, I have generally chosen the latter. In particular, there will be places where the
+Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
+doing so.
 
-Technical note: it is convenient in Lean to extend finite sequences (usually by zero) to be functions on the entire integers.
+Technical note: it is convenient in Lean to extend finite sequences (usually by zero) to be
+functions on the entire integers.
 
 Main constructions and results of this section:
 
-- API for summation over finite sets (encoded using Mathlib's `Finset` type), using the `Finset.sum` method and the `∑ n ∈ A, f n` notation.
+- API for summation over finite sets (encoded using Mathlib's `Finset` type), using the
+  `Finset.sum` method and the `∑ n ∈ A, f n` notation.
 - Fubini's theorem for finite series
 
-We do not attempt to replicate the full API for `Finset.sum` here, but in subsequent sections we shall make liberal use of this API.
+We do not attempt to replicate the full API for `Finset.sum` here, but in subsequent sections we
+shall make liberal use of this API.
 
 -/
 
--- This makes available the convenient notation `∑ n ∈ A, f n` to denote summation of `f n` for `n` ranging over a finite set `A`.
+-- This makes available the convenient notation `∑ n ∈ A, f n` to denote summation of `f n` for
+-- `n` ranging over a finite set `A`.
 open BigOperators
 
 -- This is a technical device to avoid Mathlib's insistence on decidable equality for finite sets.
@@ -24,7 +32,8 @@ open Classical
 
 namespace Finset
 
--- We use `Finset.Icc` to describe finite intervals in the integers.  `Finset.mem_Icc` is the standard Mathlib tool for checking membership in such intervals.
+-- We use `Finset.Icc` to describe finite intervals in the integers. `Finset.mem_Icc` is the
+-- standard Mathlib tool for checking membership in such intervals.
 #check mem_Icc
 
 /-- Definition 7.1.1 -/
@@ -34,8 +43,12 @@ theorem sum_of_empty {n m:ℤ} (h: n < m) (a: ℤ → ℝ) : ∑ i ∈ Icc m n, 
   rw [mem_Icc] at hx
   linarith
 
-/-- Definition 7.1.1.  This is similar to Mathlib's `Finset.sum_Icc_succ_top` except that the latter involves summation over the natural numbers rather than integers. -/
-theorem sum_of_nonempty {n m:ℤ} (h: n ≥ m-1) (a: ℤ → ℝ) : ∑ i ∈ Icc m (n+1), a i = ∑ i ∈ Icc m n, a i + a (n+1) := by
+/--
+  Definition 7.1.1. This is similar to Mathlib's `Finset.sum_Icc_succ_top` except that the
+  latter involves summation over the natural numbers rather than integers.
+-/
+theorem sum_of_nonempty {n m:ℤ} (h: n ≥ m-1) (a: ℤ → ℝ) :
+    ∑ i ∈ Icc m (n+1), a i = ∑ i ∈ Icc m n, a i + a (n+1) := by
   rw [add_comm _ (a (n+1))]
   convert sum_insert _
   . ext i; simp; omega
@@ -79,11 +92,19 @@ theorem abs_finite_series_le {m n:ℤ}   (a: ℤ → ℝ) (c:ℝ) :
 theorem finite_series_of_le {m n:ℤ}  {a b: ℤ → ℝ} (h: ∀ i, m ≤ i → i ≤ n → a i ≤ b i) :
   ∑ i ∈ Icc m n, a i ≤ ∑ i ∈ Icc m n, b i := by sorry
 
--- This lemma is not part of the original textbook, but proven similarly to the other results above, and is handy.
+-- This lemma is not part of the original textbook, but proven similarly to the other results
+-- above, and is handy.
 #check sum_congr
 
-/-- Proposition 7.1.8.  There is an unfortunate hack here in that one needs to extend the expressions `f g i` and `f h i` outside of `Icc 1 n`, leading to a certain uglification of the code. -/
-theorem finite_series_of_rearrange {n:ℕ} {X':Type*} (X: Finset X') (hcard: X.card = n) (f: X' → ℝ) (g h: Icc (1:ℤ) n → X) (hg: Function.Bijective g) (hh: Function.Bijective h) : ∑ i ∈ Icc (1:ℤ) n, (if hi:i ∈ Icc (1:ℤ) n then f (g ⟨ i, hi ⟩) else 0) = ∑ i ∈ Icc (1:ℤ) n, (if hi: i ∈ Icc (1:ℤ) n then f (h ⟨ i, hi ⟩) else 0) := by
+/--
+  Proposition 7.1.8. There is an unfortunate hack here in that one needs to extend the
+  expressions `f g i` and `f h i` outside of `Icc 1 n`, leading to a certain uglification of the
+  code.
+-/
+theorem finite_series_of_rearrange {n:ℕ} {X':Type*} (X: Finset X') (hcard: X.card = n)
+  (f: X' → ℝ) (g h: Icc (1:ℤ) n → X) (hg: Function.Bijective g) (hh: Function.Bijective h) :
+    ∑ i ∈ Icc (1:ℤ) n, (if hi:i ∈ Icc (1:ℤ) n then f (g ⟨ i, hi ⟩) else 0)
+    = ∑ i ∈ Icc (1:ℤ) n, (if hi: i ∈ Icc (1:ℤ) n then f (h ⟨ i, hi ⟩) else 0) := by
   -- This proof is written to broadly follow the structure of the original text.
   revert X n
   intro n
@@ -91,8 +112,11 @@ theorem finite_series_of_rearrange {n:ℕ} {X':Type*} (X: Finset X') (hcard: X.c
   . simp [sum_of_empty (show 0 < 1 by norm_num) (fun _ ↦ 0)]
   -- A technical step: we extend g, h to the entire integers using a slightly artificial map π
   intro X hX g h hg hh
-  set π : ℤ → Icc (1:ℤ) (n+1) := fun i ↦ if hi: i ∈ Icc (1:ℤ) (n+1) then ⟨ i, hi ⟩ else ⟨ 1, by simp ⟩
-  have hπ (g : Icc (1:ℤ) (n+1) → X) : ∑ i ∈ Icc (1:ℤ) (n+1), (if hi:i ∈ Icc (1:ℤ) (n+1) then f (g ⟨ i, hi ⟩) else 0) = ∑ i ∈ Icc (1:ℤ) (n+1), f (g (π i)) := by
+  set π : ℤ → Icc (1:ℤ) (n+1) :=
+    fun i ↦ if hi: i ∈ Icc (1:ℤ) (n+1) then ⟨ i, hi ⟩ else ⟨ 1, by simp ⟩
+  have hπ (g : Icc (1:ℤ) (n+1) → X) :
+      ∑ i ∈ Icc (1:ℤ) (n+1), (if hi:i ∈ Icc (1:ℤ) (n+1) then f (g ⟨ i, hi ⟩) else 0)
+      = ∑ i ∈ Icc (1:ℤ) (n+1), f (g (π i)) := by
     apply sum_congr rfl _
     intro i hi
     simp only [hi, ↓reduceDIte, π]
@@ -108,7 +132,8 @@ theorem finite_series_of_rearrange {n:ℕ} {X':Type*} (X: Finset X') (hcard: X.c
     _ = ∑ i ∈ Icc (1:ℤ) j, f (h (π i)) + ∑ i ∈ Icc (j+1:ℤ) (n + 1), f (h (π i)) := by
       convert (concat_finite_series _ _ _).symm
       all_goals linarith
-    _ = ∑ i ∈ Icc (1:ℤ) (j-1), f (h (π i)) + f ( h (π j) ) + ∑ i ∈ Icc (j+1:ℤ) (n + 1), f (h (π i)) := by
+    _ = ∑ i ∈ Icc (1:ℤ) (j-1), f (h (π i)) + f ( h (π j) ) + ∑ i
+        ∈ Icc (j+1:ℤ) (n + 1), f (h (π i)) := by
       congr
       convert sum_of_nonempty _ _ <;> simp
       tauto
@@ -142,11 +167,14 @@ theorem finite_series_of_rearrange {n:ℕ} {X':Type*} (X: Finset X') (hcard: X.c
     have hi'' : i ≤ n+1 := by linarith
     by_cases hlt: i < j
     all_goals by_contra! heq
-    all_goals simp [h', hlt, ←hj, (Function.Bijective.injective hh).eq_iff, ←Subtype.val_inj, π, hi.1, hi.2, hi',hi''] at heq
+    all_goals simp [h', hlt, ←hj, (Function.Bijective.injective hh).eq_iff, ←Subtype.val_inj,
+                    π, hi.1, hi.2, hi',hi''] at heq
     . linarith
     contrapose! hlt; linarith
-  set gtil : Icc (1:ℤ) n → X.erase x := fun i ↦ ⟨ (g (π i)).val, by simp [mem_erase, Subtype.val_inj, g_ne_x] ⟩
-  set htil : Icc (1:ℤ) n → X.erase x := fun i ↦ ⟨ (h' i).val, by simp [mem_erase, Subtype.val_inj, h'_ne_x] ⟩
+  set gtil : Icc (1:ℤ) n → X.erase x :=
+    fun i ↦ ⟨ (g (π i)).val, by simp [mem_erase, Subtype.val_inj, g_ne_x] ⟩
+  set htil : Icc (1:ℤ) n → X.erase x :=
+    fun i ↦ ⟨ (h' i).val, by simp [mem_erase, Subtype.val_inj, h'_ne_x] ⟩
   set ftil : X.erase x → ℝ := fun y ↦ f y.val
   have why : Function.Bijective gtil := by sorry
   have why2 : Function.Bijective htil := by sorry
@@ -165,15 +193,21 @@ theorem finite_series_of_rearrange {n:ℕ} {X':Type*} (X: Finset X') (hcard: X.c
       intro i hi
       simp [hi, htil, ftil]
 
-/-- This fact ensures that Definition 7.1.6 would be well-defined even if we did not appeal to the existing `Finset.sum` method. -/
-theorem exist_bijection {n:ℕ} {Y:Type*} (X: Finset Y) (hcard: X.card = n) : ∃ g: Icc (1:ℤ) n → X, Function.Bijective g := by
+/--
+  This fact ensures that Definition 7.1.6 would be well-defined even if we did not appeal to the
+  existing `Finset.sum` method.
+-/
+theorem exist_bijection {n:ℕ} {Y:Type*} (X: Finset Y) (hcard: X.card = n) :
+    ∃ g: Icc (1:ℤ) n → X, Function.Bijective g := by
   have : (Icc (1:ℤ) n).card = X.card := by simp [hcard]
   replace this := Finset.equivOfCardEq this
   use this
   exact Equiv.bijective this
 
 /-- Definition 7.1.6 -/
-theorem finite_series_eq {n:ℕ} {Y:Type*} (X: Finset Y) (f: Y → ℝ) (g: Icc (1:ℤ) n → X) (hg: Function.Bijective g) : ∑ i ∈ X, f i = ∑ i ∈ Icc (1:ℤ) n, (if hi:i ∈ Icc (1:ℤ) n then f (g ⟨ i, hi ⟩) else 0) := by
+theorem finite_series_eq {n:ℕ} {Y:Type*} (X: Finset Y) (f: Y → ℝ) (g: Icc (1:ℤ) n → X)
+  (hg: Function.Bijective g) :
+    ∑ i ∈ X, f i = ∑ i ∈ Icc (1:ℤ) n, (if hi:i ∈ Icc (1:ℤ) n then f (g ⟨ i, hi ⟩) else 0) := by
   symm
   convert sum_bij (t:=X) (fun i hi ↦ g ⟨ i, hi ⟩ ) _ _ _ _
   . intro i hi; simp [hi]
@@ -188,33 +222,47 @@ theorem finite_series_eq {n:ℕ} {Y:Type*} (X: Finset Y) (f: Y → ℝ) (g: Icc 
 theorem finite_series_of_empty {X':Type*} (f: X' → ℝ) : ∑ i ∈ ∅, f i = 0 := by sorry
 
 /-- Proposition 7.1.11(b) / Exercise 7.1.2 -/
-theorem finite_series_of_singleton {X':Type*} (f: X' → ℝ) (x₀:X') : ∑ i ∈ {x₀}, f i = f x₀ := by sorry
+theorem finite_series_of_singleton {X':Type*} (f: X' → ℝ) (x₀:X') : ∑ i ∈ {x₀}, f i = f x₀ := by
+  sorry
 
-/-- A technical lemma relating a sum over a finset with a sum over a fintype.  Combines well with tools such as `map_finite_series` below. -/
-theorem finite_series_of_fintype {X':Type*} (f: X' → ℝ) (X: Finset X') : ∑ x ∈ X, f x = ∑ x:X, f x.val := (sum_coe_sort X f).symm
+/--
+  A technical lemma relating a sum over a finset with a sum over a fintype. Combines well with
+  tools such as `map_finite_series` below.
+-/
+theorem finite_series_of_fintype {X':Type*} (f: X' → ℝ) (X: Finset X') :
+    ∑ x ∈ X, f x = ∑ x:X, f x.val := (sum_coe_sort X f).symm
 
 /-- Proposition 7.1.11(c) / Exercise 7.1.2 -/
-theorem map_finite_series {X:Type*} [Fintype X] [Fintype Y] (f: X → ℝ) {g:Y → X} (hg: Function.Bijective g) : ∑ x, f x = ∑ y, f (g y) := by sorry
+theorem map_finite_series {X:Type*} [Fintype X] [Fintype Y] (f: X → ℝ) {g:Y → X}
+  (hg: Function.Bijective g) :
+    ∑ x, f x = ∑ y, f (g y) := by sorry
 
 -- Proposition 7.1.11(d) is `rfl` in our formalism and is therefore omitted.
 
 /-- Proposition 7.1.11(e) / Exercise 7.1.2 -/
-theorem finite_series_of_disjoint_union {Z:Type*} {X Y: Finset Z} (hdisj: Disjoint X Y) (f: Z → ℝ) : ∑ z ∈ X ∪ Y, f z = ∑ z ∈ X, f z + ∑ z ∈ Y, f z := by sorry
+theorem finite_series_of_disjoint_union {Z:Type*} {X Y: Finset Z} (hdisj: Disjoint X Y) (f: Z → ℝ) :
+    ∑ z ∈ X ∪ Y, f z = ∑ z ∈ X, f z + ∑ z ∈ Y, f z := by sorry
 
 /-- Proposition 7.1.11(f) / Exercise 7.1.2 -/
-theorem finite_series_of_add {X':Type*} (f g: X' → ℝ) (X: Finset X') : ∑ x ∈ X, (f + g) x = ∑ x ∈ X, f x + ∑ x ∈ X, g x := by sorry
+theorem finite_series_of_add {X':Type*} (f g: X' → ℝ) (X: Finset X') :
+    ∑ x ∈ X, (f + g) x = ∑ x ∈ X, f x + ∑ x ∈ X, g x := by sorry
 
 /-- Proposition 7.1.11(g) / Exercise 7.1.2 -/
-theorem finite_series_of_const_mul {X':Type*} (f: X' → ℝ) (X: Finset X') (c:ℝ) : ∑ x ∈ X, c * f x = c * ∑ x ∈ X, f x := by sorry
+theorem finite_series_of_const_mul {X':Type*} (f: X' → ℝ) (X: Finset X') (c:ℝ) :
+    ∑ x ∈ X, c * f x = c * ∑ x ∈ X, f x := by sorry
 
 /-- Proposition 7.1.11(h) / Exercise 7.1.2 -/
-theorem finite_series_of_le' {X':Type*} (f g: X' → ℝ) (X: Finset X') (h: ∀ x ∈ X, f x ≤ g x) : ∑ x ∈ X, f x ≤ ∑ x ∈ X, g x := by sorry
+theorem finite_series_of_le' {X':Type*} (f g: X' → ℝ) (X: Finset X') (h: ∀ x ∈ X, f x ≤ g x) :
+    ∑ x ∈ X, f x ≤ ∑ x ∈ X, g x := by sorry
 
 /-- Proposition 7.1.11(i) / Exercise 7.1.2 -/
-theorem abs_finite_series_le' {X':Type*} (f: X' → ℝ) (X: Finset X') : |∑ x ∈ X, f x| ≤ ∑ x ∈ X, |f x| := by sorry
+theorem abs_finite_series_le' {X':Type*} (f: X' → ℝ) (X: Finset X') :
+    |∑ x ∈ X, f x| ≤ ∑ x ∈ X, |f x| := by sorry
 
 /-- Lemma 7.1.13 --/
-theorem finite_series_of_finite_series {XX YY:Type*} (X: Finset XX) (Y: Finset YY) (f: XX × YY → ℝ) : ∑ x ∈ X, ∑ y ∈ Y, f (x, y) = ∑ z ∈ Finset.product X Y, f z := by
+theorem finite_series_of_finite_series {XX YY:Type*} (X: Finset XX) (Y: Finset YY)
+  (f: XX × YY → ℝ) :
+    ∑ x ∈ X, ∑ y ∈ Y, f (x, y) = ∑ z ∈ Finset.product X Y, f z := by
   generalize h: X.card = n
   revert X
   induction' n with n hn
@@ -238,7 +286,8 @@ theorem finite_series_of_finite_series {XX YY:Type*} (X: Finset XX) (Y: Finset Y
     _ = ∑ z ∈ Finset.product X' Y, f z + ∑ z ∈ Finset.product {x₀} Y, f z := by
       congr 1
       rw [finite_series_of_fintype, finite_series_of_fintype f]
-      set π : Finset.product {x₀} Y → Y := fun z ↦ ⟨ z.val.2, by obtain ⟨ z, hz ⟩ := z; simp at hz ⊢; obtain ⟨ a, ⟨ ha, rfl ⟩ ⟩ := hz; simp [ha] ⟩
+      set π : Finset.product {x₀} Y → Y :=
+        fun z ↦ ⟨ z.val.2, by obtain ⟨ z, hz ⟩ := z; simp at hz ⊢; obtain ⟨ a, ⟨ ha, rfl ⟩ ⟩ := hz; simp [ha] ⟩
       have hπ : Function.Bijective π := by
         constructor
         . intro ⟨ ⟨ x, y ⟩, hz ⟩ ⟨ ⟨ x', y' ⟩, hz' ⟩ hzz'
@@ -255,9 +304,10 @@ theorem finite_series_of_finite_series {XX YY:Type*} (X: Finset XX) (Y: Finset Y
       sorry
 
 /-- Corollary 7.1.14 (Fubini's theorem for finite series)-/
-theorem finite_series_refl {XX YY:Type*} (X: Finset XX) (Y: Finset YY) (f: XX × YY → ℝ) : ∑ z ∈ Finset.product X Y, f z =
-∑ z ∈ Finset.product Y X, f (z.2, z.1) := by
-  set h : Finset.product Y X → Finset.product X Y := fun z ↦ ⟨ (z.val.2, z.val.1), by obtain ⟨ z, hz ⟩ := z; simp at hz ⊢; tauto ⟩
+theorem finite_series_refl {XX YY:Type*} (X: Finset XX) (Y: Finset YY) (f: XX × YY → ℝ) :
+    ∑ z ∈ Finset.product X Y, f z = ∑ z ∈ Finset.product Y X, f (z.2, z.1) := by
+  set h : Finset.product Y X → Finset.product X Y :=
+    fun z ↦ ⟨ (z.val.2, z.val.1), by obtain ⟨ z, hz ⟩ := z; simp at hz ⊢; tauto ⟩
   have hh : Function.Bijective h := by
     constructor
     . intro ⟨ ⟨ y, x ⟩, hz ⟩ ⟨ ⟨ y', x' ⟩, hz' ⟩ hzz'
@@ -270,21 +320,33 @@ theorem finite_series_refl {XX YY:Type*} (X: Finset XX) (Y: Finset YY) (f: XX ×
   nth_rewrite 2 [finite_series_of_fintype]
   convert map_finite_series _ hh with z
 
-theorem finite_series_comm {XX YY:Type*} (X: Finset XX) (Y: Finset YY) (f: XX × YY → ℝ) : ∑ x ∈ X, ∑ y ∈ Y, f (x, y) =
-∑ y ∈ Y, ∑ x ∈ X, f (x, y) := by
-  rw [finite_series_of_finite_series, finite_series_refl,  finite_series_of_finite_series _ _ (fun z ↦ f (z.2, z.1))]
+theorem finite_series_comm {XX YY:Type*} (X: Finset XX) (Y: Finset YY) (f: XX × YY → ℝ) :
+    ∑ x ∈ X, ∑ y ∈ Y, f (x, y) = ∑ y ∈ Y, ∑ x ∈ X, f (x, y) := by
+  rw [finite_series_of_finite_series, finite_series_refl,
+      finite_series_of_finite_series _ _ (fun z ↦ f (z.2, z.1))]
 
 
--- Exercise 7.1.3 : develop as many analogues as you can of the above theory for finite products instead of finite sums.
+-- Exercise 7.1.3 : develop as many analogues as you can of the above theory for finite products
+-- instead of finite sums.
 
 #check Nat.factorial_zero
 #check Nat.factorial_succ
 
-/-- Exercise 7.1.4.  Note: there may be some technicalities passing back and forth between natural numbers and integers.  Look into the tactics `zify`, `norm_cast`, and `omega` -/
-theorem binomial_theorem (x y:ℝ) (n:ℕ) : (x + y)^n = ∑ j ∈ Icc (0:ℤ) n, n.factorial / (j.toNat.factorial * (n-j).toNat.factorial) * x^k * y^(n - k) := by sorry
+/--
+  Exercise 7.1.4. Note: there may be some technicalities passing back and forth between natural
+  numbers and integers. Look into the tactics `zify`, `norm_cast`, and `omega`
+-/
+theorem binomial_theorem (x y:ℝ) (n:ℕ) :
+    (x + y)^n
+    = ∑ j ∈ Icc (0:ℤ) n,
+    n.factorial / (j.toNat.factorial * (n-j).toNat.factorial) * x^k * y^(n - k) := by
+  sorry
 
 /-- Exercise 7.1.5 -/
-theorem lim_of_finite_series {X:Type*} [Fintype X] (a: X → ℕ → ℝ) (L : X → ℝ) (h: ∀ x, Filter.Tendsto (a x) Filter.atTop (nhds (L x))) : Filter.Tendsto (fun n ↦ ∑ x, a x n) Filter.atTop (nhds (∑ x, L x)) := by sorry
+theorem lim_of_finite_series {X:Type*} [Fintype X] (a: X → ℕ → ℝ) (L : X → ℝ)
+  (h: ∀ x, Filter.Tendsto (a x) Filter.atTop (nhds (L x))) :
+    Filter.Tendsto (fun n ↦ ∑ x, a x n) Filter.atTop (nhds (∑ x, L x)) := by
+  sorry
 
 
 

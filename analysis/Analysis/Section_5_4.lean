@@ -5,7 +5,11 @@ import Analysis.Section_5_3
 /-!
 # Analysis I, Section 5.4
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original text.  When there is a choice between a more idiomatic Lean solution and a more faithful translation, I have generally chosen the latter.  In particular, there will be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing so.
+I have attempted to make the translation as faithful a paraphrasing as possible of the original
+text. When there is a choice between a more idiomatic Lean solution and a more faithful
+translation, I have generally chosen the latter. In particular, there will be places where the
+Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
+doing so.
 
 Main constructions and results of this section:
 
@@ -15,19 +19,24 @@ Main constructions and results of this section:
 namespace Chapter5
 
 
-/-- Definition 5.4.1 (sequences bounded away from zero with sign).  Sequences are indexed to start from zero as this is more convenient for Mathlib purposes. -/
+/--
+  Definition 5.4.1 (sequences bounded away from zero with sign). Sequences are indexed to start
+  from zero as this is more convenient for Mathlib purposes.
+-/
 abbrev bounded_away_pos (a:ℕ → ℚ) : Prop :=
   ∃ (c:ℚ), c > 0 ∧ ∀ n, a n ≥ c
 
-/-- Definition 5.4.1 (sequences bounded away from zero with sign).-/
+/-- Definition 5.4.1 (sequences bounded away from zero with sign). -/
 abbrev bounded_away_neg (a:ℕ → ℚ) : Prop :=
   ∃ (c:ℚ), c > 0 ∧ ∀ n, a n ≤ -c
 
 /-- Definition 5.4.1 (sequences bounded away from zero with sign). -/
-theorem bounded_away_pos_def (a:ℕ → ℚ) : bounded_away_pos a ↔ ∃ (c:ℚ), c > 0 ∧ ∀ n, a n ≥ c := by rfl
+theorem bounded_away_pos_def (a:ℕ → ℚ) : bounded_away_pos a ↔ ∃ (c:ℚ), c > 0 ∧ ∀ n, a n ≥ c := by
+  rfl
 
 /-- Definition 5.4.1 (sequences bounded away from zero with sign). -/
-theorem bounded_away_neg_def (a:ℕ → ℚ) : bounded_away_neg a ↔ ∃ (c:ℚ), c > 0 ∧ ∀ n, a n ≤ -c := by rfl
+theorem bounded_away_neg_def (a:ℕ → ℚ) : bounded_away_neg a ↔ ∃ (c:ℚ), c > 0 ∧ ∀ n, a n ≤ -c := by
+  rfl
 
 /-- Examples 5.4.2 -/
 example : bounded_away_pos (fun n ↦ 1 + 10^(-(n:ℤ)-1)) := by sorry
@@ -42,19 +51,26 @@ example : ¬ bounded_away_neg (fun n ↦ (-1)^n) := by sorry
 
 example : bounded_away_zero (fun n ↦ (-1)^n) := by sorry
 
-theorem bounded_away_zero_of_pos {a:ℕ → ℚ} (ha: bounded_away_pos a) : bounded_away_zero a := by sorry
+theorem bounded_away_zero_of_pos {a:ℕ → ℚ} (ha: bounded_away_pos a) : bounded_away_zero a := by
+  sorry
 
-theorem bounded_away_zero_of_neg {a:ℕ → ℚ} (ha: bounded_away_neg a) : bounded_away_zero a := by sorry
+theorem bounded_away_zero_of_neg {a:ℕ → ℚ} (ha: bounded_away_neg a) : bounded_away_zero a := by
+  sorry
 
-theorem not_bounded_away_pos_neg {a:ℕ → ℚ} : ¬ (bounded_away_pos a ∧ bounded_away_neg a) := by sorry
+theorem not_bounded_away_pos_neg {a:ℕ → ℚ} : ¬ (bounded_away_pos a ∧ bounded_away_neg a) := by
+  sorry
 
-abbrev Real.isPos (x:Real) : Prop := ∃ a:ℕ → ℚ, bounded_away_pos a ∧ (a:Sequence).isCauchy ∧ x = LIM a
+abbrev Real.isPos (x:Real) : Prop :=
+  ∃ a:ℕ → ℚ, bounded_away_pos a ∧ (a:Sequence).isCauchy ∧ x = LIM a
 
-abbrev Real.isNeg (x:Real) : Prop := ∃ a:ℕ → ℚ, bounded_away_neg a ∧ (a:Sequence).isCauchy ∧ x = LIM a
+abbrev Real.isNeg (x:Real) : Prop :=
+  ∃ a:ℕ → ℚ, bounded_away_neg a ∧ (a:Sequence).isCauchy ∧ x = LIM a
 
-theorem Real.isPos_def (x:Real) : Real.isPos x ↔ ∃ a:ℕ → ℚ, bounded_away_pos a ∧ (a:Sequence).isCauchy ∧ x = LIM a := by rfl
+theorem Real.isPos_def (x:Real) :
+    Real.isPos x ↔ ∃ a:ℕ → ℚ, bounded_away_pos a ∧ (a:Sequence).isCauchy ∧ x = LIM a := by rfl
 
-theorem Real.isNeg_def (x:Real) : Real.isNeg x ↔ ∃ a:ℕ → ℚ, bounded_away_neg a ∧ (a:Sequence).isCauchy ∧ x = LIM a := by rfl
+theorem Real.isNeg_def (x:Real) :
+    Real.isNeg x ↔ ∃ a:ℕ → ℚ, bounded_away_neg a ∧ (a:Sequence).isCauchy ∧ x = LIM a := by rfl
 
 /-- Proposition 5.4.4 (basic properties of positive reals) / Exercise 5.4.1 -/
 theorem Real.trichotomous (x:Real) : x = 0 ∨ x.isPos ∨ x.isNeg := by sorry
@@ -111,8 +127,12 @@ theorem Real.abs_of_neg (x:Real) (hx: x.isNeg) : Real.abs x = -x := by
 /-- Definition 5.4.5 (absolute value) -/
 @[simp]
 theorem Real.abs_of_zero : Real.abs 0 = 0 := by
-  have hpos: ¬ (0:Real).isPos := by have := Real.not_zero_pos 0; simp only [true_and] at this; assumption
-  have hneg: ¬ (0:Real).isNeg := by have := Real.not_zero_neg 0; simp only [true_and] at this; assumption
+  have hpos: ¬ (0:Real).isPos := by
+    have := Real.not_zero_pos 0
+    simp only [true_and] at this; assumption
+  have hneg: ¬ (0:Real).isNeg := by
+    have := Real.not_zero_neg 0
+    simp only [true_and] at this; assumption
   simp [Real.abs, hpos, hneg]
 
 /-- Definition 5.4.6 (Ordering of the reals) -/
@@ -169,7 +189,10 @@ theorem Real.mul_le_mul_left {x y z:Real} (hxy: x ≤ y) (hz: z.isPos) : z * x �
 theorem Real.mul_pos_neg {x y:Real} (hx: x.isPos) (hy: y.isNeg) : (x * y).isNeg := by
   sorry
 
-/-- (Not from textbook) Real has the structure of a linear ordering.  The order is not computable, and so classical logic is required to impose decidability.-/
+/--
+  (Not from textbook) Real has the structure of a linear ordering. The order is not computable,
+  and so classical logic is required to impose decidability.
+-/
 noncomputable instance Real.instLinearOrder : LinearOrder Real where
   le_refl := sorry
   le_trans := sorry
@@ -219,7 +242,8 @@ instance Real.instIsStrictOrderedRing : IsStrictOrderedRing Real where
   zero_le_one := by sorry
 
 /-- Proposition 5.4.9 (The non-negative reals are closed)-/
-theorem Real.LIM_of_nonneg {a: ℕ → ℚ} (ha: ∀ n, a n ≥ 0) (hcauchy: (a:Sequence).isCauchy) : LIM a ≥ 0 := by
+theorem Real.LIM_of_nonneg {a: ℕ → ℚ} (ha: ∀ n, a n ≥ 0) (hcauchy: (a:Sequence).isCauchy) :
+    LIM a ≥ 0 := by
   -- This proof is written to follow the structure of the original text.
   by_contra! hlim
   set x := LIM a
@@ -251,20 +275,27 @@ theorem Real.LIM_of_nonneg {a: ℕ → ℚ} (ha: ∀ n, a n ≥ 0) (hcauchy: (a:
   contradiction
 
 /-- Corollary 5.4.10 -/
-theorem Real.LIM_mono {a b:ℕ → ℚ} (ha: (a:Sequence).isCauchy) (hb: (b:Sequence).isCauchy) (hmono: ∀ n, a n ≤ b n) : LIM a ≤ LIM b := by
+theorem Real.LIM_mono {a b:ℕ → ℚ} (ha: (a:Sequence).isCauchy) (hb: (b:Sequence).isCauchy)
+  (hmono: ∀ n, a n ≤ b n) :
+    LIM a ≤ LIM b := by
   -- This proof is written to follow the structure of the original text.
   have := LIM_of_nonneg (a := b - a) (by intro n; simp [hmono n]) (sub_of_cauchy hb ha)
   rw [←Real.sub_of_LIM hb ha] at this
   linarith
 
 /-- Remark 5.4.11 --/
-theorem Real.LIM_mono_fail : ∃ (a b:ℕ → ℚ), (a:Sequence).isCauchy ∧ (b:Sequence).isCauchy ∧ ¬ (∀ n, a n > b n) ∧ ¬ LIM a > LIM b := by
+theorem Real.LIM_mono_fail :
+    ∃ (a b:ℕ → ℚ), (a:Sequence).isCauchy
+    ∧ (b:Sequence).isCauchy
+    ∧ ¬ (∀ n, a n > b n)
+    ∧ ¬ LIM a > LIM b := by
   use (fun n ↦ 1 + 1/(n:ℚ))
   use (fun n ↦ 1 - 1/(n:ℚ))
   sorry
 
 /-- Proposition 5.4.12 (Bounding reals by rationals) -/
-theorem Real.exists_rat_le_and_nat_ge {x:Real} (hx: x.isPos) : (∃ q:ℚ, q > 0 ∧ (q:Real) ≤ x) ∧ ∃ N:ℕ, x < (N:Real) := by
+theorem Real.exists_rat_le_and_nat_ge {x:Real} (hx: x.isPos) :
+    (∃ q:ℚ, q > 0 ∧ (q:Real) ≤ x) ∧ ∃ N:ℕ, x < (N:Real) := by
   -- This proof is written to follow the structure of the original text.
   rw [isPos_def] at hx
   obtain ⟨ a, hbound, hcauchy, heq ⟩ := hx
@@ -335,10 +366,12 @@ theorem Real.le_add_eps_iff (x y:Real) : ∀ ε > 0, x ≤ y+ε ↔ x ≤ y := b
 theorem Real.dist_le_eps_iff (x y:Real) : ∀ ε > 0, |x-y| ≤ ε ↔ x = y := by sorry
 
 /-- Exercise 5.4.8 -/
-theorem Real.LIM_of_le {x:Real} {a:ℕ → ℚ} (hcauchy: (a:Sequence).isCauchy) (h: ∀ n, a n ≤ x) : LIM a ≤ x := by sorry
+theorem Real.LIM_of_le {x:Real} {a:ℕ → ℚ} (hcauchy: (a:Sequence).isCauchy) (h: ∀ n, a n ≤ x) :
+    LIM a ≤ x := by sorry
 
 /-- Exercise 5.4.8 -/
-theorem Real.LIM_of_ge {x:Real} {a:ℕ → ℚ} (hcauchy: (a:Sequence).isCauchy) (h: ∀ n, a n ≥ x) : LIM a ≥ x := by sorry
+theorem Real.LIM_of_ge {x:Real} {a:ℕ → ℚ} (hcauchy: (a:Sequence).isCauchy) (h: ∀ n, a n ≥ x) :
+    LIM a ≥ x := by sorry
 
 theorem Real.max_eq (x y:Real) : max x y = (if x ≥ y then x else y) :=  max_def' x y
 
@@ -360,7 +393,8 @@ theorem Real.max_self (x:Real) : max x x = x := by sorry
 theorem Real.max_add (x y z:Real) : max (x + z) (y + z) = max x y + z := by sorry
 
 /-- Exercise 5.4.9 -/
-theorem Real.max_mul (x y :Real) {z:Real} (hz: z.isPos) : max (x * z) (y * z) = max x y * z := by sorry
+theorem Real.max_mul (x y :Real) {z:Real} (hz: z.isPos) : max (x * z) (y * z) = max x y * z := by
+  sorry
 /- Additional exercise: What happens if z is negative? -/
 
 /-- Exercise 5.4.9 -/
@@ -373,7 +407,8 @@ theorem Real.min_self (x:Real) : min x x = x := by sorry
 theorem Real.min_add (x y z:Real) : min (x + z) (y + z) = min x y + z := by sorry
 
 /-- Exercise 5.4.9 -/
-theorem Real.min_mul (x y :Real) {z:Real} (hz: z.isPos) : min (x * z) (y * z) = min x y * z := by sorry
+theorem Real.min_mul (x y :Real) {z:Real} (hz: z.isPos) : min (x * z) (y * z) = min x y * z := by
+  sorry
 
 /-- Exercise 5.4.9 -/
 theorem Real.inv_max {x y :Real} (hx:x.isPos) (hy:y.isPos) : (max x y)⁻¹ = min x⁻¹ y⁻¹ := by sorry

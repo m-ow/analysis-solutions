@@ -4,14 +4,29 @@ import Mathlib.Algebra.Field.Power
 /-!
 # Analysis I, Section 7.2
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original text.  When there is a choice between a more idiomatic Lean solution and a more faithful translation, I have generally chosen the latter.  In particular, there will be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing so.
+I have attempted to make the translation as faithful a paraphrasing as possible of the original
+text. When there is a choice between a more idiomatic Lean solution and a more faithful
+translation, I have generally chosen the latter. In particular, there will be places where the
+Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
+doing so.
+
+Main constructions and results of this section:
+
+- Formal series and their limits
+- Absolute convergence; basic series laws.
+
+
+
 -/
 
 namespace Chapter7
 
 open BigOperators
 
-/-- Definition 7.2.1 (Formal infinite series). This is similar to Chapter 6 sequence, but is manipulated differently.  As with Chapter 5, we will start series from 0 by default. -/
+/--
+  Definition 7.2.1 (Formal infinite series). This is similar to Chapter 6 sequence, but is
+  manipulated differently. As with Chapter 5, we will start series from 0 by default.
+-/
 @[ext]
 structure Series where
   m : ℤ
@@ -38,12 +53,22 @@ abbrev Series.mk' {m:ℤ} (a: { n // n ≥ m } → ℝ) : Series where
     intro n hn
     simp [hn]
 
-theorem Series.eval_mk' {m:ℤ} (a : { n // n ≥ m } → ℝ) {n : ℤ} (h:n ≥ m) : (Series.mk' a).seq n = a ⟨ n, h ⟩ := by simp [h]
+theorem Series.eval_mk' {m:ℤ} (a : { n // n ≥ m } → ℝ) {n : ℤ} (h:n ≥ m) :
+    (Series.mk' a).seq n = a ⟨ n, h ⟩ := by simp [h]
 
 /-- Definition 7.2.2 (Convergence of series) -/
 abbrev Series.partial (s : Series) (N:ℤ) : ℝ := ∑ n ∈ Finset.Icc s.m N, s.seq n
 
-abbrev Series.convergesTo (s : Series) (L:ℝ) : Prop := Filter.Tendsto (s.partial) Filter.atTop (nhds L)
+theorem Series.partial_succ (s : Series) {N:ℤ} (h: N ≥ s.m-1) : s.partial (N+1) = s.partial N + s.seq (N+1) := by
+  unfold Series.partial
+  rw [add_comm (s.partial N) _]
+  have : N+1 ∉ Finset.Icc s.m N := by simp
+  convert Finset.sum_insert this
+  refine (Finset.insert_Icc_right_eq_Icc_add_one ?_).symm
+  linarith
+
+abbrev Series.convergesTo (s : Series) (L:ℝ) : Prop :=
+  Filter.Tendsto (s.partial) Filter.atTop (nhds L)
 
 abbrev Series.converges (s : Series) : Prop := ∃ L, s.convergesTo L
 
@@ -53,7 +78,8 @@ open Classical in
 noncomputable abbrev Series.sum (s : Series) : ℝ :=
   if h : s.converges then h.choose else 0
 
-theorem Series.converges_of_convergesTo {s : Series} {L:ℝ} (h: s.convergesTo L) : s.converges := by use L
+theorem Series.converges_of_convergesTo {s : Series} {L:ℝ} (h: s.convergesTo L) :
+    s.converges := by use L
 
 /-- Remark 7.2.3 -/
 theorem Series.sum_of_converges {s : Series} {L:ℝ} (h: s.convergesTo L) : s.sum = L := by
@@ -63,7 +89,8 @@ theorem Series.sum_of_converges {s : Series} {L:ℝ} (h: s.convergesTo L) : s.su
 /-- Example 7.2.4 -/
 noncomputable abbrev Series.example_7_2_4 := mk' (m := 1) (fun n ↦ (2:ℝ)^(-n:ℤ))
 
-theorem Series.example_7_2_4a {N:ℤ} (hN: N ≥ 1) : example_7_2_4.partial N = 1 - (2:ℝ)^(-N) := by sorry
+theorem Series.example_7_2_4a {N:ℤ} (hN: N ≥ 1) : example_7_2_4.partial N = 1 - (2:ℝ)^(-N) := by
+  sorry
 
 theorem Series.example_7_2_4b : example_7_2_4.convergesTo 1 := by sorry
 
@@ -71,17 +98,24 @@ theorem Series.example_7_2_4c : example_7_2_4.sum = 1 := by sorry
 
 noncomputable abbrev Series.example_7_2_4' := mk' (m := 1) (fun n ↦ (2:ℝ)^(n:ℤ))
 
-theorem Series.example_7_2_4'a {N:ℤ} (hN: N ≥ 1) : example_7_2_4'.partial N = (2:ℝ)^(N+1) - 2 := by sorry
+theorem Series.example_7_2_4'a {N:ℤ} (hN: N ≥ 1) : example_7_2_4'.partial N = (2:ℝ)^(N+1) - 2 := by
+  sorry
 
 theorem Series.example_7_2_4'b : example_7_2_4'.diverges := by sorry
 
 /-- Proposition 7.2.5 / Exercise 7.2.2 -/
-theorem Series.converges_iff_tail_decay (s:Series) : s.converges ↔ ∀ ε > 0, ∃ N ≥ s.m, ∀ p ≥ N, ∀ q ≥ N, |∑ n ∈ Finset.Icc p q, s.seq n| ≤ ε := by sorry
+theorem Series.converges_iff_tail_decay (s:Series) :
+    s.converges ↔ ∀ ε > 0, ∃ N ≥ s.m, ∀ p ≥ N, ∀ q ≥ N, |∑ n ∈ Finset.Icc p q, s.seq n| ≤ ε := by
+  sorry
 
 /-- Corollary 7.2.6 (Zero test) / Exercise 7.2.3 -/
-theorem Series.decay_of_converges {s:Series} (h: s.converges) : Filter.Tendsto s.seq Filter.atTop (nhds 0) := by sorry
+theorem Series.decay_of_converges {s:Series} (h: s.converges) :
+    Filter.Tendsto s.seq Filter.atTop (nhds 0) := by
+  sorry
 
-theorem Series.diverges_of_nodecay {s:Series} (h: ¬ Filter.Tendsto s.seq Filter.atTop (nhds 0)) : s.diverges := by sorry
+theorem Series.diverges_of_nodecay {s:Series} (h: ¬ Filter.Tendsto s.seq Filter.atTop (nhds 0)) :
+    s.diverges := by
+  sorry
 
 /-- Example 7.2.7 -/
 theorem Series.example_7_2_7 : ((fun n:ℕ ↦ (1:ℝ)):Series).diverges := by
@@ -100,12 +134,16 @@ abbrev Series.absConverges (s:Series) : Prop := s.abs.converges
 abbrev Series.condConverges (s:Series) : Prop := s.converges ∧ ¬ s.absConverges
 
 /-- Proposition 7.2.9 (Absolute convergence test) / Example 7.2.4 -/
-theorem Series.converges_of_absConverges {s:Series} (h : s.absConverges) : s.converges := by sorry
+theorem Series.converges_of_absConverges {s:Series} (h : s.absConverges) : s.converges := by
+  sorry
 
-theorem Series.abs_le {s:Series} (h : s.absConverges) : |s.sum| ≤ s.abs.sum := by sorry
+theorem Series.abs_le {s:Series} (h : s.absConverges) : |s.sum| ≤ s.abs.sum := by
+  sorry
 
 /-- Proposition 7.2.12 (Alternating series test) -/
-theorem Series.converges_of_alternating {m:ℤ} {a: { n // n ≥ m} → ℝ} (ha: ∀ n, a n ≥ 0) (ha': Antitone a) : ((mk' (fun n ↦ (-1)^(n:ℤ) * a n)).converges ↔ Filter.Tendsto a Filter.atTop (nhds 0)) := by
+theorem Series.converges_of_alternating {m:ℤ} {a: { n // n ≥ m} → ℝ} (ha: ∀ n, a n ≥ 0)
+  (ha': Antitone a) :
+    ((mk' (fun n ↦ (-1)^(n:ℤ) * a n)).converges ↔ Filter.Tendsto a Filter.atTop (nhds 0)) := by
   -- This proof is written to follow the structure of the original text.
   constructor
   . intro h
@@ -119,15 +157,9 @@ theorem Series.converges_of_alternating {m:ℤ} {a: { n // n ≥ m} → ℝ} (ha
   set b := mk' fun n ↦ (-1) ^ (n:ℤ) * a n
   set S := b.partial
   have claim0 {N:ℤ} (hN: N ≥ m) : S (N+1) = S N + (-1)^(N+1) * a ⟨ N+1, by linarith ⟩ := by
-    unfold S Series.partial
-    rw [add_comm (S N) _]
-    have : N+1 ∉ Finset.Icc b.m N := by simp
-    convert Finset.sum_insert this
-    . refine (Finset.insert_Icc_right_eq_Icc_add_one ?_).symm
-      simp [b, mk']
-      linarith
-    have : m ≤ N+1 := by linarith
-    simp [b, this]
+    have h1 : N+1 ≥ m := by linarith
+    convert b.partial_succ ?_
+    simp [b, h1]; linarith
   have claim1 {N:ℤ} (hN: N ≥ m) : S (N+2) = S N + (-1)^(N+1) * (a ⟨ N+1, by linarith ⟩ - a ⟨ N+2, by linarith ⟩) := calc
       S (N+2) = S N + (-1)^(N+1) * a ⟨ N+1, by linarith ⟩ + (-1)^(N+2) * a ⟨ N+2, by linarith ⟩ := by
         have hN2 : N+2 = N+1+1 := by abel
@@ -189,7 +221,8 @@ instance Series.inst_add : Add Series where
   }
 
 /-- Proposition 7.2.14 (a) (Series laws) / Exercise 7.2.5 -/
-theorem Series.add {s t:Series} (hs: s.converges) (ht: t.converges) : (s + t).converges ∧ (s+t).sum = s.sum + t.sum := by sorry
+theorem Series.add {s t:Series} (hs: s.converges) (ht: t.converges) :
+    (s + t).converges ∧ (s+t).sum = s.sum + t.sum := by sorry
 
 instance Series.inst.smul : SMul ℝ Series where
   smul c s := {
@@ -201,25 +234,40 @@ instance Series.inst.smul : SMul ℝ Series where
       simp [hn]
   }
 /-- Proposition 7.2.14 (b) (Series laws) / Exercise 7.2.5 -/
-theorem Series.smul {c:ℝ} {s:Series} (hs: s.converges) : (c • s).converges ∧ (c • s).sum = c * s.sum := by sorry
+theorem Series.smul {c:ℝ} {s:Series} (hs: s.converges) :
+    (c • s).converges ∧ (c • s).sum = c * s.sum := by sorry
 
-abbrev Series.from (s:Series) (m₁:ℤ) : Series := mk' (m := max s.m m₁) (fun n ↦ s.seq (n:ℤ))
+abbrev Series.from (s:Series) (m₁:ℤ) : Series :=
+  mk' (m := max s.m m₁) (fun n ↦ s.seq (n:ℤ))
 
 /-- Proposition 7.2.14 (c) (Series laws) / Exercise 7.2.5 -/
-theorem Series.converges_from (s:Series) (k:ℕ) : s.converges ↔ (s.from (s.m+k)).converges := by sorry
+theorem Series.converges_from (s:Series) (k:ℕ) : s.converges ↔ (s.from (s.m+k)).converges := by
+  sorry
 
-theorem Series.sum_from {s:Series} (k:ℕ) (h: s.converges) : s.sum = ∑ n ∈ Finset.Ico s.m (s.m+k), s.seq n + (s.from (s.m+k)).sum := by sorry
+theorem Series.sum_from {s:Series} (k:ℕ) (h: s.converges) :
+    s.sum = ∑ n ∈ Finset.Ico s.m (s.m+k), s.seq n + (s.from (s.m+k)).sum := by
+  sorry
 
 /-- Proposition 7.2.14 (d) (Series laws) / Exercise 7.2.5 -/
-theorem Series.shift {s:Series} {x:ℝ} (h: s.convergesTo x) (L:ℤ) : (mk' (m := s.m + L) (fun n ↦ s.seq (n - L))).convergesTo x := by sorry
+theorem Series.shift {s:Series} {x:ℝ} (h: s.convergesTo x) (L:ℤ) :
+    (mk' (m := s.m + L) (fun n ↦ s.seq (n - L))).convergesTo x := by
+  sorry
 
 /-- Lemma 7.2.15 (telescoping series) / Exercise 7.2.6 -/
-theorem Series.telescope {a:ℕ → ℝ} (ha: Filter.Tendsto a Filter.atTop (nhds 0)) : ((fun n:ℕ ↦ a (n+1) - a n):Series).convergesTo (a 0) := by sorry
+theorem Series.telescope {a:ℕ → ℝ} (ha: Filter.Tendsto a Filter.atTop (nhds 0)) :
+    ((fun n:ℕ ↦ a (n+1) - a n):Series).convergesTo (a 0) := by
+  sorry
 
 /- Exercise 7.2.1 : uncomment and prove one of the following statements, and delete the other. -/
 
--- theorem Series.exercise_7_2_1_convergent : (mk' (m := 1) (fun n ↦ (-1:ℝ)^(n:ℤ))).converges := by sorry
+/-
+theorem Series.exercise_7_2_1_convergent : (mk' (m := 1) (fun n ↦ (-1:ℝ)^(n:ℤ))).converges := by
+  sorry
+-/
 
--- theorem Series.exercise_7_2_1_divergent : (mk' (m := 1) (fun n ↦ (-1:ℝ)^(n:ℤ))).diverges := by sorry
+/-
+theorem Series.exercise_7_2_1_divergent : (mk' (m := 1) (fun n ↦ (-1:ℝ)^(n:ℤ))).diverges := by
+  sorry
+-/
 
 end Chapter7

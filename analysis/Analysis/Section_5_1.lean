@@ -4,7 +4,11 @@ import Analysis.Section_4_3
 /-!
 # Analysis I, Section 5.1
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original text.  When there is a choice between a more idiomatic Lean solution and a more faithful translation, I have generally chosen the latter.  In particular, there will be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing so.
+I have attempted to make the translation as faithful a paraphrasing as possible of the original
+text. When there is a choice between a more idiomatic Lean solution and a more faithful
+translation, I have generally chosen the latter. In particular, there will be places where the
+Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
+doing so.
 
 Main constructions and results of this section:
 
@@ -15,7 +19,10 @@ Main constructions and results of this section:
 
 namespace Chapter5
 
-/-- Definition 5.1.1 (Sequence). To avoid some technicalities involving dependent types, we extend sequences by zero to the left of the starting point `n₀`. -/
+/--
+  Definition 5.1.1 (Sequence). To avoid some technicalities involving dependent types, we extend
+  sequences by zero to the left of the starting point `n₀`.
+-/
 @[ext]
 structure Sequence where
   n₀ : ℤ
@@ -44,7 +51,8 @@ abbrev Sequence.mk' (n₀:ℤ) (a: { n // n ≥ n₀ } → ℚ) : Sequence where
     simp [hn]
 
 
-lemma Sequence.eval_mk {n n₀:ℤ} (a: { n // n ≥ n₀ } → ℚ) (h: n ≥ n₀) : (Sequence.mk' n₀ a) n = a ⟨ n, h ⟩ := by simp [seq, h]
+lemma Sequence.eval_mk {n n₀:ℤ} (a: { n // n ≥ n₀ } → ℚ) (h: n ≥ n₀) :
+    (Sequence.mk' n₀ a) n = a ⟨ n, h ⟩ := by simp [seq, h]
 
 @[simp]
 lemma Sequence.eval_coe (n:ℕ) (a: ℕ → ℚ) : (a:Sequence) n = a n := by simp [seq]
@@ -99,9 +107,13 @@ example (ε:ℚ) (hε: ε>0) : ε.steady ((fun _:ℕ ↦ (2:ℚ) ):Sequence) := 
 
 example : (10:ℚ).steady ((fun n:ℕ ↦ if n = 0 then (10:ℚ) else (0:ℚ)):Sequence) := by sorry
 
-example (ε:ℚ) (hε:ε<10):  ¬ ε.steady ((fun n:ℕ ↦ if n = 0 then (10:ℚ) else (0:ℚ)):Sequence) := by sorry
+example (ε:ℚ) (hε:ε<10):  ¬ ε.steady ((fun n:ℕ ↦ if n = 0 then (10:ℚ) else (0:ℚ)):Sequence) := by
+  sorry
 
-/-- a.from n₁ starts `a:Sequence` from `n₁`.  It is intended for use when `n₁ ≥ n₀`, but returns the "junk" value of the original sequence `a` otherwise. -/
+/--
+  a.from n₁ starts `a:Sequence` from `n₁`.  It is intended for use when `n₁ ≥ n₀`, but returns
+  the "junk" value of the original sequence `a` otherwise.
+-/
 abbrev Sequence.from (a:Sequence) (n₁:ℤ) : Sequence :=
   mk' (max a.n₀ n₁) (fun n ↦ a (n:ℤ))
 
@@ -114,7 +126,8 @@ lemma Sequence.from_eval (a:Sequence) {n₁ n:ℤ} (hn: n ≥ n₁) :
 end Chapter5
 
 /-- Definition 5.1.6 (Eventually ε-steady) -/
-abbrev Rat.eventuallySteady (ε: ℚ) (a: Chapter5.Sequence) : Prop := ∃ N ≥ a.n₀, ε.steady (a.from N)
+abbrev Rat.eventuallySteady (ε: ℚ) (a: Chapter5.Sequence) : Prop :=
+  ∃ N ≥ a.n₀, ε.steady (a.from N)
 
 lemma Rat.eventuallySteady_def (ε: ℚ) (a: Chapter5.Sequence) :
   ε.eventuallySteady a ↔ ∃ N ≥ a.n₀, ε.steady (a.from N) := by rfl
@@ -125,34 +138,47 @@ namespace Chapter5
 /-- Example 5.1.7 -/
 lemma Sequence.ex_5_1_7_a : ¬ (0.1:ℚ).steady ((fun n:ℕ ↦ (n+1:ℚ)⁻¹ ):Sequence) := by sorry
 
-lemma Sequence.ex_5_1_7_b : (0.1:ℚ).steady (((fun n:ℕ ↦ (n+1:ℚ)⁻¹ ):Sequence).from 10) := by sorry
+lemma Sequence.ex_5_1_7_b : (0.1:ℚ).steady (((fun n:ℕ ↦ (n+1:ℚ)⁻¹ ):Sequence).from 10) := by
+  sorry
 
-lemma Sequence.ex_5_1_7_c : (0.1:ℚ).eventuallySteady ((fun n:ℕ ↦ (n+1:ℚ)⁻¹ ):Sequence) := by sorry
+lemma Sequence.ex_5_1_7_c : (0.1:ℚ).eventuallySteady ((fun n:ℕ ↦ (n+1:ℚ)⁻¹ ):Sequence) := by
+  sorry
 
-lemma Sequence.ex_5_1_7_d {ε:ℚ} (hε:ε>0) : ε.eventuallySteady ((fun n:ℕ ↦ if n=0 then (10:ℚ) else (0:ℚ) ):Sequence) := by sorry
+lemma Sequence.ex_5_1_7_d {ε:ℚ} (hε:ε>0) :
+    ε.eventuallySteady ((fun n:ℕ ↦ if n=0 then (10:ℚ) else (0:ℚ) ):Sequence) := by sorry
 
 abbrev Sequence.isCauchy (a:Sequence) : Prop := ∀ ε > (0:ℚ), ε.eventuallySteady a
 
 lemma Sequence.isCauchy_def (a:Sequence) :
   a.isCauchy ↔ ∀ ε > (0:ℚ), ε.eventuallySteady a := by rfl
 
-lemma Sequence.isCauchy_of_coe (a:ℕ → ℚ) : (a:Sequence).isCauchy ↔ ∀ ε > (0:ℚ), ∃ N, ∀ j ≥ N, ∀ k ≥ N, Section_4_3.dist (a j) (a k) ≤ ε := by sorry
+lemma Sequence.isCauchy_of_coe (a:ℕ → ℚ) :
+    (a:Sequence).isCauchy ↔ ∀ ε > (0:ℚ), ∃ N, ∀ j ≥ N, ∀ k ≥ N,
+    Section_4_3.dist (a j) (a k) ≤ ε := by sorry
 
-lemma Sequence.isCauchy_of_mk {n₀:ℤ} (a: {n // n ≥ n₀} → ℚ) : (mk' n₀ a).isCauchy ↔ ∀ ε > (0:ℚ), ∃ N ≥ n₀, ∀ j ≥ N, ∀ k ≥ N, Section_4_3.dist (mk' n₀ a j) (mk' n₀ a k) ≤ ε := by sorry
+lemma Sequence.isCauchy_of_mk {n₀:ℤ} (a: {n // n ≥ n₀} → ℚ) :
+    (mk' n₀ a).isCauchy ↔ ∀ ε > (0:ℚ), ∃ N ≥ n₀, ∀ j ≥ N, ∀ k ≥ N,
+    Section_4_3.dist (mk' n₀ a j) (mk' n₀ a k) ≤ ε := by sorry
 
-noncomputable def Sequence.sqrt_two : Sequence := (fun n:ℕ ↦ ((⌊ (Real.sqrt 2)*10^n ⌋ / 10^n):ℚ))
+noncomputable def Sequence.sqrt_two : Sequence :=
+  (fun n:ℕ ↦ ((⌊ (Real.sqrt 2)*10^n ⌋ / 10^n):ℚ))
 
-/-- Example 5.1.10.  (This requires extensive familiarity with Mathlib's API for the real numbers. )-/
+/--
+  Example 5.1.10. (This requires extensive familiarity with Mathlib's API for the real numbers.)
+-/
 theorem Sequence.ex_5_1_10_a : (1:ℚ).steady sqrt_two := by sorry
 
-/-- Example 5.1.10.  (This requires extensive familiarity with Mathlib's API for the real numbers. )-/
+/--
+  Example 5.1.10. (This requires extensive familiarity with Mathlib's API for the real numbers.)
+-/
 theorem Sequence.ex_5_1_10_b : (0.1:ℚ).steady (sqrt_two.from 1) := by sorry
 
 theorem Sequence.ex_5_1_10_c : (0.1:ℚ).eventuallySteady sqrt_two := by sorry
 
 /-- Proposition 5.1.11 -/
 theorem Sequence.harmonic_steady : (mk' 1 (fun n ↦ (1:ℚ)/n)).isCauchy := by
-  -- This is proof is probably longer than it needs to be; there should be a shorter proof that is still in the spirit of  the proof in the book.
+  -- This is proof is probably longer than it needs to be; there should be a shorter proof that
+  -- is still in the spirit of  the proof in the book.
   rw [isCauchy_of_mk (fun n ↦ (1:ℚ)/n)]
   intro ε hε
   have : ∃ N:ℕ, N > 1/ε := exists_nat_gt (1 / ε)
@@ -193,7 +219,10 @@ theorem Sequence.harmonic_steady : (mk' 1 (fun n ↦ (1:ℚ)/n)).isCauchy := by
 abbrev BoundedBy {n:ℕ} (a: Fin n → ℚ) (M:ℚ) : Prop :=
   ∀ i, |a i| ≤ M
 
-/-- Definition 5.1.12 (bounded sequences).  Here we start sequences from 0 rather than 1 to align better with Mathlib conventions. -/
+/--
+  Definition 5.1.12 (bounded sequences). Here we start sequences from 0 rather than 1 to align
+  better with Mathlib conventions.
+-/
 lemma BoundedBy_def {n:ℕ} (a: Fin n → ℚ) (M:ℚ) :
   BoundedBy a M ↔ ∀ i, |a i| ≤ M := by rfl
 

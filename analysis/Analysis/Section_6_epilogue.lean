@@ -4,12 +4,16 @@ import Analysis.Section_6_6
 /-!
 # Analysis I, Chapter 6 epilogue
 
-In this (technical) epilogue, we show that various operations and properties we have defined for "Chapter 6" sequences `Chapter6.Sequence` are equivalent to Mathlib operations.  Note however that Mathlib's operations are defined in far greater generality than the setting of real-valued sequences, in particular using the language of filters.
+In this (technical) epilogue, we show that various operations and properties we have defined for
+"Chapter 6" sequences `Chapter6.Sequence` are equivalent to Mathlib operations.  Note however
+that Mathlib's operations are defined in far greater generality than the setting of real-valued
+sequences, in particular using the language of filters.
 
 -/
 
 /-- Identification with the Cauchy sequence support in `Mathlib.Algebra.Order.CauSeq.Basic` -/
-theorem Chapter6.Sequence.Cauchy_iff_CauSeq (a: ℕ → ℝ) : (a:Sequence).isCauchy ↔ IsCauSeq _root_.abs a := by
+theorem Chapter6.Sequence.Cauchy_iff_CauSeq (a: ℕ → ℝ) :
+    (a:Sequence).isCauchy ↔ IsCauSeq _root_.abs a := by
   simp_rw [isCauchy_of_coe, Real.dist_eq, IsCauSeq]
   constructor
   . intro h ε hε
@@ -30,12 +34,14 @@ theorem Chapter6.Sequence.Cauchy_iff_CauSeq (a: ℕ → ℝ) : (a:Sequence).isCa
     _ = _ := by linarith
 
 /-- Identification with the Cauchy sequence support in `Mathlib.Topology.UniformSpace.Cauchy` -/
-theorem Chapter6.Sequence.Cauchy_iff_CauchySeq (a: ℕ → ℝ) : (a:Sequence).isCauchy ↔ CauchySeq a := by
+theorem Chapter6.Sequence.Cauchy_iff_CauchySeq (a: ℕ → ℝ) :
+    (a:Sequence).isCauchy ↔ CauchySeq a := by
   rw [Cauchy_iff_CauSeq]
   convert isCauSeq_iff_cauchySeq
 
 /-- Identifiction with `Filter.Tendsto` -/
-theorem Chapter6.Sequence.tendsto_iff_Tendsto (a: ℕ → ℝ) (L:ℝ) : (a:Sequence).tendsTo L ↔ Filter.Tendsto a Filter.atTop (nhds L) := by
+theorem Chapter6.Sequence.tendsto_iff_Tendsto (a: ℕ → ℝ) (L:ℝ) :
+    (a:Sequence).tendsTo L ↔ Filter.Tendsto a Filter.atTop (nhds L) := by
   rw [Metric.tendsto_atTop, tendsTo_iff]
   constructor
   . intro h ε hε
@@ -58,8 +64,33 @@ theorem Chapter6.Sequence.tendsto_iff_Tendsto (a: ℕ → ℝ) (L:ℝ) : (a:Sequ
   simp [hpos, ←Real.dist_eq]
   exact le_of_lt hN
 
-theorem Chapter6.Sequence.converges_iff_Tendsto (a: ℕ → ℝ) : (a:Sequence).convergent ↔ ∃ L, Filter.Tendsto a Filter.atTop (nhds L) := by
+theorem Chapter6.Sequence.tendsto_iff_Tendsto' (a: Sequence) (L:ℝ) : a.tendsTo L ↔ Filter.Tendsto a.seq Filter.atTop (nhds L) := by
+  rw [Metric.tendsto_atTop, tendsTo_iff]
+  constructor
+  . intro h ε hε
+    specialize h (ε/2) (half_pos hε)
+    obtain ⟨ N, hN ⟩ := h
+    use N
+    intro n hn
+    specialize hN n hn
+    rw [Real.dist_eq]
+    linarith
+  intro h ε hε
+  specialize h ε hε
+  obtain ⟨ N, hN ⟩ := h
+  use N
+  intro n hn
+  rw [ge_iff_le] at hn
+  specialize hN n hn
+  simp [←Real.dist_eq]
+  exact le_of_lt hN
+
+theorem Chapter6.Sequence.converges_iff_Tendsto (a: ℕ → ℝ) :
+    (a:Sequence).convergent ↔ ∃ L, Filter.Tendsto a Filter.atTop (nhds L) := by
   simp_rw [←tendsto_iff_Tendsto]
+
+theorem Chapter6.Sequence.converges_iff_Tendsto' (a: Sequence) : a.convergent ↔ ∃ L, Filter.Tendsto a.seq Filter.atTop (nhds L) := by
+  simp_rw [←tendsto_iff_Tendsto']
 
 /-- A technicality: `CauSeq.IsComplete ℝ` was established for `_root_.abs` but not for `norm`. -/
 instance inst_real_complete : CauSeq.IsComplete ℝ norm := by
@@ -76,7 +107,8 @@ theorem Chapter6.Sequence.lim_eq_CauSeq_lim (a:ℕ → ℝ) (ha: (a:Sequence).is
   tauto
 
 /-- Identification with `Bornology.IsBounded` -/
-theorem Chapter6.Sequence.isBounded_iff_isBounded_range (a:ℕ → ℝ): (a:Sequence).isBounded ↔ Bornology.IsBounded (Set.range a) := by
+theorem Chapter6.Sequence.isBounded_iff_isBounded_range (a:ℕ → ℝ):
+    (a:Sequence).isBounded ↔ Bornology.IsBounded (Set.range a) := by
   simp [isBounded_def, BoundedBy_def, Metric.isBounded_iff]
   constructor
   . intro h
@@ -106,21 +138,27 @@ theorem Chapter6.Sequence.isBounded_iff_isBounded_range (a:ℕ → ℝ): (a:Sequ
       _ ≤ C + |a 0| := by gcongr; rw [←Real.dist_eq]; convert h n.toNat 0
   positivity
 
-theorem Chapter6.Sequence.sup_eq_sSup (a:ℕ → ℝ): (a:Sequence).sup = sSup (Set.range (fun n ↦ (a n:EReal))) := by sorry
+theorem Chapter6.Sequence.sup_eq_sSup (a:ℕ → ℝ):
+    (a:Sequence).sup = sSup (Set.range (fun n ↦ (a n:EReal))) := by sorry
 
-theorem Chapter6.Sequence.inf_eq_sInf (a:ℕ → ℝ): (a:Sequence).inf = sInf (Set.range (fun n ↦ (a n:EReal))) := by sorry
+theorem Chapter6.Sequence.inf_eq_sInf (a:ℕ → ℝ):
+    (a:Sequence).inf = sInf (Set.range (fun n ↦ (a n:EReal))) := by sorry
 
-theorem Chapter6.Sequence.bddAbove_iff (a:ℕ → ℝ): (a:Sequence).bddAbove ↔ BddAbove (Set.range a) := by sorry
+theorem Chapter6.Sequence.bddAbove_iff (a:ℕ → ℝ):
+    (a:Sequence).bddAbove ↔ BddAbove (Set.range a) := by sorry
 
-theorem Chapter6.Sequence.bddBelow_iff (a:ℕ → ℝ): (a:Sequence).bddBelow ↔ BddBelow (Set.range a) := by sorry
+theorem Chapter6.Sequence.bddBelow_iff (a:ℕ → ℝ):
+    (a:Sequence).bddBelow ↔ BddBelow (Set.range a) := by sorry
 
 theorem Chapter6.Sequence.Monotone_iff (a:ℕ → ℝ): (a:Sequence).isMonotone ↔ Monotone a := by sorry
 
 theorem Chapter6.Sequence.Antitone_iff (a:ℕ → ℝ): (a:Sequence).isAntitone ↔ Antitone a := by sorry
 
 /-- Identification with `Filter.MapClusterPt` -/
-theorem Chapter6.Sequence.limit_point_iff (a:ℕ → ℝ) (L:ℝ) : (a:Sequence).limit_point L ↔ MapClusterPt L Filter.atTop a := by
-  simp_rw [limit_point_def, mapClusterPt_iff_frequently, Filter.frequently_atTop, Metric.mem_nhds_iff]
+theorem Chapter6.Sequence.limit_point_iff (a:ℕ → ℝ) (L:ℝ) :
+    (a:Sequence).limit_point L ↔ MapClusterPt L Filter.atTop a := by
+  simp_rw [limit_point_def, mapClusterPt_iff_frequently,
+           Filter.frequently_atTop, Metric.mem_nhds_iff]
   constructor
   . intro h s hs N
     obtain ⟨ ε, hε, hεs ⟩ := hs
@@ -142,12 +180,13 @@ theorem Chapter6.Sequence.limit_point_iff (a:ℕ → ℝ) (L:ℝ) : (a:Sequence)
   linarith
 
 /-- Identification with `Filter.limsup` -/
-theorem Chapter6.Sequence.limsup_eq (a:ℕ → ℝ) : (a:Sequence).limsup = Filter.limsup (fun n ↦ (a n:EReal)) Filter.atTop := by
+theorem Chapter6.Sequence.limsup_eq (a:ℕ → ℝ) :
+    (a:Sequence).limsup = Filter.limsup (fun n ↦ (a n:EReal)) Filter.atTop := by
   simp_rw [Filter.limsup_eq, Filter.eventually_atTop]
   sorry
 
 /-- Identification with `Filter.liminf` -/
-theorem Chapter6.Sequence.liminf_eq (a:ℕ → ℝ) : (a:Sequence).liminf = Filter.liminf (fun n ↦ (a n:EReal)) Filter.atTop := by
+theorem Chapter6.Sequence.liminf_eq (a:ℕ → ℝ) :
+    (a:Sequence).liminf = Filter.liminf (fun n ↦ (a n:EReal)) Filter.atTop := by
   simp_rw [Filter.liminf_eq, Filter.eventually_atTop]
   sorry
-

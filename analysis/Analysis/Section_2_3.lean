@@ -4,15 +4,23 @@ import Analysis.Section_2_2
 /-!
 # Analysis I, Section 2.3
 
-This file is a translation of Section 2.3 of Analysis I to Lean 4.  All numbering refers to the original text.
+This file is a translation of Section 2.3 of Analysis I to Lean 4.
+All numbering refers to the original text.
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original text.  When there is a choice between a more idiomatic Lean solution and a more faithful translation, I have generally chosen the latter.  In particular, there will be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing so.
+I have attempted to make the translation as faithful a paraphrasing as possible of the original
+text. When there is a choice between a more idiomatic Lean solution and a more faithful
+translation, I have generally chosen the latter.  In particular, there will be places where the
+Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
+doing so.
 
 Main constructions and results of this section:
 
-- Definition of multiplication and exponentiation for the "Chapter 2" natural numbers, `Chapter2.Nat`
+- Definition of multiplication and exponentiation for the "Chapter 2" natural numbers,
+  `Chapter2.Nat`
 
-Note: at the end of this chapter, the `Chapter2.Nat` class will be deprecated in favor of the standard Mathlib class `_root_.Nat`, or `ℕ`.  However, we will develop the properties of `Chapter2.Nat` "by hand" for pedagogical purposes.
+Note: at the end of this chapter, the `Chapter2.Nat` class will be deprecated in favor of the
+standard Mathlib class `_root_.Nat`, or `ℕ`.  However, we will develop the properties of
+`Chapter2.Nat` "by hand" for pedagogical purposes.
 -/
 
 namespace Chapter2
@@ -142,7 +150,8 @@ theorem Nat.mul_lt_mul_of_pos_right {a b c: Nat} (h: a < b) (hc: c.isPos) : a * 
   use d*c
 
 /-- Proposition 2.3.6 (Multiplication preserves order) -/
-theorem Nat.mul_gt_mul_of_pos_right {a b c: Nat} (h: a > b) (hc: c.isPos) : a * c > b * c := mul_lt_mul_of_pos_right h hc
+theorem Nat.mul_gt_mul_of_pos_right {a b c: Nat} (h: a > b) (hc: c.isPos) :
+    a * c > b * c := mul_lt_mul_of_pos_right h hc
 
 /-- Proposition 2.3.6 (Multiplication preserves order) -/
 theorem Nat.mul_lt_mul_of_pos_left {a b c: Nat} (h: a < b) (hc: c.isPos) : c * a < c * b := by
@@ -150,7 +159,8 @@ theorem Nat.mul_lt_mul_of_pos_left {a b c: Nat} (h: a < b) (hc: c.isPos) : c * a
   exact mul_lt_mul_of_pos_right h hc
 
 /-- Proposition 2.3.6 (Multiplication preserves order) -/
-theorem Nat.mul_gt_mul_of_pos_left {a b c: Nat} (h: a > b) (hc: c.isPos) : c * a > c * b := mul_lt_mul_of_pos_left h hc
+theorem Nat.mul_gt_mul_of_pos_left {a b c: Nat} (h: a > b) (hc: c.isPos) :
+    c * a > c * b := mul_lt_mul_of_pos_left h hc
 
 
 
@@ -182,7 +192,8 @@ instance Nat.isOrderedRing : IsOrderedRing Nat where
                                    ring
 
 /-- Proposition 2.3.9 (Euclid's division lemma) / Exercise 2.3.5 -/
-theorem Nat.exists_div_mod (n :Nat) {q: Nat} (hq: q.isPos) : ∃ m r: Nat, 0 ≤ r ∧ r < q ∧ n = m * q + r := by
+theorem Nat.exists_div_mod (n :Nat) {q: Nat} (hq: q.isPos) :
+    ∃ m r: Nat, 0 ≤ r ∧ r < q ∧ n = m * q + r := by
   revert n; apply induction
   . use 0, 0; constructor
     . simp
@@ -224,11 +235,12 @@ instance Nat.instPow : HomogeneousPow Nat where
 theorem Nat.zero_pow_zero : (0:Nat) ^ 0 = 1 := recurse_zero (fun _ prod ↦ prod * 0) _
 
 /-- Definition 2.3.11 (Exponentiation for natural numbers) -/
-theorem Nat.pow_succ (m n: Nat) : (m:Nat) ^ n++ = m^n * m := recurse_succ (fun _ prod ↦ prod * m) _ _
+theorem Nat.pow_succ (m n: Nat) : (m:Nat) ^ n++ = m^n * m :=
+  recurse_succ (fun _ prod ↦ prod * m) _ _
 
 /-- Exercise 2.3.4-/
-theorem Nat.sq_add_eq (a b: Nat) : (a + b) ^ (2 : Nat) = a ^ (2 : Nat) + 2 * a * b + b ^ (2 : Nat) := by
+theorem Nat.sq_add_eq (a b: Nat) :
+    (a + b) ^ (2 : Nat) = a ^ (2 : Nat) + 2 * a * b + b ^ (2 : Nat) := by
   change (a + b) * (a + b) = a * a + 2 * a * b + b * b
   ring
-
 end Chapter2

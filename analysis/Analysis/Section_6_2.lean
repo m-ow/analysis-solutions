@@ -5,11 +5,16 @@ import Analysis.Section_5_epilogue
 /-!
 # Analysis I, Section 6.2
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original text.  When there is a choice between a more idiomatic Lean solution and a more faithful translation, I have generally chosen the latter.  In particular, there will be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing so.
+I have attempted to make the translation as faithful a paraphrasing as possible of the original
+text. When there is a choice between a more idiomatic Lean solution and a more faithful
+translation, I have generally chosen the latter. In particular, there will be places where the
+Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
+doing so.
 
 Main constructions and results of this section:
 
-- Some API for Mathlib's extended reals `EReal`, particularly with regard to the supremum operation `sSup` and infimum operation `sInf`.
+- Some API for Mathlib's extended reals `EReal`, particularly with regard to the supremum
+  operation `sSup` and infimum operation `sInf`.
 
 -/
 
@@ -43,7 +48,8 @@ theorem EReal.neg_of_real (x:Real) : -(x:EReal) = (-x:ℝ) := rfl
 #check EReal.neg_bot
 
 /-- Definition 6.2.3 (Ordering of extended reals) -/
-theorem EReal.le_iff (x y:EReal) : x ≤ y ↔ (∃ (x' y':Real), x = x' ∧ y = y' ∧ x' ≤ y') ∨ y = ⊤ ∨ x = ⊥ := by
+theorem EReal.le_iff (x y:EReal) :
+    x ≤ y ↔ (∃ (x' y':Real), x = x' ∧ y = y' ∧ x' ≤ y') ∨ y = ⊤ ∨ x = ⊥ := by
   rcases EReal.def x with hx | rfl | rfl
   all_goals rcases EReal.def y with hy | rfl | rfl
   all_goals simp
@@ -92,8 +98,10 @@ theorem EReal.trans {x y z:EReal} (hxy : x ≤ y) (hyz: y ≤ z) : x ≤ z := by
 theorem EReal.neg_of_lt {x y:EReal} (hxy : x ≤ y): -y ≤ -x := by sorry
 
 /-- Definition 6.2.6 -/
-theorem EReal.sup_of_bounded_nonempty {E: Set ℝ} (hbound: BddAbove E) (hnon: E.Nonempty) : sSup ((fun (x:ℝ) ↦ (x:EReal)) '' E) = sSup E := calc
-  _ = sSup ((fun (x:WithTop ℝ) ↦ (x:WithBot (WithTop ℝ))) '' ((fun (x:ℝ) ↦ (x:WithTop ℝ)) '' E)) := by
+theorem EReal.sup_of_bounded_nonempty {E: Set ℝ} (hbound: BddAbove E) (hnon: E.Nonempty) :
+    sSup ((fun (x:ℝ) ↦ (x:EReal)) '' E) = sSup E := calc
+  _ = sSup
+      ((fun (x:WithTop ℝ) ↦ (x:WithBot (WithTop ℝ))) '' ((fun (x:ℝ) ↦ (x:WithTop ℝ)) '' E)) := by
     rw [←Set.image_comp]
     congr
   _ = sSup ((fun (x:ℝ) ↦ (x:WithTop ℝ)) '' E) := by
@@ -107,7 +115,8 @@ theorem EReal.sup_of_bounded_nonempty {E: Set ℝ} (hbound: BddAbove E) (hnon: E
   _ = _ := by rfl
 
 /-- Definition 6.2.6 -/
-theorem EReal.sup_of_unbounded_nonempty {E: Set ℝ} (hunbound: ¬ BddAbove E) (hnon: E.Nonempty) : sSup ((fun (x:ℝ) ↦ (x:EReal)) '' E) = ⊤ := by
+theorem EReal.sup_of_unbounded_nonempty {E: Set ℝ} (hunbound: ¬ BddAbove E) (hnon: E.Nonempty) :
+    sSup ((fun (x:ℝ) ↦ (x:EReal)) '' E) = ⊤ := by
   rw [sSup_eq_top]
   intro b hb
   rcases EReal.def b with hb' | rfl | rfl
@@ -126,7 +135,8 @@ theorem EReal.sup_of_empty : sSup (∅:Set EReal) = ⊥ := sSup_empty
 theorem EReal.sup_of_infty_mem {E: Set EReal} (hE: ⊤ ∈ E) : sSup E = ⊤ := csSup_eq_top_of_top_mem hE
 
 /-- Definition 6.2.6 -/
-theorem EReal.sup_of_neg_infty_mem {E: Set EReal} : sSup E = sSup (E \ {⊥}) := (sSup_diff_singleton_bot _).symm
+theorem EReal.sup_of_neg_infty_mem {E: Set EReal} : sSup E = sSup (E \ {⊥}) :=
+  (sSup_diff_singleton_bot _).symm
 
 theorem EReal.inf_eq_neg_sup (E: Set EReal) : sInf E = - sSup (-E) := by
   simp_rw [←isGLB_iff_sInf_eq, isGLB_iff_le_iff, EReal.le_neg]

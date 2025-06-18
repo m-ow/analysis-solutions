@@ -4,16 +4,23 @@ import Analysis.Section_2_1
 /-!
 # Analysis I, Section 2.2
 
-This file is a translation of Section 2.2 of Analysis I to Lean 4.  All numbering refers to the original text.
+This file is a translation of Section 2.2 of Analysis I to Lean 4.
+All numbering refers to the original text.
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original text.   When there is a choice between a more idiomatic Lean solution and a more faithful translation, I have generally chosen the latter.  In particular, there will be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing so.
+I have attempted to make the translation as faithful a paraphrasing as possible of the original
+text. When there is a choice between a more idiomatic Lean solution and a more faithful
+translation, I have generally chosen the latter.  In particular, there will be places where the
+Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
+doing so.
 
 Main constructions and results of this section:
 
 - Definition of addition and order for the "Chapter 2" natural numbers, `Chapter2.Nat`
 - Establishment of basic properties of addition and order
 
-Note: at the end of this chapter, the `Chapter2.Nat` class will be deprecated in favor of the standard Mathlib class `_root_.Nat`, or `ℕ`.  However, we will develop the properties of `Chapter2.Nat` "by hand" for pedagogical purposes.
+Note: at the end of this chapter, the `Chapter2.Nat` class will be deprecated in favor of the
+standard Mathlib class `_root_.Nat`, or `ℕ`.  However, we will develop the properties of
+`Chapter2.Nat` "by hand" for pedagogical purposes.
 -/
 
 namespace Chapter2
@@ -136,7 +143,11 @@ theorem Nat.add_eq_zero (a b:Nat) (hab: a + b = 0) : a = 0 ∧ b = 0 := by
   have : (a + b).isPos := add_pos _ hb
   contradiction
 
--- The following API for ∃! may be useful for the next problem.  Also, the `obtain` tactic is useful for extracting witnesses from existential statements; for instance, `obtain ⟨ x, hx ⟩ := h` extracts a witness `x` and a proof `hx : P x` of the property from a hypothesis `h : ∃ x, P x`.
+/-
+The following API for ∃! may be useful for the next problem.  Also, the `obtain` tactic is useful
+for extracting witnesses from existential statements; for instance, `obtain ⟨ x, hx ⟩ := h`
+extracts a witness `x` and a proof `hx : P x` of the property from a hypothesis `h : ∃ x, P x`.
+-/
 
 #check existsUnique_of_exists_of_unique
 #check ExistsUnique.exists
@@ -345,7 +356,13 @@ theorem Nat.trichotomous (a b:Nat) : a < b ∨ a = b ∨ a > b := by
         apply add_eq_zero at hx'; contradiction }
   tauto
 
-/-- (Not from textbook) Establish the decidability of this order computably.  The portion of the proof involving decidability has been provided; the remaining sorries involve claims about the natural numbers.  One could also have established this result by the `classical` tactic followed by `exact Classical.decRel _`, but this would make this definition (as well as some instances below) noncomputable. -/
+/--
+  (Not from textbook) Establish the decidability of this order computably.  The portion of the
+  proof involving decidability has been provided; the remaining sorries involve claims about the
+  natural numbers.  One could also have established this result by the `classical` tactic
+  followed by `exact Classical.decRel _`, but this would make this definition (as well as some
+  instances below) noncomputable.
+-/
 def Nat.le_dec : (a b : Nat) → Decidable (a ≤ b)
   | 0, b => by
     apply isTrue
@@ -384,15 +401,20 @@ instance Nat.isOrderedAddMonoid : IsOrderedAddMonoid Nat where
 
 /-- Proposition 2.2.14 (Strong principle of induction) / Exercise 2.2.5
 -/
-theorem Nat.strong_induction {m₀:Nat} {P: Nat → Prop} (hind: ∀ m, m ≥ m₀ → (∀ m', m₀ ≤ m' ∧ m' < m → P m') → P m) : ∀ m, m ≥ m₀ → P m := by
+theorem Nat.strong_induction {m₀:Nat} {P: Nat → Prop}
+  (hind: ∀ m, m ≥ m₀ → (∀ m', m₀ ≤ m' ∧ m' < m → P m') → P m) :
+    ∀ m, m ≥ m₀ → P m := by
   sorry
 
 /-- Exercise 2.2.6 (backwards induction) -/
-theorem Nat.backwards_induction {n:Nat} {P: Nat → Prop}  (hind: ∀ m, P (m++) → P m) (hn: P n) : ∀ m, m ≤ n → P m := by
+theorem Nat.backwards_induction {n:Nat} {P: Nat → Prop}
+  (hind: ∀ m, P (m++) → P m) (hn: P n) :
+    ∀ m, m ≤ n → P m := by
   sorry
 
 /-- Exercise 2.2.7 (induction from a starting point) -/
-theorem Nat.induction_from {n:Nat} {P: Nat → Prop} (hind: ∀ m, P m → P (m++)) : P n → ∀ m, m ≥ n → P m := by
+theorem Nat.induction_from {n:Nat} {P: Nat → Prop} (hind: ∀ m, P m → P (m++)) :
+    P n → ∀ m, m ≥ n → P m := by
   sorry
 
 

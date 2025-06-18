@@ -45,3 +45,4 @@ Currently formalized sections:
 - [Section 6 epilogue: Connections with Mathlib limits](./sec6e/)
 - [Section 7.1: Finite series](./sec71/)
 - [Section 7.2: Infinite series](./sec72/)
+- [Section 7.3: Sums of non-negative numbers](./sec73/)

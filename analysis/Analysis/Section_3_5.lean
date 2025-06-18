@@ -6,7 +6,11 @@ import Analysis.Section_3_4
 /-!
 # Analysis I, Section 3.5
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original text.   When there is a choice between a more idiomatic Lean solution and a more faithful translation, I have generally chosen the latter.  In particular, there will be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing so.
+I have attempted to make the translation as faithful a paraphrasing as possible of the original
+text. When there is a choice between a more idiomatic Lean solution and a more faithful
+translation, I have generally chosen the latter. In particular, there will be places where the
+Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
+doing so.
 
 Main constructions and results of this section:
 
@@ -32,7 +36,8 @@ structure OrderedPair where
 #check OrderedPair.ext
 
 /-- Definition 3.5.1 (Ordered pair) -/
-theorem OrderedPair.eq (x y x' y':Object) : (⟨ x, y ⟩:OrderedPair) = (⟨ x', y' ⟩:OrderedPair) ↔ x = x' ∧ y = y' := by aesop
+theorem OrderedPair.eq (x y x' y' : Object) :
+    (⟨ x, y ⟩ : OrderedPair) = (⟨ x', y' ⟩ : OrderedPair) ↔ x = x' ∧ y = y' := by aesop
 
 /-- Exercise 3.5.1 -/
 abbrev OrderedPair.toObject : OrderedPair ↪ Object where
@@ -42,25 +47,34 @@ abbrev OrderedPair.toObject : OrderedPair ↪ Object where
 instance OrderedPair.inst_coeObject : Coe OrderedPair Object where
   coe := OrderedPair.toObject
 
-/-- A technical operation, turning a object `x` and a set `Y` to a set `{x} × Y`, needed to define the full Cartesian product-/
-abbrev SetTheory.Set.slice (x:Object) (Y:Set) : Set := Y.replace (P := fun y z ↦ z = (⟨x, y⟩:OrderedPair)) (by
-  intro y z z' ⟨ hz, hz'⟩
-  simp at hz hz'
-  rw [hz, hz'])
+/--
+  A technical operation, turning a object `x` and a set `Y` to a set `{x} × Y`, needed to define
+  the full Cartesian product
+-/
+abbrev SetTheory.Set.slice (x:Object) (Y:Set) : Set :=
+  Y.replace (P := fun y z ↦ z = (⟨x, y⟩:OrderedPair)) (by
+    intro y z z' ⟨ hz, hz'⟩
+    simp at hz hz'
+    rw [hz, hz']
+  )
 
-theorem SetTheory.Set.mem_slice (x z:Object) (Y:Set) : z ∈ (SetTheory.Set.slice x Y) ↔ ∃ y:Y, z = (⟨x, y⟩:OrderedPair) :=  replacement_axiom _ _
+theorem SetTheory.Set.mem_slice (x z:Object) (Y:Set) :
+    z ∈ (SetTheory.Set.slice x Y) ↔ ∃ y:Y, z = (⟨x, y⟩:OrderedPair) := replacement_axiom _ _
 
 /-- Definition 3.5.2 (Cartesian product) -/
-abbrev SetTheory.Set.cartesian (X Y:Set) : Set := union (X.replace (P := fun x z ↦ z = slice x Y) (by
-  intro x z z' ⟨ hz, hz' ⟩
-  simp at hz hz'
-  rw [hz, hz']))
+abbrev SetTheory.Set.cartesian (X Y:Set) : Set :=
+  union (X.replace (P := fun x z ↦ z = slice x Y) (by
+    intro x z z' ⟨ hz, hz' ⟩
+    simp at hz hz'
+    rw [hz, hz']
+  ))
 
 /-- This instance enables the ×ˢ notation for Cartesian product. -/
 instance SetTheory.Set.inst_SProd : SProd Set Set Set where
   sprod := cartesian
 
-theorem SetTheory.Set.mem_cartesian (z:Object) (X Y:Set) : z ∈ X ×ˢ Y ↔ ∃ x:X, ∃ y:Y, z = (⟨x, y⟩:OrderedPair) := by
+theorem SetTheory.Set.mem_cartesian (z:Object) (X Y:Set) :
+    z ∈ X ×ˢ Y ↔ ∃ x:X, ∃ y:Y, z = (⟨x, y⟩:OrderedPair) := by
   simp only [SProd.sprod, union_axiom]
   constructor
   . intro h
@@ -81,13 +95,19 @@ theorem SetTheory.Set.mem_cartesian (z:Object) (X Y:Set) : z ∈ X ×ˢ Y ↔ �
   rw [replacement_axiom]
   use x
 
-abbrev SetTheory.Set.curry {X Y Z:Set} (f: X ×ˢ Y → Z) : X → Y → Z := fun x y ↦ f ⟨ (⟨ x, y ⟩:OrderedPair), by rw [mem_cartesian]; use x, y ⟩
+abbrev SetTheory.Set.curry {X Y Z:Set} (f: X ×ˢ Y → Z) : X → Y → Z :=
+  fun x y ↦ f ⟨ (⟨ x, y ⟩:OrderedPair), by rw [mem_cartesian]; use x, y ⟩
 
-noncomputable abbrev SetTheory.Set.fst {X Y:Set} (z:X ×ˢ Y) : X := (show ∃ x:X, ∃ y:Y, z.val = (⟨ x, y ⟩:OrderedPair) by exact (mem_cartesian _ _ _).mp z.property).choose
+noncomputable abbrev SetTheory.Set.fst {X Y:Set} (z:X ×ˢ Y) : X :=
+  (show ∃ x:X, ∃ y:Y, z.val = (⟨ x, y ⟩:OrderedPair)
+  by exact (mem_cartesian _ _ _).mp z.property).choose
 
-noncomputable abbrev SetTheory.Set.snd {X Y:Set} (z:X ×ˢ Y) : Y := (show ∃ y:Y, ∃ x:X, z.val = (⟨ x, y ⟩:OrderedPair) by rw [exists_comm]; exact (mem_cartesian _ _ _).mp z.property).choose
+noncomputable abbrev SetTheory.Set.snd {X Y:Set} (z:X ×ˢ Y) : Y :=
+  (show ∃ y:Y, ∃ x:X, z.val = (⟨ x, y ⟩:OrderedPair)
+  by rw [exists_comm]; exact (mem_cartesian _ _ _).mp z.property).choose
 
-theorem SetTheory.Set.pair_eq_fst_snd {X Y:Set} (z:X ×ˢ Y) : z.val = (⟨ fst z, snd z ⟩:OrderedPair) := by
+theorem SetTheory.Set.pair_eq_fst_snd {X Y:Set} (z:X ×ˢ Y) :
+    z.val = (⟨ fst z, snd z ⟩:OrderedPair) := by
   obtain ⟨ y, hy ⟩ := ((mem_cartesian _ _ _).mp z.property).choose_spec
   obtain ⟨ x, hx ⟩ := (exists_comm.mp ((mem_cartesian _ _ _).mp z.property)).choose_spec
   change z.val = (⟨ fst z, y ⟩:OrderedPair) at hy
@@ -96,7 +116,8 @@ theorem SetTheory.Set.pair_eq_fst_snd {X Y:Set} (z:X ×ˢ Y) : z.val = (⟨ fst 
   simp only [EmbeddingLike.apply_eq_iff_eq, OrderedPair.eq] at hy ⊢
   simp [hy.1]
 
-noncomputable abbrev SetTheory.Set.uncurry {X Y Z:Set} (f: X → Y → Z) : X ×ˢ Y → Z := fun z ↦ f (fst z) (snd z)
+noncomputable abbrev SetTheory.Set.uncurry {X Y Z:Set} (f: X → Y → Z) : X ×ˢ Y → Z :=
+  fun z ↦ f (fst z) (snd z)
 
 theorem SetTheory.Set.curry_uncurry {X Y Z:Set} (f: X → Y → Z) : curry (uncurry f) = f := by sorry
 
@@ -115,7 +136,8 @@ noncomputable abbrev SetTheory.Set.prod_associator (X Y Z:Set) : (X ×ˢ Y) ×ˢ
   right_inv := sorry
 
 /-- Connections with the Mathlib set product -/
-noncomputable abbrev SetTheory.Set.prod_equiv_prod (X Y:Set) : ((X ×ˢ Y):_root_.Set Object) ≃ (X:_root_.Set Object) ×ˢ (Y:_root_.Set Object) where
+noncomputable abbrev SetTheory.Set.prod_equiv_prod (X Y:Set) :
+    ((X ×ˢ Y):_root_.Set Object) ≃ (X:_root_.Set Object) ×ˢ (Y:_root_.Set Object) where
   toFun := sorry
   invFun := sorry
   left_inv := sorry
@@ -123,13 +145,16 @@ noncomputable abbrev SetTheory.Set.prod_equiv_prod (X Y:Set) : ((X ×ˢ Y):_root
 
 
 /-- Definition 3.5.7 -/
-abbrev SetTheory.Set.tuple {I:Set} {X: I → Set} (a: ∀ i, X i) : Object := object_of ((fun i ↦ ⟨ a i, by rw [mem_iUnion]; use i; exact (a i).property ⟩):I → iUnion I X)
+abbrev SetTheory.Set.tuple {I:Set} {X: I → Set} (a: ∀ i, X i) : Object :=
+  object_of ((fun i ↦ ⟨ a i, by rw [mem_iUnion]; use i; exact (a i).property ⟩):I → iUnion I X)
 
 /-- Definition 3.5.7 -/
-abbrev SetTheory.Set.iProd {I: Set} (X: I → Set) : Set := ((iUnion I X)^I).specify (fun t ↦ ∃ a : ∀ i, X i, t = tuple a)
+abbrev SetTheory.Set.iProd {I: Set} (X: I → Set) : Set :=
+  ((iUnion I X)^I).specify (fun t ↦ ∃ a : ∀ i, X i, t = tuple a)
 
 /-- Definition 3.5.7 -/
-theorem SetTheory.Set.mem_iProd {I: Set} {X: I → Set} (t:Object) : t ∈ iProd X ↔ ∃ a: ∀ i, X i, t = tuple a := by
+theorem SetTheory.Set.mem_iProd {I: Set} {X: I → Set} (t:Object) :
+    t ∈ iProd X ↔ ∃ a: ∀ i, X i, t = tuple a := by
   simp only [iProd, specification_axiom'']
   constructor
   . intro ⟨ ht, a, h ⟩
@@ -140,13 +165,19 @@ theorem SetTheory.Set.mem_iProd {I: Set} {X: I → Set} (t:Object) : t ∈ iProd
     use fun i ↦ ⟨ a i, by rw [mem_iUnion]; use i; exact (a i).property ⟩
   use h, a
 
-theorem SetTheory.Set.tuple_mem_iProd {I: Set} {X: I → Set} (a: ∀ i, X i) : tuple a ∈ iProd X := by rw [mem_iProd]; use a
+theorem SetTheory.Set.tuple_mem_iProd {I: Set} {X: I → Set} (a: ∀ i, X i) :
+    tuple a ∈ iProd X := by rw [mem_iProd]; use a
 
 @[simp]
-theorem SetTheory.Set.tuple_inj {I:Set} {X: I → Set} (a b: ∀ i, X i) : tuple a = tuple b ↔ a = b := by sorry
+theorem SetTheory.Set.tuple_inj {I:Set} {X: I → Set} (a b: ∀ i, X i) :
+    tuple a = tuple b ↔ a = b := by sorry
 
-/-- Example 3.5.11.  I suspect most of the equivalences will require classical reasoning and only be defined non-computably, but would be happy to learn of counterexamples. -/
-noncomputable abbrev SetTheory.Set.singleton_iProd_equiv (i:Object) (X:Set) : iProd (fun _:({i}:Set) ↦ X) ≃ X where
+/--
+  Example 3.5.11. I suspect most of the equivalences will require classical reasoning and only be
+  defined non-computably, but would be happy to learn of counterexamples.
+-/
+noncomputable abbrev SetTheory.Set.singleton_iProd_equiv (i:Object) (X:Set) :
+    iProd (fun _:({i}:Set) ↦ X) ≃ X where
   toFun := sorry
   invFun := sorry
   left_inv := sorry
@@ -160,37 +191,46 @@ noncomputable abbrev SetTheory.Set.empty_iProd_equiv (X: (∅:Set) → Set) : iP
   right_inv := sorry
 
 /-- Example 3.5.11 -/
-noncomputable abbrev SetTheory.Set.iProd_of_const_equiv (I:Set) (X: Set) : iProd (fun i:I ↦ X) ≃ (I → X) where
+noncomputable abbrev SetTheory.Set.iProd_of_const_equiv (I:Set) (X: Set) :
+    iProd (fun i:I ↦ X) ≃ (I → X) where
   toFun := sorry
   invFun := sorry
   left_inv := sorry
   right_inv := sorry
 
-noncomputable abbrev SetTheory.Set.iProd_equiv_prod (X: ({0,1}:Set) → Set) : iProd X ≃ (X ⟨ 0, by simp ⟩) ×ˢ (X ⟨ 1, by simp ⟩) where
+noncomputable abbrev SetTheory.Set.iProd_equiv_prod (X: ({0,1}:Set) → Set) :
+    iProd X ≃ (X ⟨ 0, by simp ⟩) ×ˢ (X ⟨ 1, by simp ⟩) where
   toFun := sorry
   invFun := sorry
   left_inv := sorry
   right_inv := sorry
 
 /-- Example 3.5.9 -/
-noncomputable abbrev SetTheory.Set.iProd_equiv_prod_triple (X: ({0,1,2}:Set) → Set) : iProd X ≃ (X ⟨ 0, by simp ⟩) ×ˢ (X ⟨ 1, by simp ⟩) ×ˢ (X ⟨ 2, by simp ⟩) where
+noncomputable abbrev SetTheory.Set.iProd_equiv_prod_triple (X: ({0,1,2}:Set) → Set) :
+    iProd X ≃ (X ⟨ 0, by simp ⟩) ×ˢ (X ⟨ 1, by simp ⟩) ×ˢ (X ⟨ 2, by simp ⟩) where
   toFun := sorry
   invFun := sorry
   left_inv := sorry
   right_inv := sorry
 
 /-- Connections with Mathlib's `Set.pi` -/
-noncomputable abbrev SetTheory.Set.iProd_equiv_pi (I:Set) (X: I → Set) : iProd X ≃ Set.pi Set.univ (fun i:I ↦ ((X i):_root_.Set Object)) where
+noncomputable abbrev SetTheory.Set.iProd_equiv_pi (I:Set) (X: I → Set) :
+    iProd X ≃ Set.pi Set.univ (fun i:I ↦ ((X i):_root_.Set Object)) where
   toFun := sorry
   invFun := sorry
   left_inv := sorry
   right_inv := sorry
 
 
--- remark: there are also additional relations between these equivalences, but this begins to drift into the field of higher order category theory, which we will not pursue here.
+/-
+remark: there are also additional relations between these equivalences, but this begins to drift
+into the field of higher order category theory, which we will not pursue here.
+-/
 
-
-/-- Here we set up some an analogue of Mathlib `Fin n` types within the Chapter 3 Set Theory, with rudimentary API. -/
+/--
+  Here we set up some an analogue of Mathlib `Fin n` types within the Chapter 3 Set Theory,
+  with rudimentary API.
+-/
 abbrev SetTheory.Set.Fin (n:ℕ) : Set := nat.specify (fun m ↦ (m:ℕ) < n)
 
 theorem SetTheory.Set.mem_Fin (n:ℕ) (x:Object) : x ∈ Fin n ↔ ∃ m, m < n ∧ x = m := by
@@ -225,7 +265,10 @@ abbrev SetTheory.Set.Fin_embed (n N:ℕ) (h: n ≤ N) (i: Fin n) : Fin N := ⟨ 
   use m, by linarith
 ⟩
 
-/-- I suspect that this equivalence is non-computable and requires classical logic, unless there is a clever trick. -/
+/--
+  I suspect that this equivalence is non-computable and requires classical logic,
+  unless there is a clever trick.
+-/
 noncomputable abbrev SetTheory.Set.Fin_equiv_Fin (n:ℕ) : Fin n ≃ _root_.Fin n where
   toFun := sorry
   invFun := sorry
@@ -234,7 +277,8 @@ noncomputable abbrev SetTheory.Set.Fin_equiv_Fin (n:ℕ) : Fin n ≃ _root_.Fin 
 
 /-- Lemma 3.5.12 (finite choice) -/
 theorem SetTheory.Set.finite_choice {n:ℕ} {X: Fin n → Set} (h: ∀ i, X i ≠ ∅) : iProd X ≠ ∅ := by
-  -- This proof broadly follows the one in the text (although it is more convenient to induct from 0 rather than 1)
+  -- This proof broadly follows the one in the text
+  -- (although it is more convenient to induct from 0 rather than 1)
   induction' n with n hn
   . have : Fin 0 = ∅ := by
       rw [eq_empty_iff_forall_notMem]
@@ -257,7 +301,10 @@ theorem SetTheory.Set.finite_choice {n:ℕ} {X: Fin n → Set} (h: ∀ i, X i �
   set x : ∀ i, X i := by
     intro i
     have := mem_Fin' i
-    classical -- it is unfortunate here that classical logic is required to perform this gluing; this is because `nat` is technically not an inductive type.  There should be some workaround involving the equivalence between `nat` and `ℕ` (which is an inductive type).
+    classical
+    -- it is unfortunate here that classical logic is required to perform this gluing; this is
+    -- because `nat` is technically not an inductive type.  There should be some workaround
+    -- involving the equivalence between `nat` and `ℕ` (which is an inductive type).
     cases decEq i last with
       | isTrue heq =>
         rw [heq]
@@ -288,26 +335,35 @@ structure SetTheory.Set.Tuple (n:ℕ) where
   surj: Function.Surjective x
 
 /-- Exercise 3.5.2 -/
-theorem SetTheory.Set.Tuple.eq {n:ℕ} (t t':Tuple n) : t = t' ↔ ∀ n : Fin n, ((t.x n):Object) = ((t'.x n):Object) := by sorry
+theorem SetTheory.Set.Tuple.eq {n:ℕ} (t t':Tuple n) :
+    t = t' ↔ ∀ n : Fin n, ((t.x n):Object) = ((t'.x n):Object) := by sorry
 
-noncomputable abbrev SetTheory.Set.iProd_equiv_tuples (n:ℕ) (X: Fin n → Set) : iProd X ≃ { t:Tuple n // ∀ i, (t.x i:Object) ∈ X i } where
+noncomputable abbrev SetTheory.Set.iProd_equiv_tuples (n:ℕ) (X: Fin n → Set) :
+    iProd X ≃ { t:Tuple n // ∀ i, (t.x i:Object) ∈ X i } where
   toFun := sorry
   invFun := sorry
   left_inv := sorry
   right_inv := sorry
 
-/-- Exercise 3.5.3.  The spirit here is to avoid direct rewrites (which make all of these claims trivial), and instead use `OrderedPair.eq` or `SetTheory.Set.tuple_inj` -/
+/--
+  Exercise 3.5.3. The spirit here is to avoid direct rewrites (which make all of these claims
+  trivial), and instead use `OrderedPair.eq` or `SetTheory.Set.tuple_inj`
+-/
 theorem OrderedPair.refl (p: OrderedPair) : p = p := by sorry
 
 theorem OrderedPair.symm (p q: OrderedPair) : p = q ↔ q = p := by sorry
 
 theorem OrderedPair.trans {p q r: OrderedPair} (hpq: p=q) (hqr: q=r) : p=r := by sorry
 
-theorem SetTheory.Set.tuple_refl {I:Set} {X: I → Set} (a: ∀ i, X i) : tuple a = tuple a := by sorry
+theorem SetTheory.Set.tuple_refl {I:Set} {X: I → Set} (a: ∀ i, X i) :
+    tuple a = tuple a := by sorry
 
-theorem SetTheory.Set.tuple_symm {I:Set} {X: I → Set} (a b: ∀ i, X i) : tuple a = tuple b ↔ tuple b = tuple a := by sorry
+theorem SetTheory.Set.tuple_symm {I:Set} {X: I → Set} (a b: ∀ i, X i) :
+    tuple a = tuple b ↔ tuple b = tuple a := by sorry
 
-theorem SetTheory.Set.tuple_trans {I:Set} {X: I → Set} {a b c: ∀ i, X i} (hab: tuple a = tuple b) (hbc : tuple b = tuple c) : tuple a = tuple c := by sorry
+theorem SetTheory.Set.tuple_trans {I:Set} {X: I → Set} {a b c: ∀ i, X i}
+  (hab: tuple a = tuple b) (hbc : tuple b = tuple c) :
+    tuple a = tuple c := by sorry
 
 /-- Exercise 3.5.4 -/
 theorem SetTheory.Set.prod_union (A B C:Set) : A ×ˢ (B ∪ C) = (A ×ˢ B) ∪ (A ×ˢ C) := by sorry
@@ -328,7 +384,8 @@ theorem SetTheory.Set.inter_prod (A B C:Set) : (A ∩ B) ×ˢ C = (A ×ˢ C) ∩
 theorem SetTheory.Set.diff_prod (A B C:Set) : (A \ B) ×ˢ C = (A ×ˢ C) \ (A ×ˢ B) := by sorry
 
 /-- Exercise 3.5.5 -/
-theorem SetTheory.Set.inter_of_prod (A B C D:Set) : (A ×ˢ B) ∩ (C ×ˢ D) = (A ∩ C) ×ˢ (B ∩ D) := by sorry
+theorem SetTheory.Set.inter_of_prod (A B C D:Set) :
+    (A ×ˢ B) ∩ (C ×ˢ D) = (A ∩ C) ×ˢ (B ∩ D) := by sorry
 
 /- Exercise 3.5.5: uncomment and prove one of these theorems, and delete the other. -/
 -- theorem SetTheory.Set.union_of_prod (A B C D:Set) : (A ×ˢ B) ∪ (C ×ˢ D) = (A ∪ C) ×ˢ (B ∪ D) := by sorry
@@ -340,34 +397,55 @@ theorem SetTheory.Set.inter_of_prod (A B C D:Set) : (A ×ˢ B) ∩ (C ×ˢ D) = 
 
 -- theorem SetTheory.Set.not_union_of_prod : ¬ ∀ A B C D:Set, (A ×ˢ B) \ (C ×ˢ D) = (A \ C) ×ˢ (B \ D) := by sorry
 
-/-- Exercise 3.5.6.  State and prove a theorem describing what happens if the non-emptiness hypotheses are removed. -/
-theorem SetTheory.Set.prod_subset_prod {A B C D:Set} (hA: A ≠ ∅) (hB: B ≠ ∅) (hC: C ≠ ∅) (hD: D ≠ ∅) : A ×ˢ B ⊆ C ×ˢ D ↔ A ⊆ C ∧ B ⊆ D := by sorry
+/--
+  Exercise 3.5.6. State and prove a theorem describing what happens if the non-emptiness
+  hypotheses are removed.
+-/
+theorem SetTheory.Set.prod_subset_prod {A B C D:Set}
+  (hA: A ≠ ∅) (hB: B ≠ ∅) (hC: C ≠ ∅) (hD: D ≠ ∅) :
+    A ×ˢ B ⊆ C ×ˢ D ↔ A ⊆ C ∧ B ⊆ D := by sorry
 
 /-- Exercise 3.5.7 -/
-theorem SetTheory.Set.direct_sum {X Y Z:Set} (f: Z → X) (g: Z → Y) : ∃! h: Z → X ×ˢ Y, fst ∘ h = f ∧ snd ∘ h = g := by sorry
+theorem SetTheory.Set.direct_sum {X Y Z:Set} (f: Z → X) (g: Z → Y) :
+    ∃! h: Z → X ×ˢ Y, fst ∘ h = f ∧ snd ∘ h = g := by sorry
 
 /-- Exercise 3.5.8 -/
 @[simp]
-theorem SetTheory.Set.iProd_empty_iff {n:ℕ} {X: Fin n → Set} : iProd X = ∅ ↔ ∀ i, X i = ∅ := by sorry
+theorem SetTheory.Set.iProd_empty_iff {n:ℕ} {X: Fin n → Set} :
+    iProd X = ∅ ↔ ∀ i, X i = ∅ := by sorry
 
 /-- Exercise 3.5.9-/
-theorem SetTheory.Set.iUnion_inter_iUnion {I J: Set} (A: I → Set) (B: J → Set) : (iUnion I A) ∩ (iUnion J B) = iUnion (I ×ˢ J) (fun p ↦ (A (fst p)) ∩ (B (snd p))) := by sorry
+theorem SetTheory.Set.iUnion_inter_iUnion {I J: Set} (A: I → Set) (B: J → Set) :
+    (iUnion I A) ∩ (iUnion J B) = iUnion (I ×ˢ J) (fun p ↦ (A (fst p)) ∩ (B (snd p))) := by sorry
 
-abbrev SetTheory.Set.graph {X Y:Set} (f: X → Y) : Set := (X ×ˢ Y).specify (fun p ↦ (f (fst p) = snd p))
+abbrev SetTheory.Set.graph {X Y:Set} (f: X → Y) : Set :=
+  (X ×ˢ Y).specify (fun p ↦ (f (fst p) = snd p))
 
 /-- Exercise 3.5.10 -/
-theorem SetTheory.Set.graph_inj {X Y:Set} (f f': X → Y) : graph f = graph f' ↔ f = f' := by sorry
+theorem SetTheory.Set.graph_inj {X Y:Set} (f f': X → Y) :
+    graph f = graph f' ↔ f = f' := by sorry
 
-theorem SetTheory.Set.is_graph {X Y G:Set} (hG: G ⊆ X ×ˢ Y) (hvert: ∀ x:X, ∃! y:Y, ((⟨x,y⟩:OrderedPair):Object) ∈ G) : ∃! f: X → Y, G = graph f := by sorry
+theorem SetTheory.Set.is_graph {X Y G:Set} (hG: G ⊆ X ×ˢ Y)
+  (hvert: ∀ x:X, ∃! y:Y, ((⟨x,y⟩:OrderedPair):Object) ∈ G) :
+    ∃! f: X → Y, G = graph f := by sorry
 
-/-- Exercise 3.5.11.  This trivially follows from `SetTheory.Set.power_set_axiom'`, but the exercise is to derive it from `SetTheory.Set.mem_powerset` instead. -/
-theorem SetTheory.Set.power_set_axiom' (X Y:Set) : ∃! S:Set, ∀(F:Object), F ∈ S ↔ ∃ f: Y → X, object_of f = F := sorry
+/--
+  Exercise 3.5.11. This trivially follows from `SetTheory.Set.power_set_axiom'`, but the
+  exercise is to derive it from `SetTheory.Set.mem_powerset` instead.
+-/
+theorem SetTheory.Set.power_set_axiom' (X Y:Set) :
+    ∃! S:Set, ∀(F:Object), F ∈ S ↔ ∃ f: Y → X, object_of f = F := sorry
 
 /-- Exercise 3.5.12 -/
-theorem SetTheory.Set.recursion (f: nat → nat → nat) (c:nat) : ∃! a: nat → nat, a 0 = c ∧ ∀ n, a (n + 1:ℕ) = f n (a n) := by sorry
+theorem SetTheory.Set.recursion (f: nat → nat → nat) (c:nat) :
+    ∃! a: nat → nat, a 0 = c ∧ ∀ n, a (n + 1:ℕ) = f n (a n) := by sorry
 
 /-- Exercise 3.5.13 -/
-theorem SetTheory.Set.nat_unique (nat':Set) (zero:nat') (succ:nat' → nat') (succ_ne: ∀ n:nat', succ n ≠ zero) (succ_of_ne: ∀ n m:nat', n ≠ m → succ n ≠ succ m) (ind: ∀ P: nat' → Prop, P zero → (∀ n, P n → P (succ n)) → ∀ n, P n) : ∃! f : nat → nat', Function.Bijective f ∧ f 0 = zero ∧ ∀ (n:nat) (n':nat'), f n = n' ↔ f (n+1:ℕ) = succ n' := by sorry
+theorem SetTheory.Set.nat_unique (nat':Set) (zero:nat') (succ:nat' → nat')
+  (succ_ne: ∀ n:nat', succ n ≠ zero) (succ_of_ne: ∀ n m:nat', n ≠ m → succ n ≠ succ m)
+  (ind: ∀ P: nat' → Prop, P zero → (∀ n, P n → P (succ n)) → ∀ n, P n) :
+    ∃! f : nat → nat', Function.Bijective f ∧ f 0 = zero
+    ∧ ∀ (n:nat) (n':nat'), f n = n' ↔ f (n+1:ℕ) = succ n' := by sorry
 
 
 end Chapter3

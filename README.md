@@ -54,7 +54,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
 - Chapter 7: Series
   - Section 7.1: Finite series ([Verso page](https://teorth.github.io/analysis/sec71/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_7_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_7_1.lean))
   - Section 7.2: Infinite series ([Verso page](https://teorth.github.io/analysis/sec72/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_7_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_7_2.lean))
-  - _Section 7.3: Sums of non-negative numbers (planned)_
+  - Section 7.3: Sums of non-negative numbers ([Verso page](https://teorth.github.io/analysis/sec73/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_7_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_7_3.lean))
   - _Section 7.4: Rearrangement of series (planned)_
   - _Section 7.5: The root and ratio tests (planned)_
 - _Chapter 8: Infinite sets (possible future expansion)_

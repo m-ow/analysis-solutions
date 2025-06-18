@@ -4,13 +4,20 @@ import Mathlib.Algebra.Group.MinimalAxioms
 /-!
 # Analysis I, Section 4.1
 
-This file is a translation of Section 4.1 of Analysis I to Lean 4.  All numbering refers to the original text.
+This file is a translation of Section 4.1 of Analysis I to Lean 4.
+All numbering refers to the original text.
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original text.  When there is a choice between a more idiomatic Lean solution and a more faithful translation, I have generally chosen the latter.  In particular, there will be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing so.
+I have attempted to make the translation as faithful a paraphrasing as possible of the original
+text. When there is a choice between a more idiomatic Lean solution and a more faithful
+translation, I have generally chosen the latter. In particular, there will be places where the
+Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
+doing so.
 
 Main constructions and results of this section:
 
-- Definition of the "Section 4.1" integers, `Section_4_1.Int`, as formal differences `a —— b` of natural numbers `a b:ℕ`, up to equivalence.  (This is a quotient of a scaffolding type `Section_4_1.PreInt`, which consists of formal differences without any equivalence imposed.)
+- Definition of the "Section 4.1" integers, `Section_4_1.Int`, as formal differences `a —— b` of
+  natural numbers `a b:ℕ`, up to equivalence.  (This is a quotient of a scaffolding type
+  `Section_4_1.PreInt`, which consists of formal differences without any equivalence imposed.)
 
 - ring operations and order these integers, as well as an embedding of ℕ
 
@@ -61,7 +68,8 @@ theorem Int.eq (a b c d:ℕ): a —— b = c —— d ↔ a + d = c + b := by
 /-- Decidability of equality -/
 instance Int.decidableEq : DecidableEq Int := by
   intro a b
-  have : ∀ (n:PreInt) (m: PreInt), Decidable (Quotient.mk PreInt.instSetoid n = Quotient.mk PreInt.instSetoid m) := by
+  have : ∀ (n:PreInt) (m: PreInt),
+      Decidable (Quotient.mk PreInt.instSetoid n = Quotient.mk PreInt.instSetoid m) := by
     intro ⟨ a,b ⟩ ⟨ c,d ⟩
     rw [eq]
     exact decEq _ _
@@ -86,7 +94,8 @@ instance Int.instAdd : Add Int where
 theorem Int.add_eq (a b c d:ℕ) : a —— b + c —— d = (a+c)——(b+d) := Quotient.lift₂_mk _ _ _ _
 
 /-- Lemma 4.1.3 (Multiplication well-defined) -/
-theorem Int.mul_congr_left (a b a' b' c d : ℕ) (h: a —— b = a' —— b') : (a*c+b*d) —— (a*d+b*c) = (a'*c+b'*d) —— (a'*d+b'*c) := by
+theorem Int.mul_congr_left (a b a' b' c d : ℕ) (h: a —— b = a' —— b') :
+    (a*c+b*d) —— (a*d+b*c) = (a'*c+b'*d) —— (a'*d+b'*c) := by
   simp only [eq] at h ⊢
   calc
     _ = c*(a+b') + d*(a'+b) := by ring
@@ -94,7 +103,8 @@ theorem Int.mul_congr_left (a b a' b' c d : ℕ) (h: a —— b = a' —— b') 
     _ = _ := by ring
 
 /-- Lemma 4.1.3 (Multiplication well-defined) -/
-theorem Int.mul_congr_right (a b c d c' d' : ℕ) (h: c —— d = c' —— d') : (a*c+b*d) —— (a*d+b*c) = (a*c'+b*d') —— (a*d'+b*c') := by
+theorem Int.mul_congr_right (a b c d c' d' : ℕ) (h: c —— d = c' —— d') :
+    (a*c+b*d) —— (a*d+b*c) = (a*c'+b*d') —— (a*d'+b*c') := by
   simp only [eq] at h ⊢
   calc
     _ = a*(c+d') + b*(c'+d) := by ring
@@ -114,7 +124,8 @@ instance Int.instMul : Mul Int where
     )
 
 /-- Definition 4.1.2 (Multiplication of integers) -/
-theorem Int.mul_eq (a b c d:ℕ) : a —— b * c —— d = (a*c+b*d) —— (a*d+b*c) := Quotient.lift₂_mk _ _ _ _
+theorem Int.mul_eq (a b c d:ℕ) : a —— b * c —— d = (a*c+b*d) —— (a*d+b*c) :=
+  Quotient.lift₂_mk _ _ _ _
 
 instance Int.instOfNat {n:ℕ} : OfNat Int n where
   ofNat := n —— 0
@@ -277,7 +288,8 @@ theorem Int.not_lt_and_eq (a b:Int) : ¬ (a < b ∧ a = b):= by sorry
 /-- (Not from textbook) Establish the decidability of this order. -/
 instance Int.decidableRel : DecidableRel (· ≤ · : Int → Int → Prop) := by
   intro n m
-  have : ∀ (n:PreInt) (m: PreInt), Decidable (Quotient.mk PreInt.instSetoid n ≤ Quotient.mk PreInt.instSetoid m) := by
+  have : ∀ (n:PreInt) (m: PreInt),
+      Decidable (Quotient.mk PreInt.instSetoid n ≤ Quotient.mk PreInt.instSetoid m) := by
     intro ⟨ a,b ⟩ ⟨ c,d ⟩
     change Decidable (a —— b ≤ c —— d)
     cases (a + d).decLe (b + c) with
@@ -310,7 +322,10 @@ theorem Int.sq_nonneg (n:Int) : n*n ≥ 0 := by sorry
 /-- Exercise 4.1.9 -/
 theorem Int.sq_nonneg' (n:Int) : ∃ (m:Nat), n*n = m := by sorry
 
-/-- Not in textbook: create an equivalence between Int and ℤ.  This requires some familiarity with the API for Mathlib's version of the integers. -/
+/--
+  Not in textbook: create an equivalence between Int and ℤ.
+  This requires some familiarity with the API for Mathlib's version of the integers.
+-/
 abbrev Int.equivInt : Int ≃ ℤ where
   toFun := Quotient.lift (fun ⟨ a, b ⟩ ↦ a - b) (by
     sorry)
