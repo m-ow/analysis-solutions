@@ -507,7 +507,30 @@ theorem SetTheory.Set.specification_axiom'' {A:Set} (P: A → Prop) (x:Object) :
   simp at hP; assumption
 
 /-- This exercise may require some understanding of how  subtypes are implemented in Lean. -/
-theorem SetTheory.Set.specify_congr {A A':Set} (hAA':A = A') {P: A → Prop} {P': A' → Prop} (hPP': (x:Object) → (h:x ∈ A) → (h':x ∈ A') → P ⟨ x, h⟩ ↔ P' ⟨ x, h'⟩ ) : A.specify P = A'.specify P' := by sorry
+theorem SetTheory.Set.specify_congr {A A':Set} (hAA':A = A') {P: A → Prop} {P': A' → Prop} (hPP': (x:Object) → (h:x ∈ A) → (h':x ∈ A') → P ⟨ x, h⟩ ↔ P' ⟨ x, h'⟩ ) : A.specify P = A'.specify P' := by
+  apply ext; intro x; constructor
+  . intro h
+    have : x ∈ A := specification_axiom h
+    have hA' : x ∈ A' := by rwa [hAA'] at this
+    rw [specification_axiom''] at h
+    cases' h with hA hP
+    specialize hPP' x
+    specialize hPP' hA
+    specialize hPP' hA'
+    rw [specification_axiom'']
+    use hA'
+    rwa [<- hPP']
+  . intro h
+    have : x ∈ A' := specification_axiom h
+    have hA : x ∈ A := by rwa[<- hAA'] at this
+    rw [specification_axiom''] at h
+    cases' h with hA' hP'
+    specialize hPP' x
+    specialize hPP' hA
+    specialize hPP' hA'
+    rw [specification_axiom'']
+    use hA
+    rwa [hPP']
 
 instance SetTheory.Set.instIntersection : Inter Set where
   inter X Y := X.specify (fun x ↦ x.val ∈ Y)
@@ -1418,30 +1441,69 @@ theorem SetTheory.Set.mem_coe (X:Set) (x:Object) : x ∈ (X : _root_.Set Object)
   simp [Coe.coe]
 
 /-- Compatibility of the emptyset -/
-theorem SetTheory.Set.coe_empty : ((∅:Set) : _root_.Set Object) = ∅ := by sorry
+theorem SetTheory.Set.coe_empty : ((∅:Set) : _root_.Set Object) = ∅ := by simp
 
 /-- Compatibility of subset -/
-theorem SetTheory.Set.coe_subset (X Y:Set) : (X : _root_.Set Object) ⊆ (Y : _root_.Set Object) ↔ X ⊆ Y := by sorry
+theorem SetTheory.Set.coe_subset (X Y:Set) : (X : _root_.Set Object) ⊆ (Y : _root_.Set Object) ↔ X ⊆ Y := by
+  constructor
+  . intro h
+    intro x hx
+    rw [<- mem_coe] at hx
+    exact h hx
+  . intro h
+    intro x hX
+    rw [subset_def] at h
+    specialize h x
+    rw [mem_coe] at hX
+    exact h hX
 
-theorem SetTheory.Set.coe_ssubset (X Y:Set) : (X : _root_.Set Object) ⊂ (Y : _root_.Set Object) ↔ X ⊂ Y := by sorry
+theorem SetTheory.Set.coe_ssubset (X Y:Set) : (X : _root_.Set Object) ⊂ (Y : _root_.Set Object) ↔ X ⊂ Y := by
+  constructor
+  . intro h
+    cases' h with hxy hN
+    rw [coe_subset, subset_def] at hxy
+    constructor
+    . intro x hx
+      specialize hxy x
+      exact hxy hx
+    . intro hXY
+      apply hN
+      rw [coe_subset]
+      intro x hy
+      rw [ext_iff] at hXY
+      specialize hXY x
+      rwa [hXY]
+  . intro h
+    rw [ssubset_def] at h
+    cases' h with hXY hN
+    constructor
+    . intro x hX
+      rw [subset_def] at hXY
+      specialize hXY x
+      rw [mem_coe] at *
+      exact hXY hX
+    . intro h
+      rw [coe_subset] at h
+      have : X = Y := subset_antisymm X Y hXY h
+      contradiction
 
 /-- Compatibility of singleton -/
-theorem SetTheory.Set.coe_singleton (x: Object) : ({x} : _root_.Set Object) = {x} := by sorry
+theorem SetTheory.Set.coe_singleton (x: Object) : ({x} : _root_.Set Object) = {x} := by rfl
 
 /-- Compatibility of union -/
-theorem SetTheory.Set.coe_union (X Y: Set) : (X ∪ Y : _root_.Set Object) = (X : _root_.Set Object) ∪ (Y : _root_.Set Object) := by sorry
+theorem SetTheory.Set.coe_union (X Y: Set) : (X ∪ Y : _root_.Set Object) = (X : _root_.Set Object) ∪ (Y : _root_.Set Object) := by rfl
 
 /-- Compatibility of pair -/
-theorem SetTheory.Set.coe_pair (x y: Object) : ({x, y} : _root_.Set Object) = {x, y} := by sorry
+theorem SetTheory.Set.coe_pair (x y: Object) : ({x, y} : _root_.Set Object) = {x, y} := by rfl
 
 /-- Compatibility of subtype -/
-theorem SetTheory.Set.coe_subtype (X: Set) :  (X : _root_.Set Object) = X.toSubtype := by sorry
+theorem SetTheory.Set.coe_subtype (X: Set) :  (X : _root_.Set Object) = X.toSubtype := by rfl
 
 /-- Compatibility of intersection -/
-theorem SetTheory.Set.coe_intersection (X Y: Set) : (X ∩ Y : _root_.Set Object) = (X : _root_.Set Object) ∩ (Y : _root_.Set Object) := by sorry
+theorem SetTheory.Set.coe_intersection (X Y: Set) : (X ∩ Y : _root_.Set Object) = (X : _root_.Set Object) ∩ (Y : _root_.Set Object) := by rfl
 
 /-- Compatibility of set difference-/
-theorem SetTheory.Set.coe_diff (X Y: Set) : (X \ Y : _root_.Set Object) = (X : _root_.Set Object) \ (Y : _root_.Set Object) := by sorry
+theorem SetTheory.Set.coe_diff (X Y: Set) : (X \ Y : _root_.Set Object) = (X : _root_.Set Object) \ (Y : _root_.Set Object) := by rfl
 
 /-- Compatibility of disjointness -/
 theorem SetTheory.Set.coe_Disjoint (X Y: Set) : Disjoint (X : _root_.Set Object) (Y : _root_.Set Object) ↔ Disjoint X Y := by sorry
