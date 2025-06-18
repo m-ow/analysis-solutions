@@ -257,7 +257,7 @@ theorem SetTheory.Set.finite_choice {n:ℕ} {X: Fin n → Set} (h: ∀ i, X i �
   set x : ∀ i, X i := by
     intro i
     have := mem_Fin' i
-    classical -- it is unfortunate here that classical logic is required to perform this gluing; this is because `nat` is technically not an inductive type.  There should be some workaround involving the equivalence betweeen `nat` and `ℕ` (which is an inductive type).
+    classical -- it is unfortunate here that classical logic is required to perform this gluing; this is because `nat` is technically not an inductive type.  There should be some workaround involving the equivalence between `nat` and `ℕ` (which is an inductive type).
     cases decEq i last with
       | isTrue heq =>
         rw [heq]
