@@ -970,8 +970,24 @@ example : ({3, 5}:Set) ⊆ {1, 3, 5} := by
 /-- Example 3.1.17 (simplified). -/
 example : ({3, 5}:Set).specify (fun x ↦ x.val ≠ 3)
  = {(5:Object)} := by
-  sorry
-
+  apply SetTheory.Set.ext
+  intro x; constructor
+  . intro h
+    rw [SetTheory.Set.mem_singleton]
+    rw [SetTheory.Set.specification_axiom''] at h
+    cases' h with h35 hN; simp at hN
+    rw [SetTheory.Set.mem_pair] at h35
+    cases' h35 with h3 h5
+    . contradiction
+    . exact h5
+  . intro h5
+    rw [SetTheory.Set.mem_singleton] at h5
+    have h35 : x ∈ ({3, 5}:Set) := by
+      rw [SetTheory.Set.mem_pair]
+      right; assumption
+    rw [SetTheory.Set.specification_axiom'']
+    use h35; simp; intro h3
+    rw [h5] at h3; simp at h3
 /-- Example 3.1.24 -/
 
 example : ({1, 2, 4}:Set) ∩ {2,3,4} = {2, 4} := by
