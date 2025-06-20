@@ -1,5 +1,7 @@
 import Mathlib.Tactic
 import Mathlib.Algebra.Field.Power
+import Mathlib.NumberTheory.LSeries.RiemannZeta
+import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 import Analysis.Section_6_1
 import Analysis.Section_6_epilogue
 import Analysis.Section_7_2
@@ -11,7 +13,9 @@ I have attempted to make the translation as faithful a paraphrasing as possible 
 
 Main constructions and results of this section:
 
--
+- Equivalent characterizations of convergence of nonnegative series
+- Cauchy condensation test
+
 -/
 
 namespace Chapter7
@@ -191,6 +195,47 @@ theorem Series.converges_qseries (q : ℝ) (hq : q > 0) : (mk' (m := 1) fun n �
   simp [this, converges_geom_iff]
   rw [abs_of_nonneg (by positivity), Real.rpow_lt_one_iff_of_pos (by positivity)]
   simp
+
+/-- Remark 7.3.8 -/
+theorem Series.zeta_eq {q:ℝ} (hq: q > 1) : (mk' (m := 1) fun n ↦ 1 / (n:ℝ) ^ q : Series).sum = riemannZeta q := by
+  -- `riemannZeta` is defined over the complex numbers, so some preliminary work is needed to specialize to the reals.
+  set L := ∑' n:ℕ, 1 / (n+1:ℝ)^q
+  have hL : L = riemannZeta q := by
+    rw [zeta_eq_tsum_one_div_nat_add_one_cpow (by norm_cast)]
+    unfold L
+    convert Complex.ofReal_tsum _ with n
+    simp [Complex.ofReal_cpow (x := n+1) (by positivity) _]
+  rw [←hL]
+  norm_cast
+  apply sum_of_converges
+  have : Summable (fun (n : ℕ)↦ 1 / (n+1:ℝ) ^ q) := by
+    convert (Real.summable_one_div_nat_add_rpow 1 q).mpr hq using 4 with n
+    rw [abs_of_nonneg (by positivity)]
+  have tail (a: ℤ → ℝ) (L:ℝ) : Filter.Tendsto a Filter.atTop (nhds L) ↔ Filter.Tendsto (fun n:ℕ ↦ a n) Filter.atTop (nhds L) := by
+    convert Filter.tendsto_map'_iff (g:= fun n:ℕ ↦ (n:ℤ) )
+    simp
+  unfold convergesTo
+  rw [tail _ L]
+  convert Summable.tendsto_sum_tsum_nat this with n
+  simp [Series.partial]
+  set e : ℕ ↪ ℤ := {
+    toFun n := n+1
+    inj' := by intro a b h; simp at h; exact h
+  }
+  convert Finset.sum_map _ e _ using 2 with n _ m hm
+  . ext x
+    simp [e]
+    constructor
+    . intro ⟨ h1, h2 ⟩
+      use (x-1).toNat; omega
+    intro ⟨ a, han, hax ⟩; omega
+  simp [e]
+
+theorem Series.Basel_problem :  (mk' (m := 1) fun n ↦ 1 / (n:ℝ) ^ 2 : Series).sum = Real.pi ^ 2 / 6 := by
+  have := zeta_eq (show 2 > 1 by norm_num)
+  simp [Complex.ofReal_ofNat, riemannZeta_two] at this
+  simpa [←Complex.ofReal_inj]
+
 
 /-- Exercise 7.3.3 -/
 theorem Series.nonneg_sum_zero {a:ℕ → ℝ} (ha: (a:Series).nonneg) (hconv: (a:Series).converges) : (a:Series).sum = 0 ↔ ∀ n, a n = 0 := by sorry

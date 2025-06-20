@@ -55,10 +55,20 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Section 7.1: Finite series ([Verso page](https://teorth.github.io/analysis/sec71/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_7_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_7_1.lean))
   - Section 7.2: Infinite series ([Verso page](https://teorth.github.io/analysis/sec72/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_7_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_7_2.lean))
   - Section 7.3: Sums of non-negative numbers ([Verso page](https://teorth.github.io/analysis/sec73/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_7_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_7_3.lean))
-  - _Section 7.4: Rearrangement of series (planned)_
-  - _Section 7.5: The root and ratio tests (planned)_
+  - Section 7.4: Rearrangement of series ([Verso page](https://teorth.github.io/analysis/sec74/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_7_4.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_7_4.lean))
+  - Section 7.5: The root and ratio tests ([Verso page](https://teorth.github.io/analysis/sec75/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_7_5.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_7_5.lean))
 - _Chapter 8: Infinite sets (possible future expansion)_
-- _Chapter 9: Continuous functions on `ℝ` (planned)_
+- _Chapter 9: Continuous functions on `ℝ` 
+  - Section 9.1: Subsets of the real line ([Verso page](https://teorth.github.io/analysis/sec91/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_9_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_9_1.lean))
+  - Section 9.2: The algebra of real-valued functions ([Verso page](https://teorth.github.io/analysis/sec92/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_9_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_9_2.lean))
+  - _Section 9.3: Limiting values of functions (planned)_
+  - _Section 9.4: Continuous functions (planned)_
+  - _Section 9.5: Left and right limits (planned)_
+  - _Section 9.6: The maximum principle (planned)_
+  - _Section 9.7: The intermediate value theorem (planned)_
+  - _Section 9.8: Monotonic functions (planned)_
+  - _Section 9.9: Uniform continuity (planned)_
+  - _Section 9.10: Limits at infinity (planned)_
 - _Chapter 10: Differentiation of functions (planned)_
 - _Chapter 11: The Riemann integral (planned)_
 - _Appendix A: The basics of mathematical logic (possible future expansion)_

@@ -27,3 +27,7 @@ import Analysis.Section_6_epilogue
 import Analysis.Section_7_1
 import Analysis.Section_7_2
 import Analysis.Section_7_3
+import Analysis.Section_7_4
+import Analysis.Section_7_5
+import Analysis.Section_9_1
+import Analysis.Section_9_2

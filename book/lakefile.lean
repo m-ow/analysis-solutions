@@ -3,7 +3,7 @@ open Lake DSL
 
 require verso from git "https://github.com/leanprover/verso.git"@"main"
 require subverso from git
-  "https://github.com/leanprover/subverso.git" @ "c0fc43dce384e563afdef19288daa35befaf4f86"
+  "https://github.com/leanprover/subverso.git" @ "79c973b07e2f43c4ac1cec720bbe20b4fbfbd0e9"
 
 package "analysis-book" where
   version := v!"0.1.0"
@@ -54,7 +54,11 @@ def sections := #[
   (`Analysis.Section_6_epilogue, "Connections with Mathlib limits"),
   (`Analysis.Section_7_1, "Finite series"),
   (`Analysis.Section_7_2, "Infinite series"),
-  (`Analysis.Section_7_3, "Sums of non-negative numbers")
+  (`Analysis.Section_7_3, "Sums of non-negative numbers"),
+  (`Analysis.Section_7_4, "Rearrangement of series"),
+  (`Analysis.Section_7_5, "The root and ratio tests"),
+  (`Analysis.Section_9_1, "Subsets of the real line"),
+  (`Analysis.Section_9_2, "The algebra of real-valued functions")
 ]
 
 /--

@@ -86,6 +86,10 @@ theorem Series.sum_of_converges {s : Series} {L:ℝ} (h: s.convergesTo L) : s.su
   simp [sum, converges_of_convergesTo h]
   exact tendsto_nhds_unique ((converges_of_convergesTo h).choose_spec) h
 
+theorem Series.convergesTo_sum {s : Series} (h: s.converges) : s.convergesTo s.sum := by
+  simp [sum, h]
+  exact (h.choose_spec)
+  
 /-- Example 7.2.4 -/
 noncomputable abbrev Series.example_7_2_4 := mk' (m := 1) (fun n ↦ (2:ℝ)^(-n:ℤ))
 
