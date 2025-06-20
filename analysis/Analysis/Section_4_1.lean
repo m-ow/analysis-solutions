@@ -206,15 +206,53 @@ theorem Int.not_pos_neg (x:Int) : x.isPos ∧ x.isNeg → False := by
 
 /-- Proposition 4.1.6 (laws of algebra) / Exercise 4.1.4 -/
 instance Int.instAddGroup : AddGroup Int :=
-AddGroup.ofLeftAxioms (by sorry) (by sorry) (by sorry)
+AddGroup.ofLeftAxioms
+  (by
+    intro x y z
+    obtain ⟨ a, b, rfl ⟩ := eq_diff x
+    obtain ⟨ c, d, rfl ⟩ := eq_diff y
+    obtain ⟨ e, f, rfl ⟩ := eq_diff z
+    simp_rw [add_eq]
+    congr 1
+    . ring
+    ring)
+
+  (by
+    intro x
+    obtain ⟨ a, b, rfl ⟩ := eq_diff x
+    have : 0 = 0 —— 0 := by rfl
+    rw [this]
+    rw [add_eq]
+    congr 1
+    . ring
+    ring)
+
+  (by
+    intro x
+    obtain ⟨ a, b, rfl ⟩ := eq_diff x
+    sorry)
 
 /-- Proposition 4.1.6 (laws of algebra) / Exercise 4.1.4 -/
 instance Int.instAddCommGroup : AddCommGroup Int where
-  add_comm := by sorry
+  add_comm := by
+    intro x y
+    obtain ⟨ a, b, rfl ⟩ := eq_diff x
+    obtain ⟨ c, d, rfl ⟩ := eq_diff y
+    simp_rw [add_eq]
+    congr 1
+    . ring
+    ring
 
 /-- Proposition 4.1.6 (laws of algebra) / Exercise 4.1.4 -/
 instance Int.instCommMonoid : CommMonoid Int where
-  mul_comm := by sorry
+  mul_comm := by
+    intro x y
+    obtain ⟨ a, b, rfl ⟩ := eq_diff x
+    obtain ⟨ c, d, rfl ⟩ := eq_diff y
+    simp_rw [mul_eq]
+    congr 1
+    . ring
+    ring
   mul_assoc := by
     -- This proof is written to follow the structure of the original text.
     intro x y z
@@ -225,15 +263,42 @@ instance Int.instCommMonoid : CommMonoid Int where
     congr 1
     . ring
     ring
-  one_mul := by sorry
-  mul_one := by sorry
+  one_mul := by
+    intro x
+    obtain ⟨ a, b, rfl ⟩ := eq_diff x
+    have : 1 = 2 —— 1 := by rw [Int.ofNat_eq, Int.eq]
+    rw [this]
+    rw [mul_eq]
+    sorry
+  mul_one := by
+    intro x
+    obtain ⟨ a, b, rfl ⟩ := eq_diff x
+    have : 1 = 2 —— 1 := by rw [Int.ofNat_eq, Int.eq]
+    rw [this]
+    rw [mul_eq]
+    sorry
 
 /-- Proposition 4.1.6 (laws of algebra) / Exercise 4.1.4 -/
 instance Int.instCommRing : CommRing Int where
   left_distrib := by sorry
   right_distrib := by sorry
-  zero_mul := by sorry
-  mul_zero := by sorry
+  zero_mul := by
+    intro x
+    obtain ⟨ a, b, rfl ⟩ := eq_diff x
+    have : 0 = 0 —— 0 := by rfl
+    rw [this]
+    rw [mul_eq]
+    congr 1
+    . ring
+    ring
+  mul_zero := by
+    intro x
+    obtain ⟨ a, b, rfl ⟩ := eq_diff x
+    have : 0 = 0 —— 0 := by rfl
+    nth_rw 1 [this]
+    rw [mul_eq]
+    simp
+    rfl
 
 /-- Definition of subtraction -/
 theorem Int.sub_eq (a b:Int) : a - b = a + (-b) := by rfl

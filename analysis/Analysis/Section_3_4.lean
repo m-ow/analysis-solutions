@@ -52,13 +52,50 @@ theorem SetTheory.Set.image_eq_image {X Y:Set} (f:X → Y) (S: Set):
 /-- Example 3.4.2 -/
 abbrev f_3_4_2 : nat → nat := fun n ↦ (2*n:ℕ)
 
-theorem SetTheory.Set.image_f_3_4_2 : image f_3_4_2 {1,2,3} = {2,4,6} := by sorry
+theorem SetTheory.Set.image_f_3_4_2 : image f_3_4_2 {1,2,3} = {2,4,6} := by
+  apply ext; intro x
+  constructor
+  . sorry
+  . intro h
+    rw [triple_eq, mem_union] at h
+    cases' h with h2 h46
+    . rw [mem_image]; use 1
+      constructor
+      . rw [mem_triple]; left; rfl
+      rw [mem_singleton] at h2
+      rw [h2]; simp
+      have : nat_equiv.symm 1 = 1 := by
+        apply nat_equiv.symm_apply_apply
+      rw [this]; rfl
+    . rw [mem_image]
+      rw [mem_pair] at h46
+      cases' h46 with h4 h6
+      . use 2; constructor
+        . rw [triple_eq, mem_union]
+          right; rw [mem_pair]
+          left; rfl
+        rw [h4]; simp
+        have : nat_equiv.symm 2 = 2 := by
+          apply nat_equiv.symm_apply_apply
+        rw [this]; rfl
+      . use 3; constructor
+        . rw [triple_eq, mem_union]
+          right; rw [mem_pair]
+          right; rfl
+        rw [h6]; simp
+        have : nat_equiv.symm 3 = 3 := by
+          apply nat_equiv.symm_apply_apply
+        rw [this]; rfl
+
 
 /-- Example 3.4.3 is written using Mathlib's notion of image -/
 example : (fun n:ℤ ↦ n^2) '' {-1,0,1,2} = {0,1,4} := by sorry
 
 theorem SetTheory.Set.mem_image_of_eval {X Y:Set} (f:X → Y) (S: Set) (x:X) :
-    x.val ∈ S → (f x).val ∈ image f S := by sorry
+    x.val ∈ S → (f x).val ∈ image f S := by
+  intro h
+  rw [mem_image]
+  use x
 
 theorem SetTheory.Set.mem_image_of_eval_counter :
     ∃ (X Y:Set) (f:X → Y) (S: Set) (x:X), ¬((f x).val ∈ image f S → x.val ∈ S) := by sorry
@@ -212,13 +249,59 @@ theorem SetTheory.Set.preimage_eq_image_of_inv {X Y V:Set} (f:X → Y) (f_inv: Y
   Exercise 3.4.3.  Also state and prove an assertion regarding whether `⊆` can be improved to `=`.
 -/
 theorem SetTheory.Set.image_of_inter {X Y:Set} (f:X → Y) (A B: Set) :
-    image f (A ∩ B) ⊆ (image f A) ∩ (image f B) := by sorry
+    image f (A ∩ B) ⊆ (image f A) ∩ (image f B) := by
+  intro x h
+  rw [mem_inter]
+  constructor
+  . rw [mem_image] at *
+    cases' h with s h
+    cases' h with hAB h
+    use s
+    constructor
+    . rw [mem_inter] at hAB
+      cases' hAB with hA hB
+      exact hA
+    . assumption
+  . rw [mem_image] at *
+    cases' h with s h
+    cases' h with hAB h
+    use s
+    rw [mem_inter] at hAB
+    cases' hAB with hA hB
+    constructor
+    . exact hB
+    . assumption
 
 theorem SetTheory.Set.image_of_diff {X Y:Set} (f:X → Y) (A B: Set) :
     (image f A) \ (image f B) ⊆ image f (A \ B) := by sorry
 
 theorem SetTheory.Set.image_of_union {X Y:Set} (f:X → Y) (A B: Set) :
-    image f (A ∪ B) = (image f A) ∪ (image f B) := by sorry
+    image f (A ∪ B) = (image f A) ∪ (image f B) := by
+  apply ext
+  intro x; constructor
+  . intro h
+    rw [mem_image] at h
+    cases' h with s h
+    cases' h with hAB hf
+    rw [mem_union] at *
+    cases' hAB with hA hB
+    . left; rw [mem_image]; use s
+    . right; rw [mem_image]; use s
+  . intro h
+    rw [mem_union] at h
+    cases' h with hA hB
+    . rw [mem_image] at *
+      cases' hA with s h
+      use s; constructor
+      . rw [mem_union]
+        left; exact h.1
+      . exact h.2
+    . rw [mem_image] at *
+      cases' hB with s h
+      use s; constructor
+      . rw [mem_union]
+        right; exact h.1
+      . exact h.2
 
 /-- Exercise 3.4.4 -/
 theorem SetTheory.Set.preimage_of_inter {X Y:Set} (f:X → Y) (A B: Set) :
@@ -261,7 +344,16 @@ theorem SetTheory.Set.union_iUnion {I J:Set} (A: (I ∪ J:Set) → Set) :
     = iUnion (I ∪ J) A := by sorry
 
 /-- Exercise 3.4.10 -/
-theorem SetTheory.Set.union_of_nonempty {I J:Set} (hI: I ≠ ∅) (hJ: J ≠ ∅) : I ∪ J ≠ ∅ := by sorry
+theorem SetTheory.Set.union_of_nonempty {I J:Set} (hI: I ≠ ∅) (hJ: J ≠ ∅) : I ∪ J ≠ ∅ := by
+  by_contra h
+  rw [ext_iff] at h
+  apply nonempty_def at hI
+  cases' hI with i hI
+  specialize h i
+  have : i ∈ I ∪ J := by rw [mem_union]; left; exact hI
+  rw [h] at this
+  have : i ∉ (∅:Set) := by exact not_mem_empty i
+  contradiction
 
 /-- Exercise 3.4.10 -/
 theorem SetTheory.Set.inter_iInter {I J:Set} (hI: I ≠ ∅) (hJ: J ≠ ∅) (A: (I ∪ J:Set) → Set) :
