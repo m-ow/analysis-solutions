@@ -89,7 +89,7 @@ theorem Series.sum_of_converges {s : Series} {L:ℝ} (h: s.convergesTo L) : s.su
 theorem Series.convergesTo_sum {s : Series} (h: s.converges) : s.convergesTo s.sum := by
   simp [sum, h]
   exact (h.choose_spec)
-  
+
 /-- Example 7.2.4 -/
 noncomputable abbrev Series.example_7_2_4 := mk' (m := 1) (fun n ↦ (2:ℝ)^(-n:ℤ))
 
@@ -262,16 +262,12 @@ theorem Series.telescope {a:ℕ → ℝ} (ha: Filter.Tendsto a Filter.atTop (nhd
     ((fun n:ℕ ↦ a (n+1) - a n):Series).convergesTo (a 0) := by
   sorry
 
-/- Exercise 7.2.1 : uncomment and prove one of the following statements, and delete the other. -/
+/- Exercise 7.2.1  -/
 
-/-
-theorem Series.exercise_7_2_1_convergent : (mk' (m := 1) (fun n ↦ (-1:ℝ)^(n:ℤ))).converges := by
+def Series.exercise_7_2_1_convergent :
+  Decidable ( (mk' (m := 1) (fun n ↦ (-1:ℝ)^(n:ℤ))).converges ) := by
+  -- The first line of this proof should be `apply isTrue` or `apply isFalse`.
   sorry
--/
 
-/-
-theorem Series.exercise_7_2_1_divergent : (mk' (m := 1) (fun n ↦ (-1:ℝ)^(n:ℤ))).diverges := by
-  sorry
--/
 
 end Chapter7

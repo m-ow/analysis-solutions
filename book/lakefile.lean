@@ -60,7 +60,21 @@ def sections := #[
   (`Analysis.Section_9_1, "Subsets of the real line"),
   (`Analysis.Section_9_2, "The algebra of real-valued functions"),
   (`Analysis.Section_9_3, "Limiting values of functions"),
-  (`Analysis.Section_9_4, "Continuous functions")
+  (`Analysis.Section_9_4, "Continuous functions"),
+  (`Analysis.Section_9_5, "Limits from the left and right"),
+  (`Analysis.Section_9_6, "The maximum principle"),
+  (`Analysis.Section_9_7, "The intermediate value theorem"),
+  (`Analysis.Section_9_8, "Monotone functions"),
+  (`Analysis.Section_9_9, "Uniform continuity"),
+  (`Analysis.Section_9_10, "Limits at infinity"),
+  (`Analysis.Section_10_1, "Basic definitions"),
+  (`Analysis.Appendix_A_1, "Mathematical statements"),
+  (`Analysis.Appendix_A_2, "Implication"),
+  (`Analysis.Appendix_A_3, "The structure of proofs"),
+  (`Analysis.Appendix_A_4, "Variables and quantifiers"),
+  (`Analysis.Appendix_A_5, "Nested quantifiers"),
+  (`Analysis.Appendix_A_6, "Some examples of proofs and quantifiers"),
+  (`Analysis.Appendix_A_7, "Equality")
 ]
 
 /--

@@ -62,17 +62,20 @@ example : g_9_2_2 ∘ f_9_2_2 = fun x ↦ 2*x^2 := by ext x; simp
 
 /- Exercise 9.2.1.  For each of the pairs below, uncomment and prove one of the claims, and disprove the other.-/
 
---example : ∀ (f g h : ℝ → ℝ), (f+g) ∘ h = f ∘ h + g ∘ h := by sorry
---example : ¬ ∀(f g h : ℝ → ℝ), (f+g) ∘ h = f ∘ h + g ∘ h := by sorry
+def Exercise_9_2_1a : Decidable (∀ (f g h : ℝ → ℝ), (f+g) ∘ h = f ∘ h + g ∘ h) := by
+  -- The first line of this construction should be `apply isTrue` or `apply isFalse`.
+  sorry
 
---example : ∀ (f g h : ℝ → ℝ), f ∘ (g + h) = f ∘ g + f ∘ h := by sorry
---example : ¬ ∀(f g h : ℝ → ℝ), f ∘ (g + h) = f ∘ g + f ∘ h := by sorry
+def Exercise_9_2_1b : Decidable (∀ (f g h : ℝ → ℝ), f ∘ (g + h) = f ∘ g + f ∘ h) := by
+  -- The first line of this construction should be `apply isTrue` or `apply isFalse`.
+  sorry
 
---example : ∀ (f g h : ℝ → ℝ), (f+g) * h = f * h + g * h := by sorry
---example : ¬ ∀(f g h : ℝ → ℝ), (f+g) * h = f * h + g * h := by sorry
+def Exercise_9_2_1c : Decidable (∀ (f g h : ℝ → ℝ), (f+g) * h = f * h + g * h) := by
+  -- The first line of this construction should be `apply isTrue` or `apply isFalse`.
+  sorry
 
---example : ∀ (f g h : ℝ → ℝ), f * (g+h) = f * g + f * h := by sorry
---example : ¬ ∀(f g h : ℝ → ℝ), f * (g+h) = f * g + f * h := by sorry
-
+def Exercise_9_2_1d : Decidable (∀ (f g h : ℝ → ℝ), f * (g+h) = f * g + f * h) := by
+  -- The first line of this construction should be `apply isTrue` or `apply isFalse`.
+  sorry
 
 end Chapter9

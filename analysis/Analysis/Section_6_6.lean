@@ -62,18 +62,12 @@ theorem Sequence.convergent_of_subseq_of_bounded {a:ℕ→ ℝ} (ha: (a:Sequence
   obtain ⟨ b, hsubseq, htends ⟩ := this
   refine ⟨ b, hsubseq, ⟨ L_plus, htends ⟩ ⟩
 
-/- Exercise 6.6.2: uncomment and prove one of the statements below and delete the other. -/
+/- Exercise 6.6.2 -/
 
-/-
-theorem Sequence.exist_subseq_of_subseq :
-    ∃ a b : ℕ → ℝ, a ≠ b ∧ Sequence.subseq a b ∧ Sequence.subseq b a := by sorry
--/
-
-/-
-theorem Sequence.not_exist_subseq_of_subseq :
-    ¬ ∃ a b:ℕ → ℝ, a ≠ b ∧ Sequence.subseq a b ∧ Sequence.subseq b a := by
-  sorry
--/
+def Sequence.exist_subseq_of_subseq :
+  Decidable (∃ a b : ℕ → ℝ, a ≠ b ∧ Sequence.subseq a b ∧ Sequence.subseq b a) := by
+    -- The first line of this construction should be `apply isTrue` or `apply isFalse`.
+    sorry
 
 /--
   Exercise 6.6.3.  You may find the API around Mathlib's `Nat.find` to be useful

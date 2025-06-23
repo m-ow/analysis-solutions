@@ -232,6 +232,9 @@ instance Nat.instPow : HomogeneousPow Nat where
   pow := Nat.pow
 
 /-- Definition 2.3.11 (Exponentiation for natural numbers) -/
+theorem Nat.pow_zero (m: Nat) : m ^ (0:Nat) = 1 := recurse_zero (fun _ prod ↦ prod * m) _
+
+/-- Definition 2.3.11 (Exponentiation for natural numbers) -/
 theorem Nat.zero_pow_zero : (0:Nat) ^ 0 = 1 := recurse_zero (fun _ prod ↦ prod * 0) _
 
 /-- Definition 2.3.11 (Exponentiation for natural numbers) -/

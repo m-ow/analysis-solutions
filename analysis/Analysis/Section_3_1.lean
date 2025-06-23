@@ -1487,7 +1487,7 @@ theorem SetTheory.Set.union_eq_partition (A B:Set) : A ∪ B = (A \ B) ∪ (A �
   or `Set.specification_axiom'`.
 -/
 theorem SetTheory.Set.specification_from_replacement {A:Set} {P: A → Prop} :
-    ∃ B, A ⊆ B ∧ ∀ x, x.val ∈ B ↔ P x := by sorry
+    ∃ B, B ⊆ A ∧ ∀ x, x.val ∈ B ↔ P x := by sorry
 
 /-- Exercise 3.1.12.-/
 theorem SetTheory.Set.subset_union_subset {A B A' B':Set} (hA'A: A' ⊆ A) (hB'B: B' ⊆ B) :
@@ -1526,7 +1526,7 @@ theorem SetTheory.Set.subset_diff_subset_counter :
 -/
 
 /-- Exercise 3.1.13 -/
-theorem SetTheory.Set.singleton_iff (A:Set) (hA: A ≠ ∅) : ¬ ∃ B, B ⊂ A ↔ ∃ x, A = {x} := by sorry
+theorem SetTheory.Set.singleton_iff (A:Set) (hA: A ≠ ∅) : (¬∃ B ⊂ A, B ≠ ∅) ↔ ∃ x, A = {x} := by sorry
 
 
 /-

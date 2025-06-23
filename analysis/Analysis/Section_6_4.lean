@@ -355,11 +355,12 @@ theorem Sequence.Cauchy_iff_convergent (a:Sequence) :
 theorem Sequence.sup_not_strict_mono : ∃ (a b:ℕ → ℝ), (∀ n, a n < b n) ∧ (a:Sequence).sup ≠ (b:Sequence).sup := by
   sorry
 
-/- Exercise 6.4.7: uncomment and prove one of these statements and delete the other. -/
+/- Exercise 6.4.7 -/
 
--- theorem Sequence.tendsTo_real_iff : ∀ (a:Sequence) (x:ℝ), a.tendsTo x ↔ a.abs.tendsTo x := by sorry
-
--- theorem Sequence.not_tendsTo_real_iff : ¬ ∀ (a:Sequence) (x:ℝ), a.tendsTo x ↔ a.abs.tendsTo x := by sorry
+def Sequence.tendsTo_real_iff :
+  Decidable (∀ (a:Sequence) (x:ℝ), a.tendsTo x ↔ a.abs.tendsTo x) := by
+  -- The first line of this construction should be `apply isTrue` or `apply isFalse`.
+  sorry
 
 /-- This definition is needed for Exercises 6.4.8 and 6.4.9. -/
 abbrev Sequence.extended_limit_point (a:Sequence) (x:EReal) : Prop := if x = ⊤ then ¬ a.bddAbove else if x = ⊥ then ¬ a.bddBelow else a.limit_point x.toReal

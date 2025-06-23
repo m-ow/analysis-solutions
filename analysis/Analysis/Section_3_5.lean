@@ -387,23 +387,31 @@ theorem SetTheory.Set.diff_prod (A B C:Set) : (A \ B) ×ˢ C = (A ×ˢ C) \ (A �
 theorem SetTheory.Set.inter_of_prod (A B C D:Set) :
     (A ×ˢ B) ∩ (C ×ˢ D) = (A ∩ C) ×ˢ (B ∩ D) := by sorry
 
-/- Exercise 3.5.5: uncomment and prove one of these theorems, and delete the other. -/
--- theorem SetTheory.Set.union_of_prod (A B C D:Set) : (A ×ˢ B) ∪ (C ×ˢ D) = (A ∪ C) ×ˢ (B ∪ D) := by sorry
+/- Exercise 3.5.5 -/
+def SetTheory.Set.union_of_prod :
+  Decidable (∀ (A B C D:Set), (A ×ˢ B) ∪ (C ×ˢ D) = (A ∪ C) ×ˢ (B ∪ D)) := by
+  -- the first line of this construction should be `apply isTrue` or `apply isFalse`.
+  sorry
 
--- theorem SetTheory.Set.not_union_of_prod : ¬ ∀ A B C D:Set, (A ×ˢ B) ∪ (C ×ˢ D) = (A ∪ C) ×ˢ (B ∪ D) := by sorry
 
-/- Exercise 3.5.5: uncomment and prove one of these theorems, and delete the other. -/
--- theorem SetTheory.Set.diff_of_prod (A B C D:Set) : (A ×ˢ B) \ (C ×ˢ D) = (A \ C) ×ˢ (B \ D) := by sorry
+/- Exercise 3.5.5 -/
+def SetTheory.Set.diff_of_prod :
+  Decidable (∀ (A B C D:Set), (A ×ˢ B) \ (C ×ˢ D) = (A \ C) ×ˢ (B \ D)) := by
+  -- the first line of this construction should be `apply isTrue` or `apply isFalse`.
+  sorry
 
--- theorem SetTheory.Set.not_union_of_prod : ¬ ∀ A B C D:Set, (A ×ˢ B) \ (C ×ˢ D) = (A \ C) ×ˢ (B \ D) := by sorry
 
 /--
-  Exercise 3.5.6. State and prove a theorem describing what happens if the non-emptiness
-  hypotheses are removed.
+  Exercise 3.5.6.
 -/
 theorem SetTheory.Set.prod_subset_prod {A B C D:Set}
   (hA: A ≠ ∅) (hB: B ≠ ∅) (hC: C ≠ ∅) (hD: D ≠ ∅) :
     A ×ˢ B ⊆ C ×ˢ D ↔ A ⊆ C ∧ B ⊆ D := by sorry
+
+def SetTheory.Set.prod_subset_prod' :
+  Decidable (∀ (A B C D:Set), A ×ˢ B ⊆ C ×ˢ D ↔ A ⊆ C ∧ B ⊆ D) := by
+  -- the first line of this construction should be `apply isTrue` or `apply isFalse`.
+  sorry
 
 /-- Exercise 3.5.7 -/
 theorem SetTheory.Set.direct_sum {X Y Z:Set} (f: Z → X) (g: Z → Y) :
