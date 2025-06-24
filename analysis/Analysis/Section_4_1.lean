@@ -156,6 +156,9 @@ example : 3 = 3 —— 0 := by rfl
 example : 3 = 4 —— 1 := by
   rw [Int.ofNat_eq, Int.eq]
 
+/-- (Not from textbook) 0 is the only natural whose cast is 0 -/
+lemma Int.cast_eq_0_iff_eq_0 (n : ℕ) : (n : Int) = 0 ↔ n = 0 := by sorry
+
 /-- Definition 4.1.4 (Negation of integers) / Exercise 4.1.2 -/
 instance Int.instNeg : Neg Int where
   neg := Quotient.lift (fun ⟨ a, b ⟩ ↦ b —— a) (by
@@ -317,26 +320,29 @@ instance Int.instLE : LE Int where
 
 /-- Definition 4.1.10 (Ordering of the integers) -/
 instance Int.instLT : LT Int where
-  lt n m := (∃ a:ℕ, m = n + a) ∧ n ≠ m
+  lt n m := n ≤ m ∧ n ≠ m
 
-theorem Int.le_iff (n m:Int) : n ≤ m ↔ ∃ a:ℕ, m = n + a := by rfl
+theorem Int.le_iff (a b:Int) : a ≤ b ↔ ∃ t:ℕ, b = a + t := by rfl
 
-theorem Int.lt_iff (n m:Int): n < m ↔ (∃ a:ℕ, m = n + a) ∧ n ≠ m := by rfl
+theorem Int.lt_iff (a b:Int): a < b ↔ (∃ t:ℕ, b = a + t) ∧ a ≠ b := by rfl
 
 /-- Lemma 4.1.11(a) (Properties of order) / Exercise 4.1.7 -/
-theorem Int.gt_iff (a b:Int) : a > b ↔ ∃ n:ℕ, n ≠ 0 ∧ a = b + n := by sorry
+theorem Int.lt_iff_exists_positive_difference (a b:Int) : a < b ↔ ∃ n:ℕ, n ≠ 0 ∧ b = a + n := by sorry
 
 /-- Lemma 4.1.11(b) (Addition preserves order) / Exercise 4.1.7 -/
-theorem Int.add_gt_add_right {a b:Int} (c:Int) (h: a > b) : a+c > b+c := by sorry
+theorem Int.add_lt_add_right {a b:Int} (c:Int) (h: a < b) : a+c < b+c := by sorry
 
 /-- Lemma 4.1.11(c) (Positive multiplication preserves order) / Exercise 4.1.7 -/
-theorem Int.mul_lt_mul_of_pos_left {a b c:Int} (hab : a > b) (hc: c > 0) : a*c > b*c := by sorry
+theorem Int.mul_lt_mul_of_pos_right {a b c:Int} (hab : a < b) (hc: 0 < c) : a*c < b*c := by sorry
 
 /-- Lemma 4.1.11(d) (Negation reverses order) / Exercise 4.1.7 -/
-theorem Int.neg_gt_neg {a b:Int} (h: a > b) : -a < -b := by sorry
+theorem Int.neg_gt_neg {a b:Int} (h: b < a) : -a < -b := by sorry
+
+/-- Lemma 4.1.11(d) (Negation reverses order) / Exercise 4.1.7 -/
+theorem Int.neg_ge_neg {a b:Int} (h: b ≤ a) : -a ≤ -b := by sorry
 
 /-- Lemma 4.1.11(e) (Order is transitive) / Exercise 4.1.7 -/
-theorem Int.gt_trans {a b c:Int} (hab: a > b) (hbc: b > c) : a > c := by sorry
+theorem Int.lt_trans {a b c:Int} (hab: a < b) (hbc: b < c) : a < c := by sorry
 
 /-- Lemma 4.1.11(f) (Order trichotomy) / Exercise 4.1.7 -/
 theorem Int.trichotomous' (a b:Int) : a > b ∨ a < b ∨ a = b := by sorry
@@ -366,6 +372,9 @@ instance Int.decidableRel : DecidableRel (· ≤ · : Int → Int → Prop) := b
         sorry
   exact Quotient.recOnSubsingleton₂ n m this
 
+/-- (Not from textbook) 0 is the only additive identity -/
+lemma Int.is_additive_identity_iff_eq_0 (b : Int) : (∀ a, a = a + b) ↔ b = 0 := by sorry
+
 /-- (Not from textbook) Int has the structure of a linear ordering. -/
 instance Int.instLinearOrder : LinearOrder Int where
   le_refl := sorry
@@ -381,8 +390,11 @@ theorem Int.neg_one_mul (a:Int) : -1 * a = -a := by sorry
 /-- Exercise 4.1.8 -/
 theorem Int.no_induction : ∃ P: Int → Prop, P 0 ∧ ∀ n, P n → P (n+1) ∧ ¬ ∀ n, P n := by sorry
 
-/-- Exercise 4.1.9 -/
-theorem Int.sq_nonneg (n:Int) : n*n ≥ 0 := by sorry
+/-- A nonnegative number squared is nonnegative. This is a special case of 4.1.9 that's useful for proving the general case. --/
+lemma Int.sq_nonneg_of_pos (n:Int) (h: 0 ≤ n) : 0 ≤ n*n := by sorry
+
+/-- Exercise 4.1.9. The square of any integer is nonnegative. -/
+theorem Int.sq_nonneg (n:Int) : 0 ≤ n*n := by sorry
 
 /-- Exercise 4.1.9 -/
 theorem Int.sq_nonneg' (n:Int) : ∃ (m:Nat), n*n = m := by sorry

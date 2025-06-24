@@ -59,6 +59,8 @@ Currently formalized sections:
 - [Section 9.9: Uniform continuity](./sec99/)
 - [Section 9.10: Limits at infinity](./sec910/)
 - [Section 10.1: Basic definitions](./sec101/)
+- [Section 10.2: Local extrema and derivatives](./sec102/)
+- [Section 10.3: Monotone functions and derivatives](./sec103/)
 - [Appendix A.1: Mathematical statements](./secA1/)
 - [Appendix A.2: Implications](./secA2/)
 - [Appendix A.3: The structure of proofs](./secA3/)

@@ -13,16 +13,21 @@ doing so.
 Main constructions and results of this section:
 - API for Mathlib's `HasDerivWithinAt`, `derivWithin`, and `DifferentiableWithinAt`.
 
-Note that the Mathlib conventions differ slightly from that in the text, in that differentiability is defined even at points that are not limit points of the domain; derivatives in such cases may not be unique, but `derivWithin` still selects one such derivative in such cases (or `0`, if no derivative exists).
+Note that the Mathlib conventions differ slightly from that in the text, in that
+differentiability is defined even at points that are not limit points of the domain;
+derivatives in such cases may not be unique, but `derivWithin` still selects one such
+derivative in such cases (or `0`, if no derivative exists).
 
 -/
 
 namespace Chapter10
 
-/-- Definition 10.1.1 (Differentiability at a point).  For the Mathlib notion `HasDerivWithinAt`, the hypothesis that `x₀` is a limit point is not needed. -/
+/-- Definition 10.1.1 (Differentiability at a point).  For the Mathlib notion `HasDerivWithinAt`, the
+hypothesis that `x₀` is a limit point is not needed. -/
 theorem _root_.HasDerivWithinAt.iff (X: Set ℝ) (x₀ : ℝ) (f: ℝ → ℝ)
   (L:ℝ) :
-  HasDerivWithinAt f L X x₀ ↔ Filter.Tendsto (fun x ↦ (f x - f x₀) / (x - x₀)) (nhds x₀ ⊓ Filter.principal (X \ {x₀})) (nhds L) :=  by
+  HasDerivWithinAt f L X x₀ ↔ Filter.Tendsto (fun x ↦ (f x - f x₀) / (x - x₀))
+  (nhds x₀ ⊓ Filter.principal (X \ {x₀})) (nhds L) :=  by
   rw [hasDerivWithinAt_iff_tendsto_slope, ←nhdsWithin.eq_1, iff_iff_eq, slope_fun_def_field]
 
 theorem _root_.DifferentiableWithinAt.iff (X: Set ℝ) (x₀ : ℝ) (f: ℝ → ℝ) :
@@ -48,7 +53,8 @@ theorem derivative_unique' (X: Set ℝ) {x₀ : ℝ}
   (hx₀: ClusterPt x₀ (Filter.principal (X \ {x₀}))) {f: ℝ → ℝ} {L :ℝ}
   (hL: HasDerivWithinAt f L X x₀)
   (hdiff : DifferentiableWithinAt ℝ f X x₀):
-  L = derivWithin f X x₀ :=  derivative_unique hx₀ hL (DifferentiableWithinAt.hasDerivWithinAt hdiff)
+  L = derivWithin f X x₀ :=
+  derivative_unique hx₀ hL (DifferentiableWithinAt.hasDerivWithinAt hdiff)
 
 
 /-- Example 10.1.3 -/
@@ -105,7 +111,8 @@ example : derivWithin f_10_1_6 (Set.Iio 0) 0 = -1 := by
 
 /-- Proposition 10.1.7 (Newton's approximation) / Exercise 10.1.2 -/
 theorem _root_.HasDerivWithinAt.iff_approx_linear (X: Set ℝ) (x₀ :ℝ) (f: ℝ → ℝ) (L:ℝ) :
-  HasDerivWithinAt f L X x₀ ↔ ∀ ε > 0, ∃ δ > 0, ∀ x ∈ X, |x - x₀| < δ → |f x - f x₀ - L * (x - x₀)| < ε * |x - x₀| := by
+  HasDerivWithinAt f L X x₀ ↔
+  ∀ ε > 0, ∃ δ > 0, ∀ x ∈ X, |x - x₀| < δ → |f x - f x₀ - L * (x - x₀)| < ε * |x - x₀| := by
   sorry
 
 /-- Proposition 10.0.1 / Exercise 10.1.3 -/
@@ -165,7 +172,8 @@ theorem _root_.HasDerivWithinAt._of_inv {X: Set ℝ} {x₀ g'x₀: ℝ}
 
 /-- Theorem 10.1.13 (h) (Quotient rule) / Exercise 10.1.4 -/
 theorem _root_.HasDerivWithinAt._of_div {X: Set ℝ} {x₀ f'x₀ g'x₀: ℝ}
-  {f g: ℝ → ℝ} (hgx₀ : g x₀ ≠ 0) (hf: HasDerivWithinAt f f'x₀ X x₀) (hg: HasDerivWithinAt g g'x₀ X x₀) :
+  {f g: ℝ → ℝ} (hgx₀ : g x₀ ≠ 0) (hf: HasDerivWithinAt f f'x₀ X x₀)
+  (hg: HasDerivWithinAt g g'x₀ X x₀) :
   HasDerivWithinAt (f / g) ((f'x₀ * (g x₀) - (f x₀) * g'x₀) / (g x₀)^2) X x₀ := by
   sorry
 
@@ -180,11 +188,13 @@ theorem _root_.HasDerivWithinAt._of_comp {X Y: Set ℝ} {x₀ y₀ f'x₀ g'y₀
   sorry
 
 /-- Exercise 10.1.5 -/
-theorem _root_.HasDerivWithinAt._of_pow (n:ℕ) (x₀:ℝ) : HasDerivWithinAt (fun x ↦ x^n) (n * x₀^((n:ℤ)-1)) (Set.univ) x₀ := by
+theorem _root_.HasDerivWithinAt._of_pow (n:ℕ) (x₀:ℝ) : HasDerivWithinAt (fun x ↦ x^n)
+(n * x₀^((n:ℤ)-1)) (Set.univ) x₀ := by
   sorry
 
 /-- Exercise 10.1.6 -/
-theorem _root_.HasDerivWithinAt._of_zpow (n:ℤ) (x₀:ℝ) (hx₀: x₀ ≠ 0) : HasDerivWithinAt (fun x ↦ x^n) (n * x₀^(n-1)) (Set.univ \ {0}) x₀ := by
+theorem _root_.HasDerivWithinAt._of_zpow (n:ℤ) (x₀:ℝ) (hx₀: x₀ ≠ 0) :
+  HasDerivWithinAt (fun x ↦ x^n) (n * x₀^(n-1)) (Set.univ \ {0}) x₀ := by
   sorry
 
 

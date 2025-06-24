@@ -171,7 +171,7 @@ example : ¬ ∃ f: ℝ → ℝ, ∀ x y, y = f x ↔ y^2 = x := by sorry
 
 example : ¬ ∃ f: NNReal → ℝ, ∀ x y, y = f x ↔ y^2 = x := by sorry
 
-example : ∃ f: NNReal → ℝ, ∀ x y, y = f x ↔ y^2 = x := by sorry
+example : ∃ f: NNReal → NNReal, ∀ x y, y = f x ↔ y^2 = x := by sorry
 
 
 /-- Example 3.3.4. The unused variable `_x` is underscored to avoid triggering a linter. -/

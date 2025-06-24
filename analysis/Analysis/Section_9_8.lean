@@ -100,17 +100,17 @@ example {R :ℝ} (hR: R > 0) {n:ℕ} (hn: n > 0) : ∃ g : ℝ → ℝ, ∀ x �
   use g
 
 /-- Exercise 9.8.1 -/
-theorem HasMaxAt.of_monotone_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf: MonotoneOn f (Set.Icc a b)) :
-  ∃ xmax ∈ Set.Icc a b, HasMaxAt f (Set.Icc a b) xmax := by sorry
+theorem IsMaxOn.of_monotone_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf: MonotoneOn f (Set.Icc a b)) :
+  ∃ xmax ∈ Set.Icc a b, IsMaxOn f (Set.Icc a b) xmax := by sorry
 
-theorem HasMaxAt.of_strictmono_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf: StrictMonoOn f (Set.Icc a b)) :
-  ∃ xmax ∈ Set.Icc a b, HasMaxAt f (Set.Icc a b) xmax := by sorry
+theorem IsMaxOn.of_strictmono_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf: StrictMonoOn f (Set.Icc a b)) :
+  ∃ xmax ∈ Set.Icc a b, IsMaxOn f (Set.Icc a b) xmax := by sorry
 
-theorem HasMaxAt.of_antitone_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf: AntitoneOn f (Set.Icc a b)) :
-  ∃ xmax ∈ Set.Icc a b, HasMaxAt f (Set.Icc a b) xmax := by sorry
+theorem IsMaxOn.of_antitone_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf: AntitoneOn f (Set.Icc a b)) :
+  ∃ xmax ∈ Set.Icc a b, IsMaxOn f (Set.Icc a b) xmax := by sorry
 
-theorem HasMaxAt.of_strictantitone_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf: StrictAntiOn f (Set.Icc a b)) :
-  ∃ xmax ∈ Set.Icc a b, HasMaxAt f (Set.Icc a b) xmax := by
+theorem IsMaxOn.of_strictantitone_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf: StrictAntiOn f (Set.Icc a b)) :
+  ∃ xmax ∈ Set.Icc a b, IsMaxOn f (Set.Icc a b) xmax := by
   sorry
 
 /-- Exercise 9.8.2 -/

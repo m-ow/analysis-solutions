@@ -126,7 +126,7 @@ theorem Sequence.equiv_of_cauchy {a b: ℕ → ℚ} (hab: Sequence.equiv a b) :
     (a:Sequence).isCauchy ↔ (b:Sequence).isCauchy := by sorry
 
 /-- Exercise 5.2.2 -/
-theorem Sequence.close_of_bounded {ε:ℚ} (hε: ε>0) {a b: ℕ → ℚ} (hab: ε.eventually_close a b) :
+theorem Sequence.close_of_bounded {ε:ℚ} {a b: ℕ → ℚ} (hab: ε.eventually_close a b) :
     (a:Sequence).isBounded ↔ (b:Sequence).isBounded := by sorry
 
 end Chapter5

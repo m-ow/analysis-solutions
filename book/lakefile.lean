@@ -68,6 +68,8 @@ def sections := #[
   (`Analysis.Section_9_9, "Uniform continuity"),
   (`Analysis.Section_9_10, "Limits at infinity"),
   (`Analysis.Section_10_1, "Basic definitions"),
+  (`Analysis.Section_10_2, "Local maxima, local minima, and derivatives"),
+  (`Analysis.Section_10_3, "Monotone functions and derivatives"),
   (`Analysis.Appendix_A_1, "Mathematical statements"),
   (`Analysis.Appendix_A_2, "Implication"),
   (`Analysis.Appendix_A_3, "The structure of proofs"),

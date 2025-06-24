@@ -71,8 +71,8 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Section 9.10: Limits at infinity ([Verso page](https://teorth.github.io/analysis/sec910/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_9_10.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_9_10.lean))
 - Chapter 10: Differentiation of functions
   - Section 10.1: Basic definitions ([Verso page](https://teorth.github.io/analysis/sec101/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_10_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_10_1.lean))
-  - _Section 10.2: Local maxima, local minima, and derivatives (planned)_
-  - _Section 10.3: Monotone functions and derivatives (planned)_
+  - Section 10.2: Local maxima, local minima, and derivatives ([Verso page](https://teorth.github.io/analysis/sec102/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_10_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_10_2.lean))
+  - Section 10.3: Monotone functions and derivatives ([Verso page](https://teorth.github.io/analysis/sec103/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_10_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_10_3.lean))
   - _Section 10.4: Inverse functions and derivatives (planned)_
   - _Section 10.5: L'Hôpital's rule (planned)_
 - _Chapter 11: The Riemann integral (planned)_
