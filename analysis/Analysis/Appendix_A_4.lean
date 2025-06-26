@@ -3,7 +3,7 @@ import Mathlib.Tactic
 /-!
 # Analysis I, Appendix A.4
 
-Some examples of how variables and quantifier are used in Lean
+Some examples of how variables and quantifiers are used in Lean
 
 -/
 
@@ -94,5 +94,3 @@ example : ¬ ∃ x, (3 < x ∧ x < 2) ∧ (6 < 2*x ∧ 2*x < 4) := by
   simp
   intro x h1 h2 h3
   linarith
-
-

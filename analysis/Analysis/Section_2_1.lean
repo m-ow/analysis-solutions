@@ -117,7 +117,7 @@ theorem Nat.six_ne_two' : (6:Nat) ≠ 2 := by
 
 /--
   Axiom 2.5 (principle of mathematical induction). The `induction` (or `induction'`) tactic in
-  Mathlib serve as a substitute for this axiom.
+  Mathlib serves as a substitute for this axiom.
 -/
 theorem Nat.induction (P : Nat → Prop) (hbase : P 0) (hind : ∀ n, P n → P (n++)) :
     ∀ n, P n := by

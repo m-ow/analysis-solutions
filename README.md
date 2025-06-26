@@ -33,7 +33,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Section 4.1: The integers ([Verso page](https://teorth.github.io/analysis/sec41/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_1.lean))
   - Section 4.2: The rationals ([Verso page](https://teorth.github.io/analysis/sec42/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_2.lean))
   - Section 4.3: Absolute value and exponentiation ([Verso page](https://teorth.github.io/analysis/sec43/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_3.lean))
-  - _Section 4.4: Gaps in the rational numbers (possible future expansion)_ 
+  - Section 4.4: Gaps in the rational numbers ([Verso page](https://teorth.github.io/analysis/sec44/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_4_4.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_4_4.lean))
 - Chapter 5: The Real numbers
   - Section 5.1: Cauchy sequences of rationals ([Verso page](https://teorth.github.io/analysis/sec51/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_1.lean))
   - Section 5.2: Equivalent Cauchy sequences ([Verso page](https://teorth.github.io/analysis/sec52/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_2.lean))
@@ -58,7 +58,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Section 7.4: Rearrangement of series ([Verso page](https://teorth.github.io/analysis/sec74/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_7_4.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_7_4.lean))
   - Section 7.5: The root and ratio tests ([Verso page](https://teorth.github.io/analysis/sec75/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_7_5.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_7_5.lean))
 - _Chapter 8: Infinite sets (possible future expansion)_
-- Chapter 9: Continuous functions on `ℝ` 
+- Chapter 9: Continuous functions on `ℝ`
   - Section 9.1: Subsets of the real line ([Verso page](https://teorth.github.io/analysis/sec91/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_9_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_9_1.lean))
   - Section 9.2: The algebra of real-valued functions ([Verso page](https://teorth.github.io/analysis/sec92/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_9_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_9_2.lean))
   - Section 9.3: Limiting values of functions ([Verso page](https://teorth.github.io/analysis/sec93/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_9_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_9_3.lean))
@@ -73,17 +73,27 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Section 10.1: Basic definitions ([Verso page](https://teorth.github.io/analysis/sec101/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_10_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_10_1.lean))
   - Section 10.2: Local maxima, local minima, and derivatives ([Verso page](https://teorth.github.io/analysis/sec102/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_10_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_10_2.lean))
   - Section 10.3: Monotone functions and derivatives ([Verso page](https://teorth.github.io/analysis/sec103/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_10_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_10_3.lean))
-  - _Section 10.4: Inverse functions and derivatives (planned)_
-  - _Section 10.5: L'Hôpital's rule (planned)_
-- _Chapter 11: The Riemann integral (planned)_
+  - Section 10.4: Inverse functions and derivatives ([Verso page](https://teorth.github.io/analysis/sec104/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_10_4.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_10_4.lean))
+  - Section 10.5: L'Hôpital's rule ([Verso page](https://teorth.github.io/analysis/sec105/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_10_5.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_10_5.lean))
+- Chapter 11: The Riemann integral
+  - _Section 11.1: Partitions (planned)_
+  - _Section 11.2: Piecewise constant functions (planned)_
+  - _Section 11.3: Upper and lower Riemann integrals (planned)_
+  - _Section 11.4: Basic properties of the Riemann integral (planned)_
+  - _Section 11.5: Riemann integrability of continuous functions (planned)_
+  - _Section 11.6: Riemann integrability of monotone functions (planned)_
+  - _Section 11.7: A non-Riemann integrable function (planned)_
+  - _Section 11.8: The Riemann-Stieltjes integral (planned)_
+  - _Section 11.9: The two fundamental theorems of calculus (planned)_
+  - _Section 11.10: Consequences of the fundamental theorem of calculus (planned)_
 - Appendix A: The basics of mathematical logic
-  - A.1: Mathematical statements ([Verso page](https://teorth.github.io/analysis/secA1/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_1.lean))
-  - A.2: Implication ([Verso page](https://teorth.github.io/analysis/secA2/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_2.lean))
-  - A.3: The structure of proofs ([Verso page](https://teorth.github.io/analysis/secA3/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_3.lean))
-  - A.4: Variables and quantifiers ([Verso page](https://teorth.github.io/analysis/secA4/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_4.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_4.lean))
-  - A.5: Nested quantifiers ([Verso page](https://teorth.github.io/analysis/secA5/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_5.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_5.lean))
-  - A.6: Some examples of proofs and quantifiers ([Verso page](https://teorth.github.io/analysis/secA6/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_6.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_6.lean))
-  - A.7: Equality ([Verso page](https://teorth.github.io/analysis/secA7/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_7.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_7.lean))
+  - A.1: Mathematical statements ([Verso page](https://teorth.github.io/analysis/appA1/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_1.lean))
+  - A.2: Implication ([Verso page](https://teorth.github.io/analysis/appA2/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_2.lean))
+  - A.3: The structure of proofs ([Verso page](https://teorth.github.io/analysis/appA3/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_3.lean))
+  - A.4: Variables and quantifiers ([Verso page](https://teorth.github.io/analysis/appA4/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_4.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_4.lean))
+  - A.5: Nested quantifiers ([Verso page](https://teorth.github.io/analysis/appA5/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_5.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_5.lean))
+  - A.6: Some examples of proofs and quantifiers ([Verso page](https://teorth.github.io/analysis/appA6/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_6.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_6.lean))
+  - A.7: Equality ([Verso page](https://teorth.github.io/analysis/appA7/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_7.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_7.lean))
 - _Appendix B: The decimal system (possible future expansion)_
 
 ## Other resources
@@ -151,5 +161,5 @@ To build the project's web page after [installing Lean](https://lean-lang.org/do
 % cd ../
 ```
 
-After this, `book/_site/` contains the project's web page. 
+After this, `book/_site/` contains the project's web page.
 This can be served as a webpage by executing `python3 serve.py`
