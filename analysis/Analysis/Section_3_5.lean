@@ -444,9 +444,9 @@ theorem SetTheory.Set.is_graph {X Y G:Set} (hG: G ⊆ X ×ˢ Y)
 theorem SetTheory.Set.power_set_axiom' (X Y:Set) :
     ∃! S:Set, ∀(F:Object), F ∈ S ↔ ∃ f: Y → X, object_of f = F := sorry
 
-/-- Exercise 3.5.12 -/
-theorem SetTheory.Set.recursion (f: nat → nat → nat) (c:nat) :
-    ∃! a: nat → nat, a 0 = c ∧ ∀ n, a (n + 1:ℕ) = f n (a n) := by sorry
+/-- Exercise 3.5.12, with errata from web site incorporated -/
+theorem SetTheory.Set.recursion (X: Type) (f: nat → X → X) (c:X) :
+    ∃! a: nat → X, a 0 = c ∧ ∀ n, a (n + 1:ℕ) = f n (a n) := by sorry
 
 /-- Exercise 3.5.13 -/
 theorem SetTheory.Set.nat_unique (nat':Set) (zero:nat') (succ:nat' → nat')

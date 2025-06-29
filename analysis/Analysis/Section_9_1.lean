@@ -67,7 +67,7 @@ example : (0.5:ℝ).adherent' 1.1 {1,2,3} := by sorry
 
 namespace Chapter9
 
-/-- Definition 9.1.ℝ-/
+/-- Definition 9.1.-/
 abbrev AdherentPt (x:ℝ) (X:Set ℝ) := ∀ ε > (0:ℝ), ε.adherent' x X
 
 example : AdherentPt 1 (Set.Ioo 0 1) := by sorry
@@ -258,7 +258,7 @@ example : AdherentPt 3 ((Set.Ioo 1 2) ∪ {3}) := by sorry
 
 example : ¬ LimitPt 3 ((Set.Ioo 1 2) ∪ {3}) := by sorry
 
-example : ¬ IsolatedPt 3 ((Set.Ioo 1 2) ∪ {3}) := by sorry
+example : IsolatedPt 3 ((Set.Ioo 1 2) ∪ {3}) := by sorry
 
 /-- Remark 9.1.20 -/
 theorem LimitPt.iff_limit (x:ℝ) (X: Set ℝ) :
@@ -394,7 +394,7 @@ example {X Y:Set ℝ} (hY: IsClosed Y) (hXY: X ⊆ Y) : closure X ⊆ Y := by
   sorry
 
 /-- Exercise 9.1.7 -/
-example {n:ℕ} (hn: n ≥ 1) (X: Fin n → Set ℝ) (hX: ∀ i, IsClosed (X i)) :
+example {n:ℕ} (X: Fin n → Set ℝ) (hX: ∀ i, IsClosed (X i)) :
   IsClosed (⋃ i, X i) := by
   sorry
 
@@ -408,7 +408,7 @@ example {X:Set ℝ} {x:ℝ} (hx: AdherentPt x X) : LimitPt x X ∨ IsolatedPt x 
   sorry
 
 /-- Exercise 9.1.9 -/
-example {X:Set ℝ} {x:ℝ} (hx: AdherentPt x X) : ¬ (LimitPt x X ∧ IsolatedPt x X) := by
+example {X:Set ℝ} {x:ℝ} : ¬ (LimitPt x X ∧ IsolatedPt x X) := by
   sorry
 
 /-- Exercise 9.1.10 -/
@@ -431,7 +431,7 @@ example (I: Finset ℝ) : IsClosed (I:Set ℝ) ∧ Bornology.IsBounded (I:Set �
   sorry
 
 /-- Exercise 9.1.15 -/
-example {E:Set ℝ} (hE: Bornology.IsBounded E) : AdherentPt (sSup E) E ∧ AdherentPt (sSup E) Eᶜ := by
+example {E:Set ℝ} (hE: Bornology.IsBounded E) (hnon: E.Nonempty): AdherentPt (sSup E) E ∧ AdherentPt (sSup E) Eᶜ := by
   sorry
 
 

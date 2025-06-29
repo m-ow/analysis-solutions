@@ -117,7 +117,7 @@ example : derivWithin f_10_1_6 (Set.Iio 0) 0 = -1 := by
 /-- Proposition 10.1.7 (Newton's approximation) / Exercise 10.1.2 -/
 theorem _root_.HasDerivWithinAt.iff_approx_linear (X: Set ℝ) (x₀ :ℝ) (f: ℝ → ℝ) (L:ℝ) :
   HasDerivWithinAt f L X x₀ ↔
-  ∀ ε > 0, ∃ δ > 0, ∀ x ∈ X, |x - x₀| < δ → |f x - f x₀ - L * (x - x₀)| < ε * |x - x₀| := by
+  ∀ ε > 0, ∃ δ > 0, ∀ x ∈ X, |x - x₀| < δ → |f x - f x₀ - L * (x - x₀)| ≤ ε * |x - x₀| := by
   sorry
 
 /-- Proposition 10.0.1 / Exercise 10.1.3 -/
@@ -182,7 +182,7 @@ theorem _root_.HasDerivWithinAt.of_div {X: Set ℝ} {x₀ f'x₀ g'x₀: ℝ}
   HasDerivWithinAt (f / g) ((f'x₀ * (g x₀) - (f x₀) * g'x₀) / (g x₀)^2) X x₀ := by
   sorry
 
-example (x₀:ℝ) : HasDerivWithinAt (fun x ↦ (x-2)/(x-1)) (1 /(x₀-1)^2) (Set.univ) x₀ := by
+example (x₀:ℝ) (hx₀: x₀ ≠ 1): HasDerivWithinAt (fun x ↦ (x-2)/(x-1)) (1 /(x₀-1)^2) (Set.univ \ {1}) x₀ := by
   sorry
 
 /-- Theorem 10.1.15 (Chain rule) / Exercise 10.1.7 -/

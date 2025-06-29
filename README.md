@@ -76,9 +76,9 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Section 10.4: Inverse functions and derivatives ([Verso page](https://teorth.github.io/analysis/sec104/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_10_4.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_10_4.lean))
   - Section 10.5: L'Hôpital's rule ([Verso page](https://teorth.github.io/analysis/sec105/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_10_5.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_10_5.lean))
 - Chapter 11: The Riemann integral
-  - _Section 11.1: Partitions (planned)_
-  - _Section 11.2: Piecewise constant functions (planned)_
-  - _Section 11.3: Upper and lower Riemann integrals (planned)_
+  - Section 11.1: Partitions ([Verso page](https://teorth.github.io/analysis/sec111/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_11_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_11_1.lean))
+  - Section 11.2: Piecewise constant functions ([Verso page](https://teorth.github.io/analysis/sec112/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_11_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_11_2.lean))
+  - Section 11.3: Upper and lower Riemann integrals ([Verso page](https://teorth.github.io/analysis/sec113/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_11_3.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_11_3.lean))
   - _Section 11.4: Basic properties of the Riemann integral (planned)_
   - _Section 11.5: Riemann integrability of continuous functions (planned)_
   - _Section 11.6: Riemann integrability of monotone functions (planned)_
