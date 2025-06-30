@@ -1244,7 +1244,50 @@ example : ({3,5,9}:Set).replace (P := fun x y ↦ ∃ (n:ℕ), x.val = n ∧ y =
 example : ({3,5,9}:Set).replace (P := fun x y ↦ y=1) (by sorry) = {1} := by sorry
 
 /-- Exercise 3.1.5.  One can use the `tfae_have` and `tfae_finish` tactics here. -/
-theorem SetTheory.Set.subset_tfae (A B C:Set) : [A ⊆ B, A ∪ B = B, A ∩ B = A].TFAE := by sorry
+theorem SetTheory.Set.subset_tfae (A B:Set) : [A ⊆ B, A ∪ B = B, A ∩ B = A].TFAE := by
+  tfae_have 1 ↔ 2 := by
+    constructor
+    · intro h
+      apply ext
+      intro x
+      constructor
+      · intro hab
+        rw [mem_union] at hab
+        rcases hab with ha | hb
+        · apply h; assumption
+        · assumption
+      · intro hb
+        rw [mem_union]
+        right; assumption
+    · intro h
+      rw [ext_iff] at h
+      intro x ha
+      specialize h x
+      rw [<- h]
+      rw [mem_union]
+      left
+      exact ha
+  tfae_have 1 ↔ 3 := by
+    constructor
+    · intro h
+      apply ext
+      intro x
+      constructor
+      · intro hab
+        rw [mem_inter] at hab
+        exact hab.1
+      · intro ha
+        rw [mem_inter]
+        constructor
+        · assumption
+        · apply h; assumption
+    · intro h x ha
+      rw [ext_iff] at h
+      specialize h x
+      rw [<- h] at ha
+      rw [mem_inter] at ha
+      exact ha.2
+  tfae_finish
 
 /-- Exercise 3.1.7 -/
 theorem SetTheory.Set.inter_subset_left (A B:Set) : A ∩ B ⊆ A := by
