@@ -80,7 +80,7 @@ instance CauchySequence.instSetoid : Setoid CauchySequence where
 theorem CauchySequence.equiv_iff (a b: CauchySequence) : a ≈ b ↔ Sequence.equiv a b := by rfl
 
 /-- Every constant sequence is Cauchy -/
-theorem Sequence.isCauchy_of_const (a:ℚ) : ((fun n:ℕ ↦ a):Sequence).isCauchy := by sorry
+theorem Sequence.isCauchy_of_const (a:ℚ) : ((fun _:ℕ ↦ a):Sequence).isCauchy := by sorry
 
 instance CauchySequence.instZero : Zero CauchySequence where
   zero := CauchySequence.mk' (a := fun _: ℕ ↦ 0) (Sequence.isCauchy_of_const (0:ℚ))

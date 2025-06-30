@@ -72,6 +72,9 @@ example (x:ℝ) : ({x}: Set ℝ).OrdConnected := by sorry
 
 
 /-- Lemma 11.1.4 / Exercise 11.1.1 -/
+theorem Bornology.IsBounded.of_boundedInterval (I: BoundedInterval) : Bornology.IsBounded (I:Set ℝ) := by
+  sorry
+
 theorem BoundedInterval.ordConnected_iff (X:Set ℝ) : Bornology.IsBounded X ∧ X.OrdConnected ↔ ∃ I: BoundedInterval, X = I := by
   sorry
 
@@ -156,6 +159,11 @@ theorem BoundedInterval.length_of_empty {I: BoundedInterval} (hI: (I:Set ℝ) = 
 theorem BoundedInterval.length_of_subsingleton {I: BoundedInterval} : Subsingleton (I:Set ℝ) ↔ |I|ₗ = 0 := by
   sorry
 
+theorem BoundedInterval.dist_le_length {I:BoundedInterval} {x y:ℝ} (hx: x ∈ I) (hy: y ∈ I) : |x - y| ≤ |I|ₗ := by
+  replace hx := subset_Icc I _ hx
+  replace hy := subset_Icc I _ hy
+  simp [mem_iff, abs_le'] at hx hy ⊢
+  left; exact ⟨ by linarith, by linarith ⟩
 
 abbrev BoundedInterval.joins (K I J: BoundedInterval) : Prop := (I:Set ℝ) ∩ (J:Set ℝ) = ∅
   ∧ (K:Set ℝ) = (I:Set ℝ) ∪ (J:Set ℝ) ∧ |K|ₗ = |I|ₗ + |J|ₗ

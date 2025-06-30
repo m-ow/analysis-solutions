@@ -76,6 +76,8 @@ def sections := #[
   (`Analysis.Section_11_1, "Partitions"),
   (`Analysis.Section_11_2, "Piecewise constant functions"),
   (`Analysis.Section_11_3, "Upper and lower Riemann integrals"),
+  (`Analysis.Section_11_4, "Basic properties of the Riemann integral"),
+  (`Analysis.Section_11_5, "Riemann integrability of continuous functions"),
   (`Analysis.Appendix_A_1, "Mathematical statements"),
   (`Analysis.Appendix_A_2, "Implication"),
   (`Analysis.Appendix_A_3, "The structure of proofs"),

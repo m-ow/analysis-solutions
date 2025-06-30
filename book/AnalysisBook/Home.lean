@@ -67,6 +67,8 @@ Currently formalized sections:
 - [Section 11.1: Partitions](./sec111/)
 - [Section 11.2: Piecewise constant functions](./sec112/)
 - [Section 11.3: Upper and lower Riemann integrals](./sec113/)
+- [Section 11.4: Basic properties of the Riemann integral](./sec114/)
+- [Section 11.5: Riemann integrability of continuous functions](./sec115/)
 - [Appendix A.1: Mathematical statements](./secA1/)
 - [Appendix A.2: Implications](./secA2/)
 - [Appendix A.3: The structure of proofs](./secA3/)

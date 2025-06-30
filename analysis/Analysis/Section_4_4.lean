@@ -135,7 +135,7 @@ theorem Rat.exist_approx_sqrt_two {ε:ℚ} (hε:ε>0) : ∃ x ≥ (0:ℚ), x^2 <
   have (n:ℕ): (n*ε)^2 < 2 := by
     induction' n with n hn
     . simp
-    specialize h (n*ε) (by sorry) hn
+    specialize h (n*ε) (by positivity) hn
     simp [add_mul]
     apply lt_of_le_of_ne h
     have := not_exist_sqrt_two

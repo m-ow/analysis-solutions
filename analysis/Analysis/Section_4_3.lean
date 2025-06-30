@@ -182,7 +182,7 @@ theorem pow_mul (x:ℚ) (m n:ℕ) : (x^n)^m = x^(n*m) := by sorry
 theorem mul_pow (x y:ℚ) (n:ℕ) : (x*y)^n = x^n * y^n := by sorry
 
 /-- Proposition 4.3.10(b) (Properties of exponentiation, I) / Exercise 4.3.3 -/
-theorem pow_eq_zero (x:ℚ) (n:ℕ) : x^n = 0 ↔ x = 0 := by sorry
+theorem pow_eq_zero (x:ℚ) (n:ℕ) (hn : 0 < n) : x^n = 0 ↔ x = 0 := by sorry
 
 /-- Proposition 4.3.10(c) (Properties of exponentiation, I) / Exercise 4.3.3 -/
 theorem pow_nonneg {x:ℚ} (n:ℕ) (hx: x ≥ 0) : x^n ≥ 0 := by sorry

@@ -170,13 +170,13 @@ theorem UniformContinuousOn.limit_at_adherent  {X:Set ℝ} (f: ℝ → ℝ)
   sorry
 
 /-- Proposition 9.9.15 / Exercise 9.9.5 -/
-theorem UniformContinuousOn.of_bounded {E X:Set ℝ} (f: ℝ → ℝ)
+theorem UniformContinuousOn.of_bounded {E X:Set ℝ} {f: ℝ → ℝ}
   (hf: UniformContinuousOn f X) (hEX: E ⊆ X) (hE: Bornology.IsBounded E) :
   Bornology.IsBounded (f '' E) := by
   sorry
 
 /-- Theorem 9.9.16 -/
-theorem UniformContinuousOn.of_continuousOn {a b:ℝ} (hab: a < b) {f:ℝ → ℝ}
+theorem UniformContinuousOn.of_continuousOn {a b:ℝ} {f:ℝ → ℝ}
   (hcont: ContinuousOn f (Set.Icc a b)) :
   UniformContinuousOn f (Set.Icc a b) := by
   -- This proof is written to follow the structure of the original text.
@@ -205,7 +205,7 @@ theorem UniformContinuousOn.of_continuousOn {a b:ℝ} (hab: a < b) {f:ℝ → �
     exact hmem
   have hxmem (j:ℕ) : x (n j) ∈ Set.Icc a b := hx (n j)
   have hymem (j:ℕ) : y (n j) ∈ Set.Icc a b := hy (n j)
-  have hclosed : IsClosed (Set.Icc a b) := Icc_closed (by linarith)
+  have hclosed : IsClosed (Set.Icc a b) := Icc_closed
   have hbounded : Bornology.IsBounded (Set.Icc a b) := Icc_bounded _ _
   obtain ⟨ j, hj, ⟨ L, hL, hconv⟩ ⟩ := (Heine_Borel (Set.Icc a b)).mp ⟨ hclosed, hbounded ⟩ _ hxmem
   replace hcont := ContinuousOn.continuousWithinAt hcont hL

@@ -71,7 +71,7 @@ lemma Nat.two_succ : 2++ = 3 := by rfl
 
 /--
   Axiom 2.3 (0 is not the successor of any natural number).
-  Compare with Mathlib's `Nat.succ_ne_zero`.
+  Compare with Lean's `Nat.succ_ne_zero`.
 -/
 theorem Nat.succ_ne (n:Nat) : n++ ≠ 0 := by
   by_contra h

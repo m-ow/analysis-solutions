@@ -194,7 +194,7 @@ theorem isClosed_def' (X:Set ℝ): IsClosed X ↔ ∀ x, AdherentPt x X → x �
   rfl
 
 /-- Examples 9.1.16 -/
-theorem Icc_closed {a b:ℝ} (h: a ≤ b) : IsClosed (Set.Icc a b) := by sorry
+theorem Icc_closed {a b:ℝ} : IsClosed (Set.Icc a b) := by sorry
 
 /-- Examples 9.1.16 -/
 theorem Ici_closed (a:ℝ) : IsClosed (Set.Ici a) := by sorry

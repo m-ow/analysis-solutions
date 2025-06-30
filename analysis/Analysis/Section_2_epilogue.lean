@@ -77,8 +77,8 @@ class PeanoAxioms where
 namespace PeanoAxioms
 
 /-- The Chapter 2 natural numbers obey the Peano axioms. -/
-def Chapter2.Nat : PeanoAxioms where
-  Nat := _root_.Chapter2.Nat
+def Chapter2_Nat : PeanoAxioms where
+  Nat := Chapter2.Nat
   zero := Chapter2.Nat.zero
   succ := Chapter2.Nat.succ
   succ_ne := Chapter2.Nat.succ_ne
@@ -86,7 +86,7 @@ def Chapter2.Nat : PeanoAxioms where
   induction := Chapter2.Nat.induction
 
 /-- The Mathlib natural numbers obey the Peano axioms. -/
-def Mathlib.Nat : PeanoAxioms where
+def Mathlib_Nat : PeanoAxioms where
   Nat := ℕ
   zero := 0
   succ := Nat.succ
@@ -99,30 +99,38 @@ abbrev natCast (P : PeanoAxioms) : ℕ → P.Nat := fun n ↦ match n with
   | Nat.zero => P.zero
   | Nat.succ n => P.succ (natCast P n)
 
+/-- One can start the proof here with `unfold Function.Injective`, although it is not strictly necessary. -/
 theorem natCast_injective (P : PeanoAxioms) : Function.Injective P.natCast  := by
   sorry
 
+/-- One can start the proof here with `unfold Function.Surjective`, although it is not strictly necessary. -/
 theorem natCast_surjective (P : PeanoAxioms) : Function.Surjective P.natCast := by
   sorry
 
-/-- The notion of an equivalence between two structures obeying the Peano axioms -/
+/-- The notion of an equivalence between two structures obeying the Peano axioms.
+    The symbol `≃` is an alias for Mathlib's `Equiv` class; for instance `P.Nat ≃ Q.Nat` is
+    an alias for `_root_.Equiv P.Nat Q.Nat`. -/
 class Equiv (P Q : PeanoAxioms) where
   equiv : P.Nat ≃ Q.Nat
   equiv_zero : equiv P.zero = Q.zero
   equiv_succ : ∀ n : P.Nat, equiv (P.succ n) = Q.succ (equiv n)
 
-abbrev Equiv.symm (equiv : Equiv P Q) : Equiv Q P where
+/-- This exercise will require application of Mathlib's API for the `Equiv` class.
+    Some of this API can be invoked automatically via the `simp` tactic. -/
+abbrev Equiv.symm {P Q: PeanoAxioms} (equiv : Equiv P Q) : Equiv Q P where
   equiv := equiv.equiv.symm
   equiv_zero := by sorry
   equiv_succ n := by sorry
 
-abbrev Equiv.trans (equiv1 : Equiv P Q) (equiv2 : Equiv Q R) : Equiv P R where
+/-- This exercise will require application of Mathlib's API for the `Equiv` class.
+    Some of this API can be invoked automatically via the `simp` tactic. -/
+abbrev Equiv.trans {P Q R: PeanoAxioms} (equiv1 : Equiv P Q) (equiv2 : Equiv Q R) : Equiv P R where
   equiv := equiv1.equiv.trans equiv2.equiv
   equiv_zero := by sorry
   equiv_succ n := by sorry
 
-/-- Note: I suspect that this construction is non-computable and requires classical logic. -/
-noncomputable abbrev Equiv.fromNat (P : PeanoAxioms) : Equiv Mathlib.Nat P where
+/-- Useful Mathlib tools for inverting bijections include `Function.surjInv` and `Function.invFun`. -/
+noncomputable abbrev Equiv.fromNat (P : PeanoAxioms) : Equiv Mathlib_Nat P where
   equiv := {
     toFun := P.natCast
     invFun := by sorry
@@ -132,8 +140,10 @@ noncomputable abbrev Equiv.fromNat (P : PeanoAxioms) : Equiv Mathlib.Nat P where
   equiv_zero := by sorry
   equiv_succ n := by sorry
 
+/-- The task here is to establish that any two structures obeying the Peano axioms are equivalent. -/
 noncomputable abbrev Equiv.mk' (P Q : PeanoAxioms) : Equiv P Q := by sorry
 
+/-- There is only one equivalence between any two structures obeying the Peano axioms. -/
 theorem Equiv.uniq {P Q : PeanoAxioms} (equiv1 equiv2 : PeanoAxioms.Equiv P Q) :
     equiv1 = equiv2 := by
   sorry

@@ -38,6 +38,9 @@ theorem BddOn.iff' (f:ℝ → ℝ) (X:Set ℝ) :
   BddOn f X ↔ Bornology.IsBounded (f '' X) := by
   sorry
 
+theorem BddOn.of_bounded {f :ℝ → ℝ} {X: Set ℝ} {M:ℝ} (h: ∀ x ∈ X, |f x| ≤ M) :
+  BddOn f X := by use M
+
 example : Continuous (fun x:ℝ ↦ x) := by sorry
 
 example : ¬ BddOn (fun x:ℝ ↦ x) Set.univ  := by sorry
@@ -59,7 +62,7 @@ theorem BddOn.of_continuous_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf: 
   set x := fun (n:ℕ) ↦ (hunbound n).choose
   have hx (n:ℕ) : a ≤ x n ∧ x n ≤ b ∧ n < |f (x n)| := (hunbound n).choose_spec
   set X := Set.Icc a b
-  have hXclosed : IsClosed X := Icc_closed (by linarith)
+  have hXclosed : IsClosed X := Icc_closed
   have hXbounded : Bornology.IsBounded X := Icc_bounded _ _
   have haX (n:ℕ): x n ∈ X := by simp [X]; exact ⟨ (hx n).1, (hx n).2.1 ⟩
   obtain ⟨ n, hn, ⟨ L, hLX, hconv ⟩ ⟩ := ((Heine_Borel X).mp ⟨ hXclosed, hXbounded ⟩) x haX
@@ -117,7 +120,7 @@ theorem IsMaxOn.of_continuous_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf
   set x : ℕ → ℝ := fun n ↦ (claim2 n).choose
   have hx (n:ℕ) : x n ∈ Set.Icc a b := (claim2 n).choose_spec.1
   have hfx (n:ℕ) : m - 1/(n+1:ℝ) < f (x n) := (claim2 n).choose_spec.2
-  have hclosed : IsClosed (Set.Icc a b) := Icc_closed (by linarith)
+  have hclosed : IsClosed (Set.Icc a b) := Icc_closed 
   have hbounded : Bornology.IsBounded (Set.Icc a b) := Icc_bounded _ _
   obtain ⟨ n, hn, ⟨ xmax, hmax, hconv⟩ ⟩ := (Heine_Borel (Set.Icc a b)).mp ⟨ hclosed, hbounded⟩ x hx
   use xmax, hmax
