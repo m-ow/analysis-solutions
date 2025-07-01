@@ -390,31 +390,83 @@ theorem Nat.trichotomous (a b:Nat) : a < b ∨ a = b ∨ a > b := by
 def Nat.decLe : (a b : Nat) → Decidable (a ≤ b)
   | 0, b => by
     apply isTrue
-    sorry
+    use b; rfl
   | a++, b => by
     cases decLe a b with
     | isTrue h =>
       cases decEq a b with
       | isTrue h =>
         apply isFalse
-        sorry
-      | isFalse h =>
+        intro contra
+        rw [<- lt_iff_succ_le] at contra
+        apply ne_of_lt at contra
+        contradiction
+      | isFalse h' =>
         apply isTrue
-        sorry
+        rw [<- lt_iff_succ_le]
+        rw [le_iff_lt_or_eq] at h
+        rcases h with h1 | h2
+        · assumption
+        · contradiction
     | isFalse h =>
       apply isFalse
-      sorry
+      intro h'
+      rw [le_iff_lt_or_eq] at h
+      simp at h
+      rcases h with ⟨h1, h2⟩
+      rw [<- lt_iff_succ_le] at h'
+      contradiction
 
 instance Nat.decidableRel : DecidableRel (· ≤ · : Nat → Nat → Prop) := Nat.decLe
-
 
 /-- (Not from textbook) Nat has the structure of a linear ordering. -/
 instance Nat.linearOrder : LinearOrder Nat where
   le_refl := ge_refl
   le_trans a b c hab hbc := ge_trans hbc hab
-  lt_iff_le_not_le := sorry
+  lt_iff_le_not_le := by
+    intro a b
+    constructor
+    · intro h
+      constructor
+      · exact le_of_lt h
+      · intro contra
+        rw [le_iff_lt_or_eq] at contra
+        rcases contra with h1 | h2
+        · rw [<- gt_iff_lt] at h1
+          exact not_lt_of_gt a b ⟨h, h1⟩
+        · rw [h2] at h
+          apply ne_of_lt at h
+          contradiction
+    · intro h
+      rcases h with ⟨h1, h2⟩
+      rw [le_iff_lt_or_eq] at h1
+      rcases h1 with h1' | h2'
+      · assumption
+      · rw [le_iff_lt_or_eq] at h2
+        simp at h2
+        rcases h2 with ⟨ha, hb⟩
+        rw [h2'] at hb
+        contradiction
   le_antisymm a b hab hba := ge_antisymm hba hab
-  le_total := sorry
+  le_total := by
+    intro a b
+    revert a
+    apply induction
+    · left; use b; rfl
+    · intro n h
+      rcases h with hnb | hbn
+      · rw [le_iff_lt_or_eq] at hnb
+        rcases hnb with h1 | h2
+        · left; rwa [<- lt_iff_succ_le]
+        · right; rw [h2]; use 1; rw [succ_eq_add_one]
+      · rw [le_iff_lt_or_eq] at hbn
+        rcases hbn with h1 | h2
+        · apply le_of_lt at h1
+          cases' h1 with w hw
+          right; use w + 1
+          rw [<- add_assoc, hw, succ_eq_add_one]
+        · right; rw [h2]
+          use 1; rw [succ_eq_add_one]
   toDecidableLE := decidableRel
 
 /-- (Not from textbook) Nat has the structure of an ordered monoid. -/
