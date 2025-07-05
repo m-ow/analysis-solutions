@@ -50,6 +50,8 @@ import Analysis.Section_11_2
 import Analysis.Section_11_3
 import Analysis.Section_11_4
 import Analysis.Section_11_5
+import Analysis.Section_11_6
+import Analysis.Section_11_7
 import Analysis.Appendix_A_1
 import Analysis.Appendix_A_2
 import Analysis.Appendix_A_3

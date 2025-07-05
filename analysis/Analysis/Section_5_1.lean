@@ -79,6 +79,9 @@ example (n:ℤ) (hn: n ≥ 3) : Sequence.squares_from_three n = n^2 := Sequence.
 
 end Chapter5
 
+/--
+A slight generalization of 5.1.3 - definition of ε-steadiness for a sequence with an arbitrary starting point n₀
+-/
 abbrev Rat.steady (ε: ℚ) (a: Chapter5.Sequence) : Prop :=
   ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.close (a n) (a m)
 
@@ -86,6 +89,41 @@ lemma Rat.steady_def (ε: ℚ) (a: Chapter5.Sequence) :
   ε.steady a ↔ ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.close (a n) (a m) := by rfl
 
 namespace Chapter5
+
+/--
+5.1.3 - definition of ε-steadiness for a sequence starting at 0
+-/
+lemma Rat.isSteady_of_coe (ε : ℚ) (a:ℕ → ℚ) :
+    ε.steady (a:Sequence) ↔ ∀ n m : ℕ, ε.close (a n) (a m) := by
+  constructor
+  · intro h n m
+    specialize h n (by simp) m (by simp)
+    dsimp at h
+    exact h
+  intro h n hn m hm
+  dsimp at hn hm
+  lift n to ℕ using hn
+  lift m to ℕ using hm
+  simp [h n m]
+
+/--
+Not in textbook: the sequence 2, 2 ... is 1-steady
+Intended as a demonstration of `isSteady_of_coe`
+-/
+example : (1:ℚ).steady ((fun _:ℕ ↦ (3:ℚ)):Sequence) := by
+  rw [Rat.isSteady_of_coe 1 (fun _:ℕ ↦ (3:ℚ))]
+  unfold Rat.close
+  intro n m
+  simp
+
+/--
+Compare: if you need to work with `Rat.steady` on the coercion directly, there will be side conditions `hn : n ≥ 0` and `hm : m ≥ 0` that you will need to deal with.
+-/
+example : (1:ℚ).steady ( (fun _:ℕ ↦ (3:ℚ)):Sequence) := by
+  unfold Rat.steady Rat.close
+  intro n hn m hm
+  dsimp at * -- Not strictly necessary, but cleans up the proof state so you can see what's going on
+  simp [hn, hm]
 
 /-- Example 5.1.5 -/
 example : (1:ℚ).steady ((fun n:ℕ ↦ if Even n then (1:ℚ) else (0:ℚ)):Sequence) := by sorry

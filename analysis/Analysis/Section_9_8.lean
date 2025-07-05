@@ -113,6 +113,16 @@ theorem IsMaxOn.of_strictantitone_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ}
   ∃ xmax ∈ Set.Icc a b, IsMaxOn f (Set.Icc a b) xmax := by
   sorry
 
+theorem BddOn.of_monotone {a b:ℝ} {f:ℝ → ℝ} (hf: MonotoneOn f (Set.Icc a b)) :
+  BddOn f (Set.Icc a b) := by
+  sorry
+
+theorem BddOn.of_antitone {a b:ℝ} {f:ℝ → ℝ} (hf: AntitoneOn f (Set.Icc a b)) :
+  BddOn f (Set.Icc a b) := by
+  sorry
+
+
+
 /-- Exercise 9.8.2 -/
 theorem no_strictmono_intermediate_value : ∃ (a b:ℝ) (hab: a < b) (f:ℝ → ℝ) (hf: StrictMonoOn f (Set.Icc a b)), ¬ ∃ y, y ∈ Set.Icc (f a) (f b) ∨ y ∈ Set.Icc (f a) (f b) := by sorry
 

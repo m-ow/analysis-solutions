@@ -299,4 +299,9 @@ theorem Series.ex_7_4_4'_sum : (fun n ↦ a_7_4_4 (f_7_4_4 n) :Series).sum < 0 :
 theorem Series.absConverges_of_subseries {a:ℕ → ℝ} (ha: (a:Series).absConverges) {f: ℕ → ℕ} (hf: StrictMono f) :
   (fun n ↦ a (f n):Series).absConverges := by sorry
 
+/-- Exercise 7.4.2 : reprove Proposition 7.4.3 using Proposition 7.41, Proposition 7.2.14,
+    and expressing `a n` as the difference of `a n + |a n|` and `|a n|`. -/
+theorem Series.absConverges_of_permute' {a:ℕ → ℝ} (ha : (a:Series).absConverges)
+  {f: ℕ → ℕ} (hf: Function.Bijective f) :
+    (fun n ↦ a (f n):Series).absConverges  ∧ (a:Series).sum = (fun n ↦ a (f n) : Series).sum := by sorry
 end Chapter7

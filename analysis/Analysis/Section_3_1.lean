@@ -62,7 +62,7 @@ Some technical notes:
 
 namespace Chapter3
 
-/-- Some of the axioms of Zermelo-Frankel theory with atoms  -/
+/-- The axioms of Zermelo-Frankel theory with atoms  -/
 class SetTheory where
   Set : Type -- Axiom 3.1
   Object : Type -- Axiom 3.1
@@ -97,7 +97,7 @@ class SetTheory where
 
 export SetTheory (Set Object)
 
--- This instance implicitly imposes (some of) the axioms of Zermelo-Frankel set theory with atoms.
+-- This instance implicitly imposes the axioms of Zermelo-Frankel set theory with atoms.
 variable [SetTheory]
 
 
@@ -136,7 +136,8 @@ instance SetTheory.Set.instEmpty : EmptyCollection Set where
 
 /--
   Axiom 3.3 (empty set).
-  Note: one may have to explicitly cast ∅ to Set due to Mathlib's existing set theory notation.
+  Note: in some applications one may have to explicitly cast ∅ to Set due to
+  Mathlib's existing set theory notation.
 -/
 @[simp]
 theorem SetTheory.Set.not_mem_empty : ∀ x, x ∉ (∅:Set) := SetTheory.emptyset_mem
@@ -185,7 +186,8 @@ instance SetTheory.Set.instSingleton : Singleton Object Set where
 
 /--
   Axiom 3.3(a) (singleton).
-  Note one may have to explicitly cast {a} to Set due to Mathlib's existing set theory notation.
+  Note: in some applications one may have to explicitly cast {a} to Set due to Mathlib's
+  existing set theory notation.
 -/
 @[simp]
 theorem SetTheory.Set.mem_singleton (x a:Object) : x ∈ ({a}:Set) ↔ x = a := by
@@ -203,16 +205,18 @@ theorem SetTheory.Set.mem_union (x:Object) (X Y:Set) : x ∈ (X ∪ Y) ↔ (x �
 instance SetTheory.Set.instInsert : Insert Object Set where
   insert x X := {x} ∪ X
 
-/-- Axiom 3.3(b) (pair).  Note that one often has to cast {a,b} to Set -/
+/-- Axiom 3.3(b) (pair).  Note: in some applications one may have to cast {a,b}
+    to Set. -/
 theorem SetTheory.Set.pair_eq (a b:Object) : ({a,b}:Set) = {a} ∪ {b} := by rfl
 
-/-- Axiom 3.3(b) (pair).  Note that one often has to cast {a,b} to Set -/
+/-- Axiom 3.3(b) (pair).  Note: in some applications one may have to cast {a,b}
+    to Set. -/
 @[simp]
 theorem SetTheory.Set.mem_pair (x a b:Object) : x ∈ ({a,b}:Set) ↔ (x = a ∨ x = b) := by
   simp [pair_eq, mem_union, mem_singleton]
 
 @[simp]
-theorem SetTheory.Set.mem_triple (x a b:Object) : x ∈ ({a,b,c}:Set) ↔ (x = a ∨ x = b ∨ x = c) := by
+theorem SetTheory.Set.mem_triple (x a b c:Object) : x ∈ ({a,b,c}:Set) ↔ (x = a ∨ x = b ∨ x = c) := by
   simp [Insert.insert, mem_union, mem_singleton]
 
 /-- Remark 3.1.8 -/

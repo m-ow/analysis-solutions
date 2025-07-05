@@ -78,6 +78,8 @@ def sections := #[
   (`Analysis.Section_11_3, "Upper and lower Riemann integrals"),
   (`Analysis.Section_11_4, "Basic properties of the Riemann integral"),
   (`Analysis.Section_11_5, "Riemann integrability of continuous functions"),
+  (`Analysis.Section_11_6, "Riemann integrability of monotone functions"),
+  (`Analysis.Section_11_7, "A non-Riemann integrable function"),
   (`Analysis.Appendix_A_1, "Mathematical statements"),
   (`Analysis.Appendix_A_2, "Implication"),
   (`Analysis.Appendix_A_3, "The structure of proofs"),
@@ -162,7 +164,7 @@ target genLib (pkg) : Unit := do
     addTrace (← computeTrace <| TextFilePath.mk jsonFile)
 
     -- The module itself contains the literate page
-    let contents := s!"import AnalysisBook.LiterateModule\n\nset_option maxHeartbeats 1000000\n\nanalysis_page {declName} from {module} as {repr title}\n"
+    let contents := s!"import AnalysisBook.LiterateModule\n\nset_option maxHeartbeats 100000000\n\nanalysis_page {declName} from {module} as {repr title}\n"
     addPureTrace contents "contents"
 
     buildFileUnlessUpToDate' mod.leanFile do
