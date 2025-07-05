@@ -45,10 +45,10 @@ def theme : Theme := { Theme.default with
 
 def demoSite : Site := site AnalysisBook.Home /
   static "static" ← "./static_files"
-  "sec2e" Book.Analysis.Section_2_epilogue
   "sec21" Book.Analysis.Section_2_1
   "sec22" Book.Analysis.Section_2_2
   "sec23" Book.Analysis.Section_2_3
+  "sec2e" Book.Analysis.Section_2_epilogue
   "sec31" Book.Analysis.Section_3_1
   "sec32" Book.Analysis.Section_3_2
   "sec33" Book.Analysis.Section_3_3
@@ -97,6 +97,7 @@ def demoSite : Site := site AnalysisBook.Home /
   "sec115" Book.Analysis.Section_11_5
   "sec116" Book.Analysis.Section_11_6
   "sec117" Book.Analysis.Section_11_7
+  "sec118" Book.Analysis.Section_11_8
   "appA1" Book.Analysis.Appendix_A_1
   "appA2" Book.Analysis.Appendix_A_2
   "appA3" Book.Analysis.Appendix_A_3

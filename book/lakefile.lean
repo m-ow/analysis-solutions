@@ -80,6 +80,7 @@ def sections := #[
   (`Analysis.Section_11_5, "Riemann integrability of continuous functions"),
   (`Analysis.Section_11_6, "Riemann integrability of monotone functions"),
   (`Analysis.Section_11_7, "A non-Riemann integrable function"),
+  (`Analysis.Section_11_8, "The Riemann-Stieltjes integral"),
   (`Analysis.Appendix_A_1, "Mathematical statements"),
   (`Analysis.Appendix_A_2, "Implication"),
   (`Analysis.Appendix_A_3, "The structure of proofs"),

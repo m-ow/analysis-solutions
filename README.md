@@ -83,7 +83,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Section 11.5: Riemann integrability of continuous functions ([Verso page](https://teorth.github.io/analysis/sec115/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_11_5.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_11_5.lean))
   - Section 11.6: Riemann integrability of monotone functions ([Verso page](https://teorth.github.io/analysis/sec116/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_11_6.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_11_6.lean))
   - Section 11.7: A non-Riemann integrable function ([Verso page](https://teorth.github.io/analysis/sec117/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_11_7.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_11_7.lean))
-  - _Section 11.8: The Riemann-Stieltjes integral (planned)_
+  - Section 11.8: The Riemann-Stieltjes integral ([Verso page](https://teorth.github.io/analysis/sec118/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_11_8.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_11_8.lean))
   - _Section 11.9: The two fundamental theorems of calculus (planned)_
   - _Section 11.10: Consequences of the fundamental theorem of calculus (planned)_
 - Appendix A: The basics of mathematical logic

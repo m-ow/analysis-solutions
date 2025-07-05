@@ -33,15 +33,24 @@ structure Sequence where
 instance Sequence.instCoeFun : CoeFun Sequence (fun _ ↦ ℤ → ℚ) where
   coe := fun a ↦ a.seq
 
-/-- Functions from ℕ to ℚ can be thought of as sequences. -/
-instance Sequence.instCoe : Coe (ℕ → ℚ) Sequence where
-  coe := fun a ↦ {
+/--
+Functions from ℕ to ℚ can be thought of as sequences starting from 0; `ofNatFun` performs this conversion.
+
+The `coe` attribute allows the delaborator to print `Sequence.ofNatFun f` as `↑f`, which is more concise; you may safely remove this if you prefer the more explicit notation.
+-/
+@[coe]
+def Sequence.ofNatFun (a : ℕ → ℚ) : Sequence where
     n₀ := 0
     seq := fun n ↦ if n ≥ 0 then a n.toNat else 0
     vanish := by
       intro n hn
       simp [hn]
-  }
+
+/--
+If `a : ℕ → ℚ` is used in a context where a `Sequence` is expected, automatically coerce `a` to `Sequence.ofNatFun a` (which will be pretty-printed as `↑a`)
+-/
+instance : Coe (ℕ → ℚ) Sequence where
+  coe := Sequence.ofNatFun
 
 abbrev Sequence.mk' (n₀:ℤ) (a: { n // n ≥ n₀ } → ℚ) : Sequence where
   n₀ := n₀
@@ -50,12 +59,17 @@ abbrev Sequence.mk' (n₀:ℤ) (a: { n // n ≥ n₀ } → ℚ) : Sequence where
     intro n hn
     simp [hn]
 
-
 lemma Sequence.eval_mk {n n₀:ℤ} (a: { n // n ≥ n₀ } → ℚ) (h: n ≥ n₀) :
     (Sequence.mk' n₀ a) n = a ⟨ n, h ⟩ := by simp [seq, h]
 
 @[simp]
-lemma Sequence.eval_coe (n:ℕ) (a: ℕ → ℚ) : (a:Sequence) n = a n := by simp [seq]
+lemma Sequence.eval_coe (n:ℕ) (a: ℕ → ℚ) : (a:Sequence) n = a n := by norm_cast
+
+@[simp]
+lemma Sequence.eval_coe_at_int (n:ℤ) (a: ℕ → ℚ) : (a:Sequence) n = if n ≥ 0 then a n.toNat else 0 := by norm_cast
+
+@[simp]
+lemma Sequence.n0_coe (a: ℕ → ℚ) : (a:Sequence).n₀ = 0 := by norm_cast
 
 /-- Example 5.1.2 -/
 abbrev Sequence.squares : Sequence := ((fun n:ℕ ↦ (n^2:ℚ)):Sequence)
@@ -94,14 +108,13 @@ namespace Chapter5
 5.1.3 - definition of ε-steadiness for a sequence starting at 0
 -/
 lemma Rat.isSteady_of_coe (ε : ℚ) (a:ℕ → ℚ) :
-    ε.steady (a:Sequence) ↔ ∀ n m : ℕ, ε.close (a n) (a m) := by
+    ε.steady a ↔ ∀ n m : ℕ, ε.close (a n) (a m) := by
   constructor
   · intro h n m
     specialize h n (by simp) m (by simp)
     dsimp at h
     exact h
   intro h n hn m hm
-  dsimp at hn hm
   lift n to ℕ using hn
   lift m to ℕ using hm
   simp [h n m]
@@ -111,7 +124,7 @@ Not in textbook: the sequence 2, 2 ... is 1-steady
 Intended as a demonstration of `isSteady_of_coe`
 -/
 example : (1:ℚ).steady ((fun _:ℕ ↦ (3:ℚ)):Sequence) := by
-  rw [Rat.isSteady_of_coe 1 (fun _:ℕ ↦ (3:ℚ))]
+  rw [Rat.isSteady_of_coe]
   unfold Rat.close
   intro n m
   simp
@@ -122,7 +135,7 @@ Compare: if you need to work with `Rat.steady` on the coercion directly, there w
 example : (1:ℚ).steady ( (fun _:ℕ ↦ (3:ℚ)):Sequence) := by
   unfold Rat.steady Rat.close
   intro n hn m hm
-  dsimp at * -- Not strictly necessary, but cleans up the proof state so you can see what's going on
+  simp only [Sequence.n0_coe, Sequence.eval_coe_at_int] at hn hm
   simp [hn, hm]
 
 /-- Example 5.1.5 -/

@@ -12,7 +12,7 @@ Lean code could be "golfed" to be more elegant and idiomatic, but I have conscio
 doing so.
 
 Main constructions and results of this section:
-- Riemann integrability of monotone functions
+- An example of a bounded function on a compact interval that is not Riemann integrable.
 
 -/
 

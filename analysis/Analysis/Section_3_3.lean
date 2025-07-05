@@ -415,7 +415,7 @@ theorem Function.comp_cancel_left {X Y Z:Set} {f f': Function X Y} {g : Function
   (heq : g ○ f = g ○ f') (hg: g.one_to_one) : f = f' := by sorry
 
 theorem Function.comp_cancel_right {X Y Z:Set} {f: Function X Y} {g g': Function Y Z}
-  (heq : g ○ f = g' ○ f) (hf: g.onto) : g = g' := by sorry
+  (heq : g ○ f = g' ○ f) (hf: f.onto) : g = g' := by sorry
 
 /--
   Exercise 3.3.5.  State or prove theorems or counterexamples in the case that `f` is replaced

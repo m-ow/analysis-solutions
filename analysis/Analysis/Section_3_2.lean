@@ -5,7 +5,7 @@ import Analysis.Section_3_1
 # Analysis I, Section 3.2
 
 In this section we set up a version of Zermelo-Frankel set theory (with atoms) that tries to be
-as faithful as possible to the original text of Analysis I, Section 3.1. All numbering refers to
+as faithful as possible to the original text of Analysis I, Section 3.2. All numbering refers to
 the original text.
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
@@ -103,7 +103,7 @@ theorem SetTheory.Set.specify_exists (h: axiom_of_universal_specification) (A:Se
 
 /--
   Exercise 3.2.1. The spirit of the exercise is to establish these results without using either
-  Russell's paradox, or the specify operation.
+  Russell's paradox, or the replace operation.
 -/
 theorem SetTheory.Set.replace_exists (h: axiom_of_universal_specification) (A:Set)
   (P: A → Object → Prop) (hP: ∀ x y y', P x y ∧ P x y' → y = y') :

@@ -49,8 +49,8 @@ Some technical notes:
 - In Analysis I, we chose to work with an "impure" set theory, in which there could be more
   `Object`s than just `Set`s.  In the type theory of Lean, this requires treating `Chapter3.Set`
   and `Chapter3.Object` as distinct types. Occasionally this means we have to use a coercion
-  `X.toObject` of a `Chapter3.Set` `X` to make into a `Chapter3.Object`: this is mostly needed
-  when manipulating sets of sets.
+  `(X: Chapter3.Object)` of a `Chapter3.Set` `X` to make into a `Chapter3.Object`: this is
+  mostly needed when manipulating sets of sets.
 - After this chapter is concluded, the notion of a `Chapter3.SetTheory.Set` will be deprecated in
   favor of the standard Mathlib notion of a `Set` (or more precisely of the type `Set X` of a set
   in a given type `X`).  However, due to various technical incompatibilities between set theory
@@ -109,15 +109,13 @@ instance objects_mem_sets : Membership Object Set where
 instance sets_are_objects : Coe Set Object where
   coe X := SetTheory.set_to_object X
 
-abbrev SetTheory.Set.toObject (X:Set) : Object := X
-
 /-- Axiom 3.1 (Sets are objects)-/
-theorem SetTheory.Set.coe_eq {X Y:Set} (h: X.toObject = Y.toObject) : X = Y :=
+theorem SetTheory.Set.coe_eq {X Y:Set} (h: (X: Object) = (Y: Object)) : X = Y :=
   SetTheory.set_to_object.inj' h
 
 /-- Axiom 3.1 (Sets are objects)-/
 @[simp]
-theorem SetTheory.Set.coe_eq_iff (X Y:Set) : X.toObject = Y.toObject ↔  X = Y := by
+theorem SetTheory.Set.coe_eq_iff (X Y:Set) : (X: Object) = (Y: Object) ↔  X = Y := by
   constructor
   . exact coe_eq
   intro h; subst h; rfl
@@ -300,8 +298,8 @@ theorem SetTheory.Set.pair_eq_pair {a b c d:Object} (h: ({a,b}:Set) = {c,d}) :
     right; exact ⟨had, hbc⟩
 
 abbrev SetTheory.Set.empty : Set := ∅
-abbrev SetTheory.Set.singleton_empty : Set := {empty.toObject}
-abbrev SetTheory.Set.pair_empty : Set := {empty.toObject, singleton_empty.toObject}
+abbrev SetTheory.Set.singleton_empty : Set := {(empty: Object)}
+abbrev SetTheory.Set.pair_empty : Set := {(empty: Object), (singleton_empty: Object)}
 
 /-- Exercise 3.1.2-/
 theorem SetTheory.Set.emptyset_neq_singleton : empty ≠ singleton_empty := by
@@ -448,7 +446,8 @@ theorem SetTheory.Set.pair_union_pair (a b c:Object) :
       rw [mem_singleton] at hA
       exact hA
     . right
-      exact hBC
+      assumption
+
 /-- Definition 3.1.14.   -/
 instance SetTheory.Set.instSubset : HasSubset Set where
   Subset X Y := ∀ x, x ∈ X → x ∈ Y
@@ -730,6 +729,7 @@ theorem  SetTheory.Set.inter_union_distrib_left (A B C:Set) :
         right
         assumption
 
+
 /-- Proposition 3.1.27(f) -/
 theorem  SetTheory.Set.union_inter_distrib_left (A B C:Set) :
     A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
@@ -769,6 +769,7 @@ theorem  SetTheory.Set.union_inter_distrib_left (A B C:Set) :
       . right
         rw [mem_inter]
         exact ⟨hB, hC⟩
+
 /-- Proposition 3.1.27(f) -/
 theorem SetTheory.Set.union_compl {A X:Set} (hAX: A ⊆ X) : A ∪ (X \ A) = X := by
   apply ext
