@@ -1,4 +1,5 @@
 import Mathlib.Tactic
+import Analysis.Section_6_4
 import Analysis.Section_7_4
 import Mathlib.Topology.Instances.EReal.Lemmas
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
@@ -18,7 +19,7 @@ A point that is only implicitly stated in the text is that for the root and rati
 
 namespace Chapter7
 
-/-- Theorem 7.5.1(a) (Root test).  A technical condition `hbound` is needed to ensure the limsup is finite. -/
+/-- Theorem 7.5.1(a) (Root test).  A technical condition is needed to ensure the limsup is finite. -/
 theorem Series.root_test_pos {s : Series}
   (h : Filter.limsup (fun n ↦ ((|s.seq n|^(1/(n:ℝ)):ℝ):EReal)) Filter.atTop < 1) : s.absConverges := by
     -- This proof is written to follow the structure of the original text.

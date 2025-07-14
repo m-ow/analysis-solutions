@@ -9,26 +9,27 @@ text. When there is a choice between a more idiomatic Lean solution and a more f
 translation, I have generally chosen the latter. In particular, there will be places where the
 Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
 doing so.
-
-Main constructions and results of this section:
-
-- Images and inverse images of (Mathlib) functions, within the framework of Section 3.1 set
-  theory. (The Section 3.2 functions are now deprecated and will not be used further.)
-- Connection with Mathlib's image `f '' S` and preimage `f ⁻¹' S` notions.
 -/
-
 namespace Chapter3
 
 export SetTheory (Set Object nat)
 
-variable [SetTheory]
+variable [SetTheory] (X : Type) (S : _root_.Set X) (f : X → X)
+
+
+/-!
+Main constructions and results of this section:
+
+- Images and inverse images of (Mathlib) functions, within the framework of Section 3.1 set
+  theory. (The Section 3.3 functions are now deprecated and will not be used further.)
+- Connection with Mathlib's image `f '' S` and preimage `f ⁻¹' S` notions.
+-/
 
 /-- Definition 3.4.1.  Interestingly, the definition does not require S to be a subset of X. -/
 abbrev SetTheory.Set.image {X Y:Set} (f:X → Y) (S: Set) : Set :=
   X.replace (P := fun x y ↦ y = f x ∧ x.val ∈ S) (by
     intro x y y' ⟨ hy, hy' ⟩
-    simp at hy hy'
-    rw [hy.1, hy'.1]
+    simp_all
   )
 
 /-- Definition 3.4.1 -/
@@ -48,6 +49,14 @@ theorem SetTheory.Set.image_eq_specify {X Y:Set} (f:X → Y) (S: Set) :
 -/
 theorem SetTheory.Set.image_eq_image {X Y:Set} (f:X → Y) (S: Set):
     (image f S: _root_.Set Object) = Subtype.val '' (f '' {x | x.val ∈ S}) := by sorry
+
+theorem SetTheory.Set.image_in_codomain {X Y:Set} (f:X → Y) (S: Set) :
+    image f S ⊆ Y := by
+  intro x h
+  rw [mem_image] at h
+  obtain ⟨ x', hx', hf ⟩ := h
+  rw [← hf]
+  exact (f x').property
 
 /-- Example 3.4.2 -/
 abbrev f_3_4_2 : nat → nat := fun n ↦ (2*n:ℕ)
@@ -111,9 +120,31 @@ theorem SetTheory.Set.mem_preimage {X Y:Set} (f:X → Y) (U: Set) (x:X) :
     x.val ∈ preimage f U ↔ (f x).val ∈ U := by
   rw [specification_axiom']
 
+/--
+  A version of mem_preimage that does not require x to be of type X.
+-/
+theorem SetTheory.Set.mem_preimage' {X Y:Set} (f:X → Y) (U: Set) (x:Object) :
+    x ∈ preimage f U ↔ ∃ x': X, x'.val = x ∧ (f x').val ∈ U := by
+  constructor
+  . intro h
+    by_cases hx: x ∈ X
+    . use ⟨ x, hx ⟩
+      have := mem_preimage f U ⟨ x, hx ⟩
+      simp_all
+    . rw [preimage] at h
+      simp_all [X.specification_axiom h]
+  . rintro ⟨ x', hx', hfx' ⟩
+    rwa [← hx', mem_preimage]
+
 /-- Connection with Mathlib's notion of preimage. -/
 theorem SetTheory.Set.preimage_eq {X Y:Set} (f:X → Y) (U: Set) :
     ((preimage f U): _root_.Set Object) = Subtype.val '' (f⁻¹' {y | y.val ∈ U}) := by sorry
+
+theorem SetTheory.Set.preimage_in_domain {X Y:Set} (f:X → Y) (U: Set) :
+    (preimage f U) ⊆ X := by
+  intro x h
+  rw [preimage] at h
+  exact specification_axiom h
 
 /-- Example 3.4.5 -/
 theorem SetTheory.Set.preimage_f_3_4_2 : preimage f_3_4_2 {2,4,6} = {1,2,3} := by sorry
@@ -149,7 +180,7 @@ noncomputable abbrev f_3_4_8_c : ({4,7}:Set) → ({0,1}:Set) :=
 abbrev f_3_4_8_d : ({4,7}:Set) → ({0,1}:Set) := fun x ↦ ⟨ 1, by simp ⟩
 
 theorem SetTheory.Set.example_3_4_8 (F:Object) :
-    F ∈ ({4,7}:Set) ^ ({0,1}:Set) ↔ F = object_of f_3_4_8_a
+    F ∈ ({0,1}:Set) ^ ({4,7}:Set) ↔ F = object_of f_3_4_8_a
     ∨ F = object_of f_3_4_8_b ∨ F = object_of f_3_4_8_c ∨ F = object_of f_3_4_8_d := by sorry
 
 /-- Lemma 3.4.9.  One needs to provide a suitable definition of the power set here. -/
@@ -196,14 +227,11 @@ theorem SetTheory.Set.mem_iUnion {I:Set} (A: I → Set) (x:Object) :
     obtain ⟨ S, hx, hS ⟩ := h
     rw [replacement_axiom] at hS
     obtain ⟨ α, hα ⟩ := hS
-    simp at hα
-    rw [hα] at hx
-    use α
+    simp_all
+    use α.val, α.property
   intro h
   obtain ⟨ α, hx ⟩ := h
-  use A α
-  constructor
-  . exact hx
+  refine ⟨ A α, hx, ?_ ⟩
   rw [replacement_axiom]
   use α
 
@@ -239,14 +267,19 @@ theorem SetTheory.Set.preimage_eq_image_of_inv {X Y V:Set} (f:X → Y) (f_inv: Y
   (hf: Function.LeftInverse f_inv f ∧ Function.RightInverse f_inv f) (hV: V ⊆ Y) :
     image f_inv V = preimage f V := by sorry
 
-/- Exercise 3.4.2.  State and prove an assertion connecting `preimage (image f S)` and `S`. -/
--- theorem SetTheory.Set.preimage_of_image {X Y:Set} (f:X → Y) (S: Set) : sorry := by sorry
+/- Exercise 3.4.2.  State and prove an assertion connecting `preimage f (image f S)` and `S`. -/
+-- theorem SetTheory.Set.preimage_of_image {X Y:Set} (f:X → Y) (S: Set) (hS: S ⊆ X) : sorry := by sorry
 
-/- Exercise 3.4.2.  State and prove an assertion connecting `image (preimage f U)` and `U`. -/
+/- Exercise 3.4.2.  State and prove an assertion connecting `image f (preimage f U)` and `U`. -/
+-- Interestingly, it is not needed for U to be a subset of Y.
+-- theorem SetTheory.Set.preimage_of_image {X Y:Set} (f:X → Y) (U: Set) : sorry := by sorry
+
+/- Exercise 3.4.2.  State and prove an assertion connecting `preimage f (image f (preimage f U))` and `U`. -/
+-- Interestingly, it is not needed for U to be a subset of Y.
 -- theorem SetTheory.Set.preimage_of_image {X Y:Set} (f:X → Y) (U: Set) : sorry := by sorry
 
 /--
-  Exercise 3.4.3.  Also state and prove an assertion regarding whether `⊆` can be improved to `=`.
+  Exercise 3.4.3.
 -/
 theorem SetTheory.Set.image_of_inter {X Y:Set} (f:X → Y) (A B: Set) :
     image f (A ∩ B) ⊆ (image f A) ∩ (image f B) := by
@@ -303,6 +336,14 @@ theorem SetTheory.Set.image_of_union {X Y:Set} (f:X → Y) (A B: Set) :
         right; exact h.1
       . exact h.2
 
+def SetTheory.Set.image_of_inter' : Decidable (∀ X Y:Set, ∀ f:X → Y, ∀ A B: Set, image f (A ∩ B) = (image f A) ∩ (image f B)) := by
+  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`
+  sorry
+
+def SetTheory.Set.image_of_diff' : Decidable (∀ X Y:Set, ∀ f:X → Y, ∀ A B: Set, image f (A \ B) = (image f A) \ (image f B)) := by
+  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`
+  sorry
+
 /-- Exercise 3.4.4 -/
 theorem SetTheory.Set.preimage_of_inter {X Y:Set} (f:X → Y) (A B: Set) :
     preimage f (A ∩ B) = (preimage f A) ∩ (preimage f B) := by sorry
@@ -358,7 +399,7 @@ theorem SetTheory.Set.union_of_nonempty {I J:Set} (hI: I ≠ ∅) (hJ: J ≠ ∅
 /-- Exercise 3.4.10 -/
 theorem SetTheory.Set.inter_iInter {I J:Set} (hI: I ≠ ∅) (hJ: J ≠ ∅) (A: (I ∪ J:Set) → Set) :
     iInter I hI (fun α ↦ A ⟨ α.val, by simp [α.property]⟩)
-    ∪ iInter J hJ (fun α ↦ A ⟨ α.val, by simp [α.property]⟩)
+    ∩ iInter J hJ (fun α ↦ A ⟨ α.val, by simp [α.property]⟩)
     = iInter (I ∪ J) (union_of_nonempty hI hJ) A := by sorry
 
 /-- Exercise 3.4.11 -/

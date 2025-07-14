@@ -94,13 +94,13 @@ theorem IsMaxOn.deriv_eq_zero_counter : ∃ (a b:ℝ) (hab: a < b) (f:ℝ → �
   sorry
 
 /-- Theorem 10.2.7 (Rolle's theorem) / Exercise 10.2.4 -/
-theorem HasDerivWithinAt.exist_zero {a b:ℝ} (hab: a < b) {g:ℝ → ℝ}
+theorem _root_.HasDerivWithinAt.exist_zero {a b:ℝ} (hab: a < b) {g:ℝ → ℝ}
   (hcont: ContinuousOn g (Set.Icc a b)) (hderiv: DifferentiableOn ℝ g (Set.Ioo a b))
   (hgab: g a = g b) : ∃ x ∈ Set.Ioo a b, HasDerivWithinAt g 0 (Set.Ioo a b) x := by
   sorry
 
 /-- Corollary 10.2.9 (Mean value theorem ) / Exercise 10.2.5 -/
-theorem HasDerivWithinAt.mean_value {a b:ℝ} (hab: a < b) {f:ℝ → ℝ}
+theorem _root_.HasDerivWithinAt.mean_value {a b:ℝ} (hab: a < b) {f:ℝ → ℝ}
   (hcont: ContinuousOn f (Set.Icc a b)) (hderiv: DifferentiableOn ℝ f (Set.Ioo a b)) :
   ∃ x ∈ Set.Ioo a b, HasDerivWithinAt f ((f b - f a) / (b - a)) (Set.Ioo a b) x := by
   sorry
@@ -126,7 +126,7 @@ theorem lipschitz_bound {M a b:ℝ} (hM: M > 0) (hab: a < b) {f:ℝ → ℝ}
   sorry
 
 /-- Exercise 10.2.7 -/
-theorem UniformContinuousOn.of_lipschitz {f:ℝ → ℝ}
+theorem _root_.UniformContinuousOn.of_lipschitz {f:ℝ → ℝ}
   (hcont: ContinuousOn f Set.univ)
   (hderiv: DifferentiableOn ℝ f Set.univ)
   (hlip: BddOn (deriv f) Set.univ) :

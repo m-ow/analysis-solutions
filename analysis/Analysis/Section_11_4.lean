@@ -78,8 +78,19 @@ theorem integ_of_extend {I J: BoundedInterval} (hIJ: I ⊆ J)
 
 /-- Theorem 11.4.1 (h) (Laws of integration) / Exercise 11.4.1 -/
 theorem integ_of_join {I J K: BoundedInterval} (hIJK: K.joins I J)
-  {f: ℝ → ℝ} (h: PiecewiseConstantOn f K) :
+  {f: ℝ → ℝ} (h: IntegrableOn f K) :
   IntegrableOn f I ∧ IntegrableOn f J ∧ integ f K = integ f I + integ f J := by
+  sorry
+
+/-- A variant of Theorem 11.4.1(h) that will be useful in later sections. -/
+theorem integ_mono' {I J: BoundedInterval} (hIJ: J ⊆ I)
+  {f: ℝ → ℝ} (h: IntegrableOn f I) : IntegrableOn f J := by
+  sorry
+
+/-- A further variant of Theorem 11.4.1(h) that will be useful in later sections. -/
+theorem integ_eq {I J: BoundedInterval} (hIJ: J ⊆ I)
+  (ha: J.a = I.a) (hb: J.b = I.b)
+  {f: ℝ → ℝ} (h: IntegrableOn f I) : integ f J = integ f I := by
   sorry
 
 /-- A handy little lemma for "epsilon of room" type arguments -/
@@ -178,7 +189,8 @@ theorem integ_of_mul_nonneg {I: BoundedInterval} {f g:ℝ → ℝ} (hf: Integrab
   swap
   . apply (integ_on_subsingleton _).1
     rw [←BoundedInterval.length_of_subsingleton]
-    aesop
+    rw [Set.not_nonempty_iff_eq_empty] at hI
+    simp [hI]
   unfold IntegrableOn at hf hg
   obtain ⟨ M₁, hM₁ ⟩ := hf.1
   obtain ⟨ M₂, hM₂ ⟩ := hg.1

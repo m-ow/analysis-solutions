@@ -214,7 +214,7 @@ theorem α_length_of_pt {α: ℝ → ℝ} (a:ℝ) : α[Icc a a]ₗ = jump α a :
   simp [α_length, jump]
 
 theorem α_length_of_cts {α:ℝ → ℝ} {I: BoundedInterval} {a b: ℝ}
-  (haa: a < I.a) (hab: I.a < I.b) (hbb: I.b < b)
+  (haa: a < I.a) (hab: I.a ≤ I.b) (hbb: I.b < b)
   (hI : I ⊆ Ioo a b) (hα: ContinuousOn α (Ioo a b)) :
   α[I]ₗ = α I.b - α I.a := by
   have ha_left : left_lim α I.a = α I.a := by
@@ -243,13 +243,15 @@ theorem α_length_of_cts {α:ℝ → ℝ} {I: BoundedInterval} {a b: ℝ}
     simp [hbb]; linarith
   cases I with
   | Icc a' b' =>
-    simp [α_length, hb_right, ha_left, le_of_lt hab]
+    simp [α_length, hb_right, ha_left, hab]
   | Ico a' b' =>
-    simp [α_length, hb_left, ha_left, le_of_lt hab]
+    simp [α_length, hb_left, ha_left, hab]
   | Ioc a' b' =>
-    simp [α_length, hb_right, ha_right, le_of_lt hab]
+    simp [α_length, hb_right, ha_right, hab]
   | Ioo a' b' =>
-    simp [α_length, hb_left, ha_right, hab]
+    simp [α_length, hb_left, ha_right]
+    intro h; replace h : a' = b' := by linarith
+    simp [h]
 
 /-- Example 11.8.2-/
 example : (fun x ↦ x^2)[Icc 2 3]ₗ = 5 := by
@@ -334,7 +336,7 @@ theorem PiecewiseConstantWith.RS_integ_eq_integ {f:ℝ → ℝ} {I: BoundedInter
   sorry
 
 /-- Analogue of Proposition 11.2.13 -/
-theorem PiecewiseConstantWith.RSinteg_eq {f:ℝ → ℝ} {I: BoundedInterval} {P P': Partition I}
+theorem PiecewiseConstantWith.RS_integ_eq {f:ℝ → ℝ} {I: BoundedInterval} {P P': Partition I}
   (hP: PiecewiseConstantWith f P) (hP': PiecewiseConstantWith f P') (α:ℝ → ℝ): RS_integ f P α = RS_integ f P' α := by
   sorry
 
@@ -342,13 +344,16 @@ open Classical in
 noncomputable abbrev PiecewiseConstantOn.RS_integ (f:ℝ → ℝ) (I: BoundedInterval) (α:ℝ → ℝ):
   ℝ := if h: PiecewiseConstantOn f I then PiecewiseConstantWith.RS_integ f h.choose α else 0
 
-/-- α-length non-negative when α monotone -/
+theorem PiecewiseConstantOn.RS_integ_def {f:ℝ → ℝ} {I: BoundedInterval} {P: Partition I}
+  (h: PiecewiseConstantWith f P) (α:ℝ → ℝ) : PiecewiseConstantOn.RS_integ f I α = PiecewiseConstantWith.RS_integ f P α := by
+  have h' : PiecewiseConstantOn f I := by use P
+  simp [PiecewiseConstantOn.RS_integ, h']
+  exact PiecewiseConstantWith.RS_integ_eq h'.choose_spec h α
 
+/-- α-length non-negative when α monotone -/
 theorem α_length_nonneg_of_monotone {α:ℝ → ℝ}  (hα: Monotone α) (I: BoundedInterval):
   0 ≤ α[I]ₗ := by
   sorry
-
-
 
 /-- Analogue of Theorem 11.2.16 (a) (Laws of integration) / Exercise 11.8.3 -/
 theorem PiecewiseConstantOn.RS_integ_add {f g: ℝ → ℝ} {I: BoundedInterval}
@@ -422,6 +427,128 @@ noncomputable abbrev upper_RS_integral (f:ℝ → ℝ) (I: BoundedInterval) (α:
 noncomputable abbrev lower_RS_integral (f:ℝ → ℝ) (I: BoundedInterval) (α: ℝ → ℝ): ℝ :=
   sSup ((fun g ↦ PiecewiseConstantOn.RS_integ g I α) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I})
 
+lemma RS_integral_bound_upper_of_bounded {f:ℝ → ℝ} {M:ℝ} {I: BoundedInterval}
+  (h: ∀ x ∈ (I:Set ℝ), |f x| ≤ M) {α:ℝ → ℝ} (hα:Monotone α)
+  : M * α[I]ₗ ∈ (fun g ↦ PiecewiseConstantOn.RS_integ g I α) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I} := by
+  simp
+  refine ⟨ fun _ ↦ M , ⟨ ⟨ ?_, ?_, ⟩, ?_ ⟩ ⟩
+  . intro x hx
+    specialize h x hx
+    simp [abs_le'] at h
+    simp [h.1]
+  . apply PiecewiseConstantOn.of_const (ConstantOn.of_const (c := M) _)
+    simp
+  exact PiecewiseConstantOn.RS_integ_const M I hα
+
+lemma RS_integral_bound_lower_of_bounded {f:ℝ → ℝ} {M:ℝ} {I: BoundedInterval} (h: ∀ x ∈ (I:Set ℝ), |f x| ≤ M) {α:ℝ → ℝ} (hα:Monotone α)
+  : -M * α[I]ₗ ∈ (fun g ↦ PiecewiseConstantOn.RS_integ g I α) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I} := by
+  simp
+  refine ⟨ fun _ ↦ -M , ⟨ ⟨ ?_, ?_, ⟩, ?_ ⟩ ⟩
+  . intro x hx
+    specialize h x hx
+    simp [abs_le'] at h
+    simp; linarith
+  . apply PiecewiseConstantOn.of_const (ConstantOn.of_const (c := -M) _)
+    simp
+  convert PiecewiseConstantOn.RS_integ_const (-M) I hα using 1
+  simp
+
+lemma RS_integral_bound_upper_nonempty {f:ℝ → ℝ} {I: BoundedInterval} (h: BddOn f I)
+  {α:ℝ → ℝ} (hα: Monotone α) :
+  ((fun g ↦ PiecewiseConstantOn.RS_integ g I α) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I}).Nonempty := by
+  obtain ⟨ M, h ⟩ := h
+  apply Set.nonempty_of_mem
+  exact RS_integral_bound_upper_of_bounded h hα
+
+lemma RS_integral_bound_lower_nonempty {f:ℝ → ℝ} {I: BoundedInterval} (h: BddOn f I)
+  {α:ℝ → ℝ} (hα: Monotone α) :
+  ((fun g ↦ PiecewiseConstantOn.RS_integ g I α) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I}).Nonempty := by
+  obtain ⟨ M, h ⟩ := h
+  apply Set.nonempty_of_mem
+  exact RS_integral_bound_lower_of_bounded h hα
+
+lemma RS_integral_bound_lower_le_upper {f:ℝ → ℝ} {I: BoundedInterval} {a b:ℝ}
+  {α:ℝ → ℝ} (hα: Monotone α)
+  (ha: a ∈ (fun g ↦ PiecewiseConstantOn.RS_integ g I α) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I})
+  (hb: b ∈ (fun g ↦ PiecewiseConstantOn.RS_integ g I α) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I})
+  : b ≤ a:= by
+    obtain ⟨ g, ⟨ ⟨ hmaj, hgp⟩, hgi ⟩ ⟩ := ha
+    obtain ⟨ h, ⟨ ⟨ hmin, hhp⟩, hhi ⟩ ⟩ := hb
+    rw [←hgi, ←hhi]
+    apply PiecewiseConstantOn.RS_integ_mono hα _ hhp hgp
+    intro x hx
+    have := hmaj x hx
+    apply (ge_iff_le.mp (hmin x hx)).trans (hmaj x hx)
+
+lemma RS_integral_bound_below {f:ℝ → ℝ} {I: BoundedInterval} (h: BddOn f I)
+  {α:ℝ → ℝ} (hα: Monotone α) :
+  BddBelow ((fun g ↦ PiecewiseConstantOn.RS_integ g I α) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I}) := by
+    rw [bddBelow_def]
+    use (RS_integral_bound_lower_nonempty h hα).some
+    intro a ha; exact RS_integral_bound_lower_le_upper hα ha (RS_integral_bound_lower_nonempty h hα).some_mem
+
+lemma RS_integral_bound_above {f:ℝ → ℝ} {I: BoundedInterval} (h: BddOn f I)
+  {α:ℝ → ℝ} (hα: Monotone α):
+  BddAbove ((fun g ↦ PiecewiseConstantOn.RS_integ g I α) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I}) := by
+    rw [bddAbove_def]
+    use (RS_integral_bound_upper_nonempty h hα).some
+    intro b hb; exact RS_integral_bound_lower_le_upper hα (RS_integral_bound_upper_nonempty h hα).some_mem hb
+
+lemma le_lower_RS_integral {f:ℝ → ℝ} {I: BoundedInterval} {M:ℝ} (h: ∀ x ∈ (I:Set ℝ), |f x| ≤ M)
+  {α:ℝ → ℝ} (hα: Monotone α) :
+  -M * α[I]ₗ ≤ lower_RS_integral f I α := by
+  exact ConditionallyCompleteLattice.le_csSup _ _
+    (RS_integral_bound_above (BddOn.of_bounded h) hα) (RS_integral_bound_lower_of_bounded h hα)
+
+lemma lower_RS_integral_le_upper {f:ℝ → ℝ} {I: BoundedInterval} (h: BddOn f I)
+  {α:ℝ → ℝ} (hα: Monotone α) :
+  lower_RS_integral f I α ≤ upper_RS_integral f I α := by
+  apply ConditionallyCompleteLattice.csSup_le _ _ (RS_integral_bound_lower_nonempty h hα) _
+  rw [mem_upperBounds]
+  intro b hb
+  apply ConditionallyCompleteLattice.le_csInf _ _ (RS_integral_bound_upper_nonempty h hα) _
+  rw [mem_lowerBounds]
+  intro a ha
+  exact RS_integral_bound_lower_le_upper hα ha hb
+
+lemma RS_upper_integral_le {f:ℝ → ℝ} {I: BoundedInterval} {M:ℝ} (h: ∀ x ∈ (I:Set ℝ), |f x| ≤ M)
+  {α:ℝ → ℝ} (hα: Monotone α) :
+  upper_RS_integral f I α ≤ M * α[I]ₗ := by
+  exact ConditionallyCompleteLattice.csInf_le _ _
+    (RS_integral_bound_below (BddOn.of_bounded h) hα) (RS_integral_bound_upper_of_bounded h hα)
+
+lemma upper_RS_integral_le_integ {f g:ℝ → ℝ} {I: BoundedInterval} (hf: BddOn f I)
+  (hfg: MajorizesOn g f I) (hg: PiecewiseConstantOn g I)
+  {α:ℝ → ℝ} (hα: Monotone α) :
+  upper_RS_integral f I α ≤ PiecewiseConstantOn.RS_integ g I α := by
+  apply ConditionallyCompleteLattice.csInf_le _ _ (RS_integral_bound_below hf hα) _
+  use g; simp [hg]; exact hfg
+
+lemma integ_le_lower_RS_integral {f h:ℝ → ℝ} {I: BoundedInterval} (hf: BddOn f I)
+  (hfh: MinorizesOn h f I) (hg: PiecewiseConstantOn h I)
+  {α:ℝ → ℝ} (hα: Monotone α) :
+  PiecewiseConstantOn.RS_integ h I α ≤ lower_RS_integral f I α := by
+  apply ConditionallyCompleteLattice.le_csSup _ _ (RS_integral_bound_above hf hα) _
+  use h; simp [hg]; exact hfh
+
+lemma lt_of_gt_upper_RS_integral {f:ℝ → ℝ} {I: BoundedInterval} (hf: BddOn f I)
+  {α: ℝ → ℝ} (hα: Monotone α) {X:ℝ} (hX: upper_RS_integral f I α < X ) :
+  ∃ g, MajorizesOn g f I ∧ PiecewiseConstantOn g I ∧ PiecewiseConstantOn.RS_integ g I α < X := by
+  obtain ⟨ Y, hY, hYX ⟩ := exists_lt_of_csInf_lt (RS_integral_bound_upper_nonempty hf hα) hX
+  simp at hY
+  obtain ⟨ g, ⟨ hmaj, hgp ⟩, hgi ⟩ := hY
+  refine ⟨ g, hmaj, hgp, ?_ ⟩
+  rwa [hgi]
+
+lemma gt_of_lt_lower_RS_integral {f:ℝ → ℝ} {I: BoundedInterval} (hf: BddOn f I)
+  {α:ℝ → ℝ} (hα: Monotone α) {X:ℝ} (hX: X < lower_RS_integral f I α) :
+  ∃ h, MinorizesOn h f I ∧ PiecewiseConstantOn h I ∧ X < PiecewiseConstantOn.RS_integ h I α := by
+  obtain ⟨ Y, hY, hYX ⟩ := exists_lt_of_lt_csSup (RS_integral_bound_lower_nonempty hf hα) hX
+  simp at hY
+  obtain ⟨ h, ⟨ hmin, hhp ⟩, hhi ⟩ := hY
+  refine ⟨ h, hmin, hhp, ?_ ⟩
+  rwa [hhi]
+
 /-- Analogue of Definition 11.3.4 -/
 noncomputable abbrev RS_integ (f:ℝ → ℝ) (I: BoundedInterval) (α:ℝ → ℝ) : ℝ :=
 upper_RS_integral f I α
@@ -429,6 +556,7 @@ upper_RS_integral f I α
 noncomputable abbrev RS_IntegrableOn (f:ℝ → ℝ) (I: BoundedInterval) (α: ℝ → ℝ) : Prop :=
   BddOn f I ∧ lower_RS_integral f I α = upper_RS_integral f I α
 
+/-- Analogue of various components of Lemma 11.3.3 -/
 theorem upper_RS_integral_eq_upper_integral (f:ℝ → ℝ) (I: BoundedInterval) :
   upper_RS_integral f I (fun x ↦ x) = upper_integral f I := by
   sorry
@@ -453,6 +581,12 @@ theorem RS_integ_of_uniform_cts {I: BoundedInterval} {f:ℝ → ℝ} (hf: Unifor
 
 /-- Exercise 11.8.5 -/
 theorem RS_integ_with_sign (f:ℝ → ℝ) (hf: ContinuousOn f (Set.Icc (-1) 1)) : RS_IntegrableOn f (Icc (-1) 1) Real.sign ∧ RS_integ f (Icc (-1) 1) (fun x ↦ -Real.sign x) = 2 * f 0 := by
+  sorry
+
+/-- Analogue of Lemma 11.3.7 -/
+theorem RS_integ_of_piecewise_const {f:ℝ → ℝ} {I: BoundedInterval} (hf: PiecewiseConstantOn f I)
+  {α: ℝ → ℝ} (hα: Monotone α):
+  RS_IntegrableOn f I α ∧ RS_integ f I α = PiecewiseConstantOn.RS_integ f I α := by
   sorry
 
 end Chapter11

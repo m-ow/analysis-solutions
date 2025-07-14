@@ -28,22 +28,27 @@ export SetTheory (Set Object nat)
 variable [SetTheory]
 
 /-- Definition 3.6.1 (Equal cardinality) -/
-abbrev SetTheory.Set.equal_card (X Y:Set) : Prop := ∃ f : X → Y, Function.Bijective f
+abbrev SetTheory.Set.EqualCard (X Y:Set) : Prop := ∃ f : X → Y, Function.Bijective f
 
 /-- Example 3.6.2 -/
-theorem SetTheory.Set.Example_3_6_2 : equal_card {0,1,2} {3,4,5} := by sorry
+theorem SetTheory.Set.Example_3_6_2 : EqualCard {0,1,2} {3,4,5} := by sorry
 
 /-- Example 3.6.3 -/
-theorem SetTheory.Set.Example_3_6_3 : equal_card nat (nat.specify (fun x ↦ Even (x:ℕ))) := by sorry
+theorem SetTheory.Set.Example_3_6_3 : EqualCard nat (nat.specify (fun x ↦ Even (x:ℕ))) := by sorry
+
+theorem SetTheory.Set.EqualCard.refl (X:Set) : EqualCard X X := by
+  sorry
+
+theorem SetTheory.Set.EqualCard.symm {X Y:Set} (h: EqualCard X Y) : EqualCard Y X := by
+  sorry
+
+theorem SetTheory.Set.EqualCard.trans {X Y Z:Set} (h1: EqualCard X Y) (h2: EqualCard Y Z) : EqualCard X Z := by
+  sorry
 
 /-- Proposition 3.6.4 / Exercise 3.6.1 -/
-instance SetTheory.Set.inst_setoid : Setoid SetTheory.Set := {
-  r := equal_card,
-  iseqv := {
-    refl := by sorry
-    symm := by sorry
-    trans := by sorry
-  }
+instance SetTheory.Set.EqualCard.inst_setoid : Setoid SetTheory.Set := {
+  r := EqualCard,
+  iseqv := {refl, symm, trans}
 }
 
 /-- Definition 3.6.5 -/
@@ -61,7 +66,7 @@ theorem SetTheory.Set.Example_3_6_7b {a b c d:Object} (hab: a ≠ b) (hac: a ≠
 
 theorem SetTheory.Set.has_card_iff (X:Set) (n:ℕ) :
     X.has_card n ↔ ∃ f: X → Fin n, Function.Bijective f := by
-  simp [has_card, HasEquiv.Equiv, Setoid.r, equal_card]
+  simp [has_card, HasEquiv.Equiv, Setoid.r, EqualCard]
 
 /-- Lemma 3.6.9 -/
 theorem SetTheory.Set.pos_card_nonempty {n:ℕ} (h: n ≥ 1) {X:Set} (hX: X.has_card n) : X ≠ ∅ := by
@@ -112,7 +117,7 @@ theorem SetTheory.Set.card_erase {n:ℕ} (h: n ≥ 1) {X:Set} (hX: X.has_card n)
         rwa [hy2,←hm₀f,Subtype.val_inj, hf.injective.eq_iff,←Subtype.val_inj] at hmm
       exact Fin_mk _ (m'-1) (by omega)
   have hg : Function.Bijective g := by sorry
-  have : equal_card X' (Fin (n-1)) := by use g
+  have : EqualCard X' (Fin (n-1)) := by use g
   exact this
 
 /-- Proposition 3.6.8 (Uniqueness of cardinality) -/
@@ -160,7 +165,7 @@ theorem SetTheory.Set.nat_infinite : infinite nat := by
   obtain ⟨ n, hn⟩ := this
   simp [has_card] at hn
   replace hn := Setoid.symm hn
-  simp [HasEquiv.Equiv, Setoid.r, equal_card] at hn
+  simp [HasEquiv.Equiv, Setoid.r, EqualCard] at hn
   obtain ⟨ f, hf ⟩ := hn
   obtain ⟨ M, hM ⟩ := bounded_on_finite f
   replace hf := hf.surjective (M+1:ℕ)
@@ -168,7 +173,7 @@ theorem SetTheory.Set.nat_infinite : infinite nat := by
     intro i
     specialize hM i; contrapose! hM
     apply_fun nat_equiv.symm at hM
-    simp at hM; simp [hM]
+    simp_all
   contrapose! this; exact hf
 
 /-- It is convenient for Lean purposes to give infinite sets the ``junk`` cardinality of zero. -/
@@ -220,12 +225,12 @@ theorem SetTheory.Set.card_eq_zero {X:Set} (hX: X.finite) :
     X.card = 0 ↔ X = ∅ := by sorry
 
 /-- Exercise 3.6.5 -/
-theorem SetTheory.Set.prod_equal_card_prod (A B:Set) :
-    equal_card (A ×ˢ B) (B ×ˢ A) := by sorry
+theorem SetTheory.Set.prod_EqualCard_prod (A B:Set) :
+    EqualCard (A ×ˢ B) (B ×ˢ A) := by sorry
 
 /-- Exercise 3.6.6 -/
-theorem SetTheory.Set.pow_pow_equal_card_pow_prod (A B C:Set) :
-    equal_card ((A ^ B) ^ C) (A ^ (B ×ˢ C)) := by sorry
+theorem SetTheory.Set.pow_pow_EqualCard_pow_prod (A B C:Set) :
+    EqualCard ((A ^ B) ^ C) (A ^ (B ×ˢ C)) := by sorry
 
 example (a b c:ℕ): (a^b)^c = a^(b*c) := by sorry
 

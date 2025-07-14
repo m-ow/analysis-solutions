@@ -10,6 +10,11 @@ text.  When there is a choice between a more idiomatic Lean solution and a more 
 translation, I have generally chosen the latter.  In particular, there will be places where
 the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
 doing so.
+-/
+
+variable (f : ℝ → ℝ) (X : Set ℝ)
+
+/-!
 
 Main constructions and results of this section:
 
@@ -21,45 +26,45 @@ Technical point: in the text, the functions `f` studied are defined only on subs
 -/
 
 /-- Definition 9.3.1 -/
-abbrev Real.close_fn (ε:ℝ) (X:Set ℝ) (f: ℝ → ℝ) (L:ℝ) : Prop :=
+abbrev Real.CloseFn (ε:ℝ) (X:Set ℝ) (f: ℝ → ℝ) (L:ℝ) : Prop :=
   ∀ x ∈ X, |f x - L| < ε
 
 /-- Definition 9.3.3 -/
-abbrev Real.close_near (ε:ℝ) (X:Set ℝ) (f: ℝ → ℝ) (L:ℝ) (x₀:ℝ) : Prop :=
-  ∃ δ > 0, ε.close_fn (X ∩ Set.Ioo (x₀-δ) (x₀+δ)) f L
+abbrev Real.CloseNear (ε:ℝ) (X:Set ℝ) (f: ℝ → ℝ) (L:ℝ) (x₀:ℝ) : Prop :=
+  ∃ δ > 0, ε.CloseFn (X ∩ Set.Ioo (x₀-δ) (x₀+δ)) f L
 
 namespace Chapter9
 
 /-- Example 9.3.2 -/
-example : (5:ℝ).close_fn (Set.Icc 1 3) (fun x ↦ x^2) 4 := by sorry
+example : (5:ℝ).CloseFn (Set.Icc 1 3) (fun x ↦ x^2) 4 := by sorry
 
 /-- Example 9.3.2 -/
-example : (0.41:ℝ).close_fn (Set.Icc 1.9 2.1) (fun x ↦ x^2) 4 := by sorry
+example : (0.41:ℝ).CloseFn (Set.Icc 1.9 2.1) (fun x ↦ x^2) 4 := by sorry
 
 /-- Example 9.3.4 -/
-example: ¬ (0.1:ℝ).close_fn (Set.Icc 1 3) (fun x ↦ x^2) 4 := by
+example: ¬ (0.1:ℝ).CloseFn (Set.Icc 1 3) (fun x ↦ x^2) 4 := by
   sorry
 
 /-- Example 9.3.4 -/
-example: (0.1:ℝ).close_near (Set.Icc 1 3) (fun x ↦ x^2) 4 2 := by
+example: (0.1:ℝ).CloseNear (Set.Icc 1 3) (fun x ↦ x^2) 4 2 := by
   sorry
 
 /-- Example 9.3.5 -/
-example: ¬ (0.1:ℝ).close_fn (Set.Icc 1 3) (fun x ↦ x^2) 9 := by
+example: ¬ (0.1:ℝ).CloseFn (Set.Icc 1 3) (fun x ↦ x^2) 9 := by
   sorry
 
 /-- Example 9.3.5 -/
-example: (0.1:ℝ).close_near (Set.Icc 1 3) (fun x ↦ x^2) 9 3 := by
+example: (0.1:ℝ).CloseNear (Set.Icc 1 3) (fun x ↦ x^2) 9 3 := by
   sorry
 
 /-- Definition 9.3.6 (Convergence of functions at a point)-/
 abbrev Convergesto (X:Set ℝ) (f: ℝ → ℝ) (L:ℝ) (x₀:ℝ) : Prop :=
-  ∀ ε > (0:ℝ), ε.close_near X f L x₀
+  ∀ ε > (0:ℝ), ε.CloseNear X f L x₀
 
 /-- Connection with Mathlib filter convergence concepts -/
 theorem Convergesto.iff (X:Set ℝ) (f: ℝ → ℝ) (L:ℝ) (x₀:ℝ) :
   Convergesto X f L x₀ ↔ Filter.Tendsto f ((nhds x₀) ⊓ Filter.principal X) (nhds L) := by
-  unfold Convergesto Real.close_near Real.close_fn
+  unfold Convergesto Real.CloseNear Real.CloseFn
   rw [LinearOrderedAddCommGroup.tendsto_nhds]
   apply forall_congr'; intro ε
   apply imp_congr_right; intro hε

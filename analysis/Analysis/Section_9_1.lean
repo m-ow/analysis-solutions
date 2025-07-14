@@ -1,5 +1,6 @@
 import Mathlib.Tactic
 import Mathlib.Analysis.SpecificLimits.Basic
+import Analysis.Section_6_4
 
 /-!
 # Analysis I, Section 9.1
@@ -18,6 +19,8 @@ Main constructions and results of this section:
 - The Heine-Borel theorem for the real line
 
 -/
+
+variable (I : Type*)
 
 /- Definition 9.1.1 (Intervals) -/
 #check Set.Icc_def

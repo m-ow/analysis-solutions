@@ -37,11 +37,9 @@ theorem Rat.exists_between_rat {x y:ℚ} (h: x < y) : ∃ z:ℚ, x < z ∧ z < y
     positivity
   constructor
   . replace h' := add_lt_add_right h' (x/2)
-    convert h' using 1
-    all_goals ring
+    convert h' using 1 <;> ring
   replace h' := add_lt_add_right h' (y/2)
-  convert h' using 1
-  all_goals ring
+  convert h' using 1 <;> ring
 
 /-- Exercise 4.4.2 -/
 theorem Nat.no_infinite_descent : ¬ ∃ a:ℕ → ℕ, ∀ n, a (n+1) < a n := by
@@ -76,8 +74,7 @@ theorem Rat.not_exist_sqrt_two : ¬ ∃ x:ℚ, x^2 = 2 := by
     use x.num.toNat, x.den
     have hnum_pos : x.num > 0 := num_pos.mpr hpos
     have hden_pos : x.den > 0 := den_pos x
-    refine ⟨ ?_, hden_pos, ?_ ⟩
-    . simp [hpos]
+    refine ⟨ by simp [hpos], hden_pos, ?_ ⟩
     rw [←num_div_den x] at hx
     field_simp at hx
     have hnum_cast : x.num = x.num.toNat := Int.eq_natCast_toNat.mpr (by positivity)
@@ -97,8 +94,7 @@ theorem Rat.not_exist_sqrt_two : ¬ ∃ x:ℚ, x^2 = 2 := by
       use q
       constructor
       . sorry
-      refine ⟨ hpos, k, ?_, this ⟩
-      . linarith [hPp.1]
+      exact ⟨ hpos, k, by linarith [hPp.1], this ⟩
     have h1 : Odd (p^2) := by
       sorry
     have h2 : Even (p^2) := by
@@ -109,22 +105,18 @@ theorem Rat.not_exist_sqrt_two : ¬ ∃ x:ℚ, x^2 = 2 := by
     tauto
   classical
   set f : ℕ → ℕ := fun p ↦ if hPp: P p then (hiter p hPp).choose else 0
-  have hf (p:ℕ) (hPp: P p) : f p < p := by
+  have hf (p:ℕ) (hPp: P p) : (f p < p) ∧ P (f p) := by
     simp [f, hPp]
-    exact (hiter p hPp).choose_spec.1
-  have hf2 (p:ℕ) (pPp: P p) : P (f p) := by
-    simp [f, pPp]
-    exact (hiter p pPp).choose_spec.2
+    exact (hiter p hPp).choose_spec
   obtain ⟨ p, hP ⟩ := hP
   set a : ℕ → ℕ := Nat.rec p (fun n p ↦ f p)
   have ha (n:ℕ) : P (a n) := by
     induction n with
     | zero => exact hP
-    | succ n ih => exact hf2 _ ih
+    | succ n ih => exact (hf _ ih).2
   have hlt (n:ℕ) : a (n+1) < a n := by
     have : a (n+1) = f (a n) := Nat.rec_add_one p (fun n p ↦ f p) n
-    rw [this]
-    exact hf _ (ha n)
+    simp [this, hf _ (ha n)]
   exact Nat.no_infinite_descent ⟨ a, hlt ⟩
 
 

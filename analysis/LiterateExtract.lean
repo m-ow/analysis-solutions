@@ -158,7 +158,8 @@ unsafe def go (suppressedNamespaces : Array Name) (mod : String) (out : IO.FS.St
     let hls ← (Frontend.runCommandElabM <| liftTermElabM <| highlightMany cmds msgs infos (suppressNamespaces := suppressedNamespaces.toList)) pctx cmdSt
 
     let env := (← cmdSt.get).commandState.env
-    let getTerms := cmds.mapM fun stx => show FrontendM _ from do
+    let getTerms := cmds.mapM fun (stx : Syntax) => show FrontendM _ from do
+      runCommandElabM <| elabCommand stx
       let tms := allTerms stx
       tms.mapM fun tm => show FrontendM _ from do
         let .ok e := Parser.runParserCategory env `term tm

@@ -12,7 +12,11 @@ text. When there is a choice between a more idiomatic Lean solution and a more f
 translation, I have generally chosen the latter. In particular, there will be places where the
 Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
 doing so.
+-/
 
+variable (a b : ℕ)
+
+/-!
 Main constructions and results of this section:
 
 - Definition of the "Section 4.1" integers, `Section_4_1.Int`, as formal differences `a —— b` of
@@ -263,23 +267,9 @@ instance Int.instCommMonoid : CommMonoid Int where
     obtain ⟨ c, d, rfl ⟩ := eq_diff y
     obtain ⟨ e, f, rfl ⟩ := eq_diff z
     simp_rw [mul_eq]
-    congr 1
-    . ring
-    ring
-  one_mul := by
-    intro x
-    obtain ⟨ a, b, rfl ⟩ := eq_diff x
-    have : 1 = 2 —— 1 := by rw [Int.ofNat_eq, Int.eq]
-    rw [this]
-    rw [mul_eq]
-    sorry
-  mul_one := by
-    intro x
-    obtain ⟨ a, b, rfl ⟩ := eq_diff x
-    have : 1 = 2 —— 1 := by rw [Int.ofNat_eq, Int.eq]
-    rw [this]
-    rw [mul_eq]
-    sorry
+    congr 1 <;> ring
+  one_mul := by sorry
+  mul_one := by sorry
 
 /-- Proposition 4.1.6 (laws of algebra) / Exercise 4.1.4 -/
 instance Int.instCommRing : CommRing Int where

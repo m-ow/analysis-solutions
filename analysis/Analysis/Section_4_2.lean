@@ -12,7 +12,12 @@ text. When there is a choice between a more idiomatic Lean solution and a more f
 translation, I have generally chosen the latter. In particular, there will be places where the
 Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
 doing so.
+-/
 
+namespace Section_4_2
+variable (a b : ℤ)
+
+/-!
 Main constructions and results of this section:
 
 - Definition of the "Section 4.2" rationals, `Section_4_2.Rat`, as formal differences `a // b` of
@@ -24,7 +29,6 @@ Main constructions and results of this section:
 - Equivalence with the Mathlib rationals `_root_.Rat` (or `ℚ`), which we will use going forward.
 -/
 
-namespace Section_4_2
 
 structure PreRat where
   numerator : ℤ
@@ -75,7 +79,7 @@ instance Rat.decidableEq : DecidableEq Rat := by
 instance Rat.add_inst : Add Rat where
   add := Quotient.lift₂ (fun ⟨ a, b, h1 ⟩ ⟨ c, d, h2 ⟩ ↦ (a*d+b*c) // (b*d)) (by
     intro ⟨ a, b, h1 ⟩ ⟨ c, d, h2 ⟩ ⟨ a', b', h1' ⟩ ⟨ c', d', h2' ⟩ h3 h4
-    simp [Setoid.r, h1, h2, h1', h2'] at *
+    simp_all [Setoid.r]
     calc
       _ = (a*b')*d*d' + b*b'*(c*d') := by ring
       _ = (a'*b)*d*d' + b*b'*(c'*d) := by rw [h3, h4]
@@ -85,8 +89,7 @@ instance Rat.add_inst : Add Rat where
 /-- Definition 4.2.2 (Addition of rationals) -/
 theorem Rat.add_eq (a c:ℤ) {b d:ℤ} (hb: b ≠ 0) (hd: d ≠ 0) :
     (a // b) + (c // d) = (a*d + b*c) // (b*d) := by
-  convert Quotient.lift₂_mk _ _ _ _
-  all_goals simp [hb, hd]
+  convert Quotient.lift₂_mk _ _ _ _ <;> simp [hb, hd]
 
 /-- Lemma 4.2.3 (Multiplication well-defined) -/
 instance Rat.mul_inst : Mul Rat where
@@ -95,17 +98,15 @@ instance Rat.mul_inst : Mul Rat where
 /-- Definition 4.2.2 (Multiplication of rationals) -/
 theorem Rat.mul_eq (a c:ℤ) {b d:ℤ} (hb: b ≠ 0) (hd: d ≠ 0) :
     (a // b) * (c // d) = (a*c) // (b*d) := by
-  convert Quotient.lift₂_mk _ _ _ _
-  all_goals simp [hb, hd]
+  convert Quotient.lift₂_mk _ _ _ _ <;> simp [hb, hd]
 
 /-- Lemma 4.2.3 (Negation well-defined) -/
 instance Rat.neg_inst : Neg Rat where
   neg := Quotient.lift (fun ⟨ a, b, h1 ⟩ ↦ (-a) // b) (by sorry)
 
 /-- Definition 4.2.2 (Negation of rationals) -/
-theorem Rat.neg_eq (a:ℤ) (hb: b ≠ 0) : - (a // b) = (-a) // b := by
-  convert Quotient.lift_mk _ _ _
-  all_goals simp [hb]
+theorem Rat.neg_eq (a:ℤ) {b:ℤ} (hb: b ≠ 0) : - (a // b) = (-a) // b := by
+  convert Quotient.lift_mk _ _ _ <;> simp [hb]
 
 /-- Embedding the integers in the rationals -/
 instance Rat.instIntCast : IntCast Rat where
@@ -114,7 +115,7 @@ instance Rat.instIntCast : IntCast Rat where
 instance Rat.instNatCast : NatCast Rat where
   natCast n := (n:ℤ) // 1
 
-instance Rat.instOfNat : OfNat Rat n where
+instance Rat.instOfNat {n:ℕ} : OfNat Rat n where
   ofNat := (n:ℤ) // 1
 
 theorem Rat.coe_Int_eq (a:ℤ) : (a:Rat) = a // 1 := by
@@ -144,7 +145,7 @@ instance Rat.instInv : Inv Rat where
     sorry -- hint: split into the `a=0` and `a≠0` cases
 )
 
-lemma Rat.inv_eq (a:ℤ) (hb: b ≠ 0) : (a // b)⁻¹ = b // a := by
+lemma Rat.inv_eq (a:ℤ) {b:ℤ} (hb: b ≠ 0) : (a // b)⁻¹ = b // a := by
   convert Quotient.lift_mk _ _ _
   all_goals simp [hb]
 
@@ -202,10 +203,7 @@ theorem Rat.coe_Rat_eq (a:ℤ) {b:ℤ} (hb: b ≠ 0) : (a/b:ℚ) = a // b := by
   rw [eq _ _ hden hb]
   qify
   have hq : num / den = q := Rat.num_div_den q
-  rw [div_eq_div_iff _ _] at hq
-  . exact hq
-  . simp [hden]
-  simp [hb]
+  rwa [div_eq_div_iff _ _] at hq <;> simp [hden, hb]
 
 /-- Default definition of division -/
 instance Rat.instDivInvMonoid : DivInvMonoid Rat where
@@ -224,9 +222,7 @@ instance Rat.instField : Field Rat where
     have hden : (den:ℤ) ≠ 0 := by simp [den, q.den_nz]
     rw [← Rat.num_div_den q]
     convert coe_Rat_eq _ hden
-    rw [coe_Int_eq, coe_Nat_eq, div_eq, inv_eq, mul_eq, eq]
-    . simp [num]
-    all_goals simp [hden, den, q.den_nz]
+    rw [coe_Int_eq, coe_Nat_eq, div_eq, inv_eq, mul_eq, eq] <;> simp [num, hden, den, q.den_nz]
   qsmul := _
   nnqsmul := _
 

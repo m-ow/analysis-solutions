@@ -13,7 +13,15 @@ Technical note: it is convenient in Lean to extend finite sequences (usually by 
 functions on the entire integers.
 
 Main constructions and results of this section:
+-/
 
+variable (n : ℤ) (A : Finset ℤ) (f : ℤ → ℝ)
+
+-- This makes available the convenient notation `∑ n ∈ A, f n` to denote summation of `f n` for
+-- `n` ranging over a finite set `A`.
+open BigOperators
+
+/-!
 - API for summation over finite sets (encoded using Mathlib's `Finset` type), using the
   `Finset.sum` method and the `∑ n ∈ A, f n` notation.
 - Fubini's theorem for finite series
@@ -22,10 +30,6 @@ We do not attempt to replicate the full API for `Finset.sum` here, but in subseq
 shall make liberal use of this API.
 
 -/
-
--- This makes available the convenient notation `∑ n ∈ A, f n` to denote summation of `f n` for
--- `n` ranging over a finite set `A`.
-open BigOperators
 
 -- This is a technical device to avoid Mathlib's insistence on decidable equality for finite sets.
 open Classical
@@ -152,8 +156,7 @@ theorem finite_series_of_rearrange {n:ℕ} {X':Type*} (X: Finset X') (hcard: X.c
       simp [this]
     _ = _ := by
       congr
-      convert concat_finite_series _ _ _
-      all_goals linarith
+      convert concat_finite_series _ _ _ <;> linarith
   rw [this]
   congr 1
   have g_ne_x {i:ℤ} (hi : i ∈ Icc (1:ℤ) n) : g (π i) ≠ x := by
@@ -165,8 +168,7 @@ theorem finite_series_of_rearrange {n:ℕ} {X':Type*} (X: Finset X') (hcard: X.c
     simp at hi
     have hi' : 0 ≤ i := by linarith
     have hi'' : i ≤ n+1 := by linarith
-    by_cases hlt: i < j
-    all_goals by_contra! heq
+    by_cases hlt: i < j <;> by_contra! heq
     all_goals simp [h', hlt, ←hj, (Function.Bijective.injective hh).eq_iff, ←Subtype.val_inj,
                     π, hi.1, hi.2, hi',hi''] at heq
     . linarith
@@ -185,9 +187,7 @@ theorem finite_series_of_rearrange {n:ℕ} {X':Type*} (X: Finset X') (hcard: X.c
       simp [hi, gtil, ftil]
     _ = ∑ i ∈ Icc (1:ℤ) n, if hi: i ∈ Icc (1:ℤ) n then ftil (htil ⟨ i, hi ⟩ ) else 0 := by
       convert hn _ _ gtil htil why why2
-      rw [Finset.card_erase_of_mem _, hX]
-      . simp
-      simp [x]
+      rw [Finset.card_erase_of_mem _, hX] <;> simp
     _ = _ := by
       apply sum_congr rfl _
       intro i hi
@@ -274,8 +274,7 @@ theorem finite_series_of_finite_series {XX YY:Type*} (X: Finset XX) (Y: Finset Y
   have hcard : X'.card = n := by simp [X', card_erase_of_mem hx₀, hX]
   have hunion : X = X' ∪ {x₀} := by
     ext x
-    by_cases h:x = x₀
-    all_goals simp [h,X', hx₀]
+    by_cases h:x = x₀ <;> simp [h,X', hx₀]
   have hdisj : Disjoint X' {x₀} := by simp [X']
   calc
     _ = ∑ x ∈ X', ∑ y ∈ Y, f (x, y) + ∑ x ∈ {x₀}, ∑ y ∈ Y, f (x, y) := by

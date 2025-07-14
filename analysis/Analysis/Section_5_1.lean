@@ -9,7 +9,12 @@ text. When there is a choice between a more idiomatic Lean solution and a more f
 translation, I have generally chosen the latter. In particular, there will be places where the
 Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
 doing so.
+-/
 
+namespace Chapter5
+variable (ε : ℚ)
+
+/-!
 Main constructions and results of this section:
 
 - Notion of a sequence of rationals
@@ -17,7 +22,6 @@ Main constructions and results of this section:
 
 -/
 
-namespace Chapter5
 
 /--
   Definition 5.1.1 (Sequence). To avoid some technicalities involving dependent types, we extend
@@ -96,11 +100,11 @@ end Chapter5
 /--
 A slight generalization of 5.1.3 - definition of ε-steadiness for a sequence with an arbitrary starting point n₀
 -/
-abbrev Rat.steady (ε: ℚ) (a: Chapter5.Sequence) : Prop :=
-  ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.close (a n) (a m)
+abbrev Rat.Steady (ε: ℚ) (a: Chapter5.Sequence) : Prop :=
+  ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.Close (a n) (a m)
 
 lemma Rat.steady_def (ε: ℚ) (a: Chapter5.Sequence) :
-  ε.steady a ↔ ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.close (a n) (a m) := by rfl
+  ε.Steady a ↔ ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.Close (a n) (a m) := by rfl
 
 namespace Chapter5
 
@@ -108,12 +112,11 @@ namespace Chapter5
 5.1.3 - definition of ε-steadiness for a sequence starting at 0
 -/
 lemma Rat.isSteady_of_coe (ε : ℚ) (a:ℕ → ℚ) :
-    ε.steady a ↔ ∀ n m : ℕ, ε.close (a n) (a m) := by
+    ε.Steady a ↔ ∀ n m : ℕ, ε.Close (a n) (a m) := by
   constructor
   · intro h n m
     specialize h n (by simp) m (by simp)
-    dsimp at h
-    exact h
+    simp_all
   intro h n hn m hm
   lift n to ℕ using hn
   lift m to ℕ using hm
@@ -121,45 +124,43 @@ lemma Rat.isSteady_of_coe (ε : ℚ) (a:ℕ → ℚ) :
 
 /--
 Not in textbook: the sequence 2, 2 ... is 1-steady
-Intended as a demonstration of `isSteady_of_coe`
+Intended as a demonstration of `Rat.isSteady_of_coe`
 -/
-example : (1:ℚ).steady ((fun _:ℕ ↦ (3:ℚ)):Sequence) := by
-  rw [Rat.isSteady_of_coe]
-  unfold Rat.close
-  intro n m
-  simp
+example : (1:ℚ).Steady ((fun _:ℕ ↦ (3:ℚ)):Sequence) := by
+  simp [Rat.isSteady_of_coe, Rat.Close]
 
 /--
 Compare: if you need to work with `Rat.steady` on the coercion directly, there will be side conditions `hn : n ≥ 0` and `hm : m ≥ 0` that you will need to deal with.
 -/
-example : (1:ℚ).steady ( (fun _:ℕ ↦ (3:ℚ)):Sequence) := by
-  unfold Rat.steady Rat.close
+example : (1:ℚ).Steady ( (fun _:ℕ ↦ (3:ℚ)):Sequence) := by
+  unfold Rat.Steady Rat.Close
   intro n hn m hm
-  simp only [Sequence.n0_coe, Sequence.eval_coe_at_int] at hn hm
-  simp [hn, hm]
+  simp_all [Sequence.n0_coe, Sequence.eval_coe_at_int]
 
 /-- Example 5.1.5 -/
-example : (1:ℚ).steady ((fun n:ℕ ↦ if Even n then (1:ℚ) else (0:ℚ)):Sequence) := by sorry
+example : (1:ℚ).Steady ((fun n:ℕ ↦ if Even n then (1:ℚ) else (0:ℚ)):Sequence) := by sorry
 
 /-- Example 5.1.5 -/
-example : ¬ (0.5:ℚ).steady ((fun n:ℕ ↦ if Even n then (1:ℚ) else (0:ℚ)):Sequence) := by sorry
+example : ¬ (0.5:ℚ).Steady ((fun n:ℕ ↦ if Even n then (1:ℚ) else (0:ℚ)):Sequence) := by sorry
 
 /-- Example 5.1.5 -/
-example : (0.1:ℚ).steady ((fun n:ℕ ↦ (10:ℚ) ^ (-(n:ℤ)-1) ):Sequence) := by sorry
+example : (0.1:ℚ).Steady ((fun n:ℕ ↦ (10:ℚ) ^ (-(n:ℤ)-1) ):Sequence) := by sorry
 
 /-- Example 5.1.5 -/
-example : ¬(0.01:ℚ).steady ((fun n:ℕ ↦ (10:ℚ) ^ (-(n:ℤ)-1) ):Sequence) := by sorry
+example : ¬(0.01:ℚ).Steady ((fun n:ℕ ↦ (10:ℚ) ^ (-(n:ℤ)-1) ):Sequence) := by sorry
 
 /-- Example 5.1.5 -/
-example (ε:ℚ) : ¬ ε.steady ((fun n:ℕ ↦ (2 ^ (n+1):ℚ) ):Sequence) := by sorry
+example (ε:ℚ) : ¬ ε.Steady ((fun n:ℕ ↦ (2 ^ (n+1):ℚ) ):Sequence) := by sorry
 
 /-- Example 5.1.5 -/
-example (ε:ℚ) (hε: ε>0) : ε.steady ((fun _:ℕ ↦ (2:ℚ) ):Sequence) := by sorry
+example (ε:ℚ) (hε: ε>0) : ε.Steady ((fun _:ℕ ↦ (2:ℚ) ):Sequence) := by sorry
 
-example : (10:ℚ).steady ((fun n:ℕ ↦ if n = 0 then (10:ℚ) else (0:ℚ)):Sequence) := by sorry
+example : (10:ℚ).Steady ((fun n:ℕ ↦ if n = 0 then (10:ℚ) else (0:ℚ)):Sequence) := by sorry
 
-example (ε:ℚ) (hε:ε<10):  ¬ ε.steady ((fun n:ℕ ↦ if n = 0 then (10:ℚ) else (0:ℚ)):Sequence) := by
+example (ε:ℚ) (hε:ε<10):  ¬ ε.Steady ((fun n:ℕ ↦ if n = 0 then (10:ℚ) else (0:ℚ)):Sequence) := by
   sorry
+
+variable (n₁ n₀ : ℤ)
 
 /--
   a.from n₁ starts `a:Sequence` from `n₁`.  It is intended for use when `n₁ ≥ n₀`, but returns
@@ -178,18 +179,18 @@ end Chapter5
 
 /-- Definition 5.1.6 (Eventually ε-steady) -/
 abbrev Rat.eventuallySteady (ε: ℚ) (a: Chapter5.Sequence) : Prop :=
-  ∃ N ≥ a.n₀, ε.steady (a.from N)
+  ∃ N ≥ a.n₀, ε.Steady (a.from N)
 
 lemma Rat.eventuallySteady_def (ε: ℚ) (a: Chapter5.Sequence) :
-  ε.eventuallySteady a ↔ ∃ N ≥ a.n₀, ε.steady (a.from N) := by rfl
+  ε.eventuallySteady a ↔ ∃ N ≥ a.n₀, ε.Steady (a.from N) := by rfl
 
 namespace Chapter5
 
 
 /-- Example 5.1.7 -/
-lemma Sequence.ex_5_1_7_a : ¬ (0.1:ℚ).steady ((fun n:ℕ ↦ (n+1:ℚ)⁻¹ ):Sequence) := by sorry
+lemma Sequence.ex_5_1_7_a : ¬ (0.1:ℚ).Steady ((fun n:ℕ ↦ (n+1:ℚ)⁻¹ ):Sequence) := by sorry
 
-lemma Sequence.ex_5_1_7_b : (0.1:ℚ).steady (((fun n:ℕ ↦ (n+1:ℚ)⁻¹ ):Sequence).from 10) := by
+lemma Sequence.ex_5_1_7_b : (0.1:ℚ).Steady (((fun n:ℕ ↦ (n+1:ℚ)⁻¹ ):Sequence).from 10) := by
   sorry
 
 lemma Sequence.ex_5_1_7_c : (0.1:ℚ).eventuallySteady ((fun n:ℕ ↦ (n+1:ℚ)⁻¹ ):Sequence) := by
@@ -198,17 +199,17 @@ lemma Sequence.ex_5_1_7_c : (0.1:ℚ).eventuallySteady ((fun n:ℕ ↦ (n+1:ℚ)
 lemma Sequence.ex_5_1_7_d {ε:ℚ} (hε:ε>0) :
     ε.eventuallySteady ((fun n:ℕ ↦ if n=0 then (10:ℚ) else (0:ℚ) ):Sequence) := by sorry
 
-abbrev Sequence.isCauchy (a:Sequence) : Prop := ∀ ε > (0:ℚ), ε.eventuallySteady a
+abbrev Sequence.IsCauchy (a:Sequence) : Prop := ∀ ε > (0:ℚ), ε.eventuallySteady a
 
 lemma Sequence.isCauchy_def (a:Sequence) :
-  a.isCauchy ↔ ∀ ε > (0:ℚ), ε.eventuallySteady a := by rfl
+  a.IsCauchy ↔ ∀ ε > (0:ℚ), ε.eventuallySteady a := by rfl
 
-lemma Sequence.isCauchy_of_coe (a:ℕ → ℚ) :
-    (a:Sequence).isCauchy ↔ ∀ ε > (0:ℚ), ∃ N, ∀ j ≥ N, ∀ k ≥ N,
+lemma Sequence.IsCauchy.coe (a:ℕ → ℚ) :
+    (a:Sequence).IsCauchy ↔ ∀ ε > (0:ℚ), ∃ N, ∀ j ≥ N, ∀ k ≥ N,
     Section_4_3.dist (a j) (a k) ≤ ε := by sorry
 
-lemma Sequence.isCauchy_of_mk {n₀:ℤ} (a: {n // n ≥ n₀} → ℚ) :
-    (mk' n₀ a).isCauchy ↔ ∀ ε > (0:ℚ), ∃ N ≥ n₀, ∀ j ≥ N, ∀ k ≥ N,
+lemma Sequence.IsCauchy.mk {n₀:ℤ} (a: {n // n ≥ n₀} → ℚ) :
+    (mk' n₀ a).IsCauchy ↔ ∀ ε > (0:ℚ), ∃ N ≥ n₀, ∀ j ≥ N, ∀ k ≥ N,
     Section_4_3.dist (mk' n₀ a j) (mk' n₀ a k) ≤ ε := by sorry
 
 noncomputable def Sequence.sqrt_two : Sequence :=
@@ -217,55 +218,53 @@ noncomputable def Sequence.sqrt_two : Sequence :=
 /--
   Example 5.1.10. (This requires extensive familiarity with Mathlib's API for the real numbers.)
 -/
-theorem Sequence.ex_5_1_10_a : (1:ℚ).steady sqrt_two := by sorry
+theorem Sequence.ex_5_1_10_a : (1:ℚ).Steady sqrt_two := by sorry
 
 /--
   Example 5.1.10. (This requires extensive familiarity with Mathlib's API for the real numbers.)
 -/
-theorem Sequence.ex_5_1_10_b : (0.1:ℚ).steady (sqrt_two.from 1) := by sorry
+theorem Sequence.ex_5_1_10_b : (0.1:ℚ).Steady (sqrt_two.from 1) := by sorry
 
 theorem Sequence.ex_5_1_10_c : (0.1:ℚ).eventuallySteady sqrt_two := by sorry
 
+
 /-- Proposition 5.1.11 -/
-theorem Sequence.harmonic_steady : (mk' 1 (fun n ↦ (1:ℚ)/n)).isCauchy := by
-  -- This is proof is probably longer than it needs to be; there should be a shorter proof that
-  -- is still in the spirit of  the proof in the book.
-  rw [isCauchy_of_mk (fun n ↦ (1:ℚ)/n)]
+theorem Sequence.harmonic_steady : (mk' 1 (fun n ↦ (1:ℚ)/n)).IsCauchy := by
+  rw [IsCauchy.mk]
   intro ε hε
-  have : ∃ N:ℕ, N > 1/ε := exists_nat_gt (1 / ε)
-  obtain ⟨ N, hN ⟩ := this
+  -- We go by reverse from the book - first choose N such that N > 1/ε
+  obtain ⟨ N, hN : N > 1/ε ⟩ := exists_nat_gt (1 / ε)
   use N
-  have hN' : (N:ℤ) > 0 := by
+  have hN' : N > 0 := by
     have : (1/ε) > 0 := by positivity
-    replace hN := this.trans hN
-    simp at hN ⊢; assumption
+    have hN := this.trans hN
+    norm_cast at *
   constructor
-  . simp at hN' ⊢; linarith
+  . norm_cast
   intro j hj k hk
-  have hj' : (j:ℚ) ≥ 0 := by simp; linarith
-  have hj'' : (1:ℚ)/j ≤ (1:ℚ)/N := by
-    gcongr
-    . simp at hN' ⊢; assumption
-    . simp at hj ⊢; qify at hj; assumption
-  have hj''' : (1:ℚ)/j ≥ 0 := by positivity
-  have hj'''' : j ≥ 1 := by simp at hj'; linarith
-  have hk' : (k:ℚ) ≥ 0 := by simp; linarith
-  have hk'' : (1:ℚ)/k ≤ (1:ℚ)/N := by
-    gcongr
-    . simp at hN' ⊢; assumption
-    . simp at hk ⊢; qify at hk; assumption
-  have hk''' : (1:ℚ)/k ≥ 0 := by positivity
-  have hk'''' : k ≥ 1 := by simp at hk'; linarith
+  lift j to ℕ using (by linarith)
+  lift k to ℕ using (by linarith)
+  norm_cast at hj hk
+  simp [show j ≥ 1 by linarith, show k ≥ 1 by linarith]
+
   have hdist : Section_4_3.dist ((1:ℚ)/j) ((1:ℚ)/k) ≤ (1:ℚ)/N := by
     rw [Section_4_3.dist_eq, abs_le']
+    /-
+    We establish the following bounds:
+    - 1/j ∈ [0, 1/N]
+    - 1/k ∈ [0, 1/N]
+    These imply that the distance between 1/j and 1/k is at most 1/N - when they are as "far apart" as possible.
+    -/
+    have hj'' : 1/j ≤ (1:ℚ)/N := by gcongr
+    have hj''' : (0:ℚ) ≤ 1/j := by positivity
+    have hk'' : 1/k ≤ (1:ℚ)/N := by gcongr
+    have hk''' : (0:ℚ) ≤ 1/k := by positivity
     constructor <;> linarith
-  simp [seq, hj'''', hk'''']
   convert hdist.trans _ using 2
   . simp
   . simp
-  rw [div_le_iff₀, mul_comm, ←div_le_iff₀ hε]
-  . exact le_of_lt hN
-  simp at hN' ⊢; assumption
+  rw [div_le_iff₀ (by positivity), mul_comm, ←div_le_iff₀ hε]
+  exact le_of_lt hN
 
 abbrev BoundedBy {n:ℕ} (a: Fin n → ℚ) (M:ℚ) : Prop :=
   ∀ i, |a i| ≤ M
@@ -300,7 +299,7 @@ example : ¬ ((fun n:ℕ ↦ (-1)^n * (n+1:ℚ)):Sequence).isBounded := by sorry
 example : ((fun n:ℕ ↦ (-1:ℚ)^n):Sequence).isBounded := by sorry
 
 /-- Example 5.1.13 -/
-example : ¬ ((fun n:ℕ ↦ (-1:ℚ)^n):Sequence).isCauchy := by sorry
+example : ¬ ((fun n:ℕ ↦ (-1:ℚ)^n):Sequence).IsCauchy := by sorry
 
 /-- Lemma 5.1.14 -/
 lemma bounded_of_finite {n:ℕ} (a: Fin n → ℚ) : ∃ M ≥ 0,  BoundedBy a M := by
@@ -327,7 +326,7 @@ lemma bounded_of_finite {n:ℕ} (a: Fin n → ℚ) : ∃ M ≥ 0,  BoundedBy a M
   simp [hm]
 
 /-- Lemma 5.1.15 (Cauchy sequences are bounded) / Exercise 5.1.1 -/
-lemma Sequence.isBounded_of_isCauchy {a:Sequence} (h: a.isCauchy) : a.isBounded := by
+lemma Sequence.isBounded_of_isCauchy {a:Sequence} (h: a.IsCauchy) : a.isBounded := by
   sorry
 
 end Chapter5

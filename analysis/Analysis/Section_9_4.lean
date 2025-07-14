@@ -72,54 +72,47 @@ theorem Filter.Tendsto.comp_of_continuous {X:Set ℝ} {f: ℝ → ℝ} {x₀:ℝ
   (hconv: Filter.Tendsto a Filter.atTop (nhds x₀)):
   Filter.Tendsto (fun n ↦ f (a n)) Filter.atTop (nhds (f x₀)) := by
   have := (ContinuousWithinAt.tfae X f h).out 0 1
-  rw [this] at h_cont
-  exact h_cont a ha hconv
+  rw [this] at h_cont; solve_by_elim
 
 /- Proposition 9.4.9 -/
 theorem ContinuousWithinAt.add {X:Set ℝ} (f g: ℝ → ℝ) {x₀:ℝ} (h : x₀ ∈ X)
   (hf: ContinuousWithinAt f X x₀) (hg: ContinuousWithinAt g X x₀) :
   ContinuousWithinAt (f + g) X x₀ := by
   rw [ContinuousWithinAt.iff] at hf hg ⊢
-  have had := AdherentPt.of_mem h
-  convert Convergesto.add had hf hg using 1
+  convert Convergesto.add (AdherentPt.of_mem h) hf hg using 1
 
 
 theorem ContinuousWithinAt.sub {X:Set ℝ} (f g: ℝ → ℝ) {x₀:ℝ} (h : x₀ ∈ X)
   (hf: ContinuousWithinAt f X x₀) (hg: ContinuousWithinAt g X x₀) :
   ContinuousWithinAt (f - g) X x₀ := by
   rw [ContinuousWithinAt.iff] at hf hg ⊢
-  have had := AdherentPt.of_mem h
-  convert Convergesto.sub had hf hg using 1
+  convert Convergesto.sub (AdherentPt.of_mem h) hf hg using 1
 
 theorem ContinuousWithinAt.max {X:Set ℝ} (f g: ℝ → ℝ) {x₀:ℝ} (h : x₀ ∈ X)
   (hf: ContinuousWithinAt f X x₀) (hg: ContinuousWithinAt g X x₀) :
   ContinuousWithinAt (max f g) X x₀ := by
   rw [ContinuousWithinAt.iff] at hf hg ⊢
-  have had := AdherentPt.of_mem h
-  convert Convergesto.max had hf hg using 1
+  convert Convergesto.max (AdherentPt.of_mem h) hf hg using 1
 
 
 theorem ContinuousWithinAt.min {X:Set ℝ} (f g: ℝ → ℝ) {x₀:ℝ} (h : x₀ ∈ X)
   (hf: ContinuousWithinAt f X x₀) (hg: ContinuousWithinAt g X x₀) :
   ContinuousWithinAt (min f g) X x₀ := by
   rw [ContinuousWithinAt.iff] at hf hg ⊢
-  have had := AdherentPt.of_mem h
-  convert Convergesto.min had hf hg using 1
+  convert Convergesto.min (AdherentPt.of_mem h) hf hg using 1
 
 
 theorem ContinuousWithinAt.mul' {X:Set ℝ} (f g: ℝ → ℝ) {x₀:ℝ} (h : x₀ ∈ X)
   (hf: ContinuousWithinAt f X x₀) (hg: ContinuousWithinAt g X x₀) :
   ContinuousWithinAt (f * g) X x₀ := by
   rw [ContinuousWithinAt.iff] at hf hg ⊢
-  have had := AdherentPt.of_mem h
-  convert Convergesto.mul had hf hg using 1
+  convert Convergesto.mul (AdherentPt.of_mem h) hf hg using 1
 
 theorem ContinuousWithinAt.div' {X:Set ℝ} (f g: ℝ → ℝ) {x₀:ℝ} (h : x₀ ∈ X) (hM: g x₀ ≠ 0)
   (hf: ContinuousWithinAt f X x₀) (hg: ContinuousWithinAt g X x₀) :
   ContinuousWithinAt (f / g) X x₀ := by
   rw [ContinuousWithinAt.iff] at hf hg ⊢
-  have had := AdherentPt.of_mem h
-  convert Convergesto.div had hM hf hg using 1
+  convert Convergesto.div (AdherentPt.of_mem h) hM hf hg using 1
 
 /-- Proposition 9.4.10 / Exercise 9.4.3  -/
 theorem Continuous.exp {a:ℝ} (ha: a>0) : Continuous (fun x:ℝ ↦ a ^ x) := by

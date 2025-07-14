@@ -174,15 +174,15 @@ noncomputable abbrev g_9_8_5 : ℚ → ℝ := fun q ↦ (2:ℝ)^(-q_9_8_5.symm q
 noncomputable abbrev f_9_8_5 : ℝ → ℝ := fun x ↦ ∑' r : {r:ℚ // (r:ℝ) < x}, g_9_8_5 r
 
 /-- Exercise 9.8.5(a) -/
-example : StrictMonoOn f_9_8_5 Set.univ := by
+theorem StrictMonoOn.of_f_9_8_5 : StrictMonoOn f_9_8_5 Set.univ := by
   sorry
 
 /-- Exercise 9.8.5(b) -/
-example (r:ℚ) : ¬ ContinuousAt f_9_8_5 r := by
+theorem ContinuousAt.of_f_9_8_5' (r:ℚ) : ¬ ContinuousAt f_9_8_5 r := by
   sorry
 
 /-- Exercise 9.8.5(c) -/
-example {x:ℝ} (hx: ¬ ∃ r:ℚ, x = r) : ContinuousAt f_9_8_5 x := by
+theorem ContinuousAt.of_f_9_8_5 {x:ℝ} (hx: ¬ ∃ r:ℚ, x = r) : ContinuousAt f_9_8_5 x := by
   sorry
 
 end Chapter9

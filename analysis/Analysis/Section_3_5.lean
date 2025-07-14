@@ -54,8 +54,7 @@ instance OrderedPair.inst_coeObject : Coe OrderedPair Object where
 abbrev SetTheory.Set.slice (x:Object) (Y:Set) : Set :=
   Y.replace (P := fun y z ↦ z = (⟨x, y⟩:OrderedPair)) (by
     intro y z z' ⟨ hz, hz'⟩
-    simp at hz hz'
-    rw [hz, hz']
+    simp_all
   )
 
 theorem SetTheory.Set.mem_slice (x z:Object) (Y:Set) :
@@ -65,8 +64,7 @@ theorem SetTheory.Set.mem_slice (x z:Object) (Y:Set) :
 abbrev SetTheory.Set.cartesian (X Y:Set) : Set :=
   union (X.replace (P := fun x z ↦ z = slice x Y) (by
     intro x z z' ⟨ hz, hz' ⟩
-    simp at hz hz'
-    rw [hz, hz']
+    simp_all
   ))
 
 /-- This instance enables the ×ˢ notation for Cartesian product. -/
@@ -82,8 +80,7 @@ theorem SetTheory.Set.mem_cartesian (z:Object) (X Y:Set) :
     rw [replacement_axiom] at hS
     obtain ⟨ x, hx ⟩ := hS
     simp at hx
-    rw [hx] at hz
-    rw [mem_slice] at hz
+    rw [hx, mem_slice] at hz
     obtain ⟨ y, rfl ⟩ := hz
     use x, y
   intro h
@@ -112,8 +109,7 @@ theorem SetTheory.Set.pair_eq_fst_snd {X Y:Set} (z:X ×ˢ Y) :
   obtain ⟨ x, hx ⟩ := (exists_comm.mp ((mem_cartesian _ _ _).mp z.property)).choose_spec
   change z.val = (⟨ fst z, y ⟩:OrderedPair) at hy
   change z.val = (⟨ x, snd z ⟩:OrderedPair) at hx
-  rw [hx] at hy ⊢
-  simp only [EmbeddingLike.apply_eq_iff_eq, OrderedPair.eq] at hy ⊢
+  simp only [hx, EmbeddingLike.apply_eq_iff_eq, OrderedPair.eq] at hy ⊢
   simp [hy.1]
 
 noncomputable abbrev SetTheory.Set.uncurry {X Y Z:Set} (f: X → Y → Z) : X ×ˢ Y → Z :=
@@ -243,8 +239,7 @@ theorem SetTheory.Set.mem_Fin (n:ℕ) (x:Object) : x ∈ Fin n ↔ ∃ m, m < n 
       x = (⟨ x, h1 ⟩:nat) := by rfl
       _ = _ :=  by congr; simp
   intro ⟨ m, hm, h ⟩
-  have hn : x ∈ nat := by rw [h, ←SetTheory.Object.ofnat_eq]; exact (m:nat).property
-  use hn
+  use (by rw [h, ←SetTheory.Object.ofnat_eq]; exact (m:nat).property)
   convert hm
   simp [h, Equiv.symm_apply_eq]
   rfl
@@ -284,8 +279,7 @@ theorem SetTheory.Set.finite_choice {n:ℕ} {X: Fin n → Set} (h: ∀ i, X i �
       rw [eq_empty_iff_forall_notMem]
       intro x
       by_contra! h
-      rw [specification_axiom''] at h
-      simp at h
+      simp [specification_axiom''] at h
     have empty (i:Fin 0) : X i := False.elim (by rw [this] at i; exact not_mem_empty i i.property)
     apply nonempty_of_inhabited (x := tuple empty)
     rw [mem_iProd]

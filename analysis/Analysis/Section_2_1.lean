@@ -15,7 +15,7 @@ so.
 Main constructions and results of this section:
 
 - Definition of the "Chapter 2" natural numbers, `Chapter2.Nat`, abbreviated as `Nat` within the
-  `Chapter2` namespace. (In the book, the natural numbers are treated in a purely axiomatic
+  Chapter2 namespace. (In the book, the natural numbers are treated in a purely axiomatic
   fashion, as a type that obeys the Peano axioms; but here we take advantage of Lean's native
   inductive types to explicitly construct a version of the natural numbers that obey those
   axioms.  One could also proceed more axiomatically, as is done in Section 3 for set theory, but
@@ -75,7 +75,7 @@ lemma Nat.two_succ : 2++ = 3 := by rfl
 -/
 theorem Nat.succ_ne (n:Nat) : n++ ≠ 0 := by
   by_contra h
-  simp only [reduceCtorEq] at h
+  injection h
 
 /-- Proposition 2.1.6 (4 is not equal to zero) -/
 theorem Nat.four_ne : (4:Nat) ≠ 0 := by
@@ -89,8 +89,8 @@ theorem Nat.four_ne : (4:Nat) ≠ 0 := by
   Compare with Mathlib's `Nat.succ_inj`.
 -/
 theorem Nat.succ_cancel {n m:Nat} (hnm: n++ = m++) : n = m := by
-  rwa [succ.injEq] at hnm
-
+  injection hnm
+  
 /--
   Axiom 2.4 (Different natural numbers have different successors).
   Compare with Mathlib's `Nat.succ_ne_succ`.

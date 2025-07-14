@@ -34,6 +34,22 @@ noncomputable abbrev upper_integral (f:ℝ → ℝ) (I: BoundedInterval) : ℝ :
 noncomputable abbrev lower_integral (f:ℝ → ℝ) (I: BoundedInterval) : ℝ :=
   sSup ((fun g ↦ PiecewiseConstantOn.integ g I) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I})
 
+theorem upper_integral_congr {f g:ℝ → ℝ} {I: BoundedInterval} (h: Set.EqOn f g I) :
+  upper_integral f I = upper_integral g I := by
+  simp [upper_integral]; congr! 2; ext G; simp
+  intro P hP; unfold MajorizesOn
+  apply forall_congr'; intro x
+  apply imp_congr_right; intro hx
+  rw [h hx]
+
+theorem lower_integral_congr {f g:ℝ → ℝ} {I: BoundedInterval} (h: Set.EqOn f g I) :
+  lower_integral f I = lower_integral g I := by
+  simp [lower_integral]; congr! 2; ext G; simp
+  intro P hP; unfold MinorizesOn
+  apply forall_congr'; intro x
+  apply imp_congr_right; intro hx
+  rw [h hx]
+
 lemma integral_bound_upper_of_bounded {f:ℝ → ℝ} {M:ℝ} {I: BoundedInterval} (h: ∀ x ∈ (I:Set ℝ), |f x| ≤ M) : M * |I|ₗ ∈ (fun g ↦ PiecewiseConstantOn.integ g I) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I} := by
   simp
   refine ⟨ fun _ ↦ M , ⟨ ⟨ ?_, ?_, ⟩, ?_ ⟩ ⟩
@@ -147,6 +163,9 @@ lemma gt_of_lt_lower_integral {f:ℝ → ℝ} {I: BoundedInterval} (hf: BddOn f 
 As we permit junk values, the simplest definition for the Riemann integral is the upper integral.-/
 noncomputable abbrev integ (f:ℝ → ℝ) (I: BoundedInterval) : ℝ :=
 upper_integral f I
+
+theorem integ_congr {f g:ℝ → ℝ} {I: BoundedInterval} (h: Set.EqOn f g I) :
+  integ f I = integ g I := upper_integral_congr h
 
 noncomputable abbrev IntegrableOn (f:ℝ → ℝ) (I: BoundedInterval) : Prop :=
   BddOn f I ∧ lower_integral f I = upper_integral f I

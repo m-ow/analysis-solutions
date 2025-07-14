@@ -1,5 +1,5 @@
 import Mathlib.Tactic
-import Analysis.Section_5_5
+import Analysis.Section_5_6
 
 /-!
 # Analysis I, Chapter 5 epilogue
@@ -16,7 +16,7 @@ Filling the sorries here requires both the Chapter5.Real API and the Mathlib API
 natural numbers `ℝ`.  As such, they are excellent exercises to prepare you for the aforementioned
 transition.
 
---/
+-/
 
 namespace Chapter5
 
@@ -130,6 +130,15 @@ noncomputable abbrev Real.equivR_ordered_ring : Real ≃+*o ℝ where
   map_add' := by sorry
   map_mul' := by sorry
   map_le_map_iff' := by sorry
+
+theorem Real.pow_of_equivR (x:Real) (n:ℕ) : equivR (x^n) = (equivR x)^n := by
+  sorry
+
+theorem Real.zpow_of_equivR (x:Real) (n:ℤ) : equivR (x^n) = (equivR x)^n := by
+  sorry
+
+theorem Real.ratPow_of_equivR (x:Real) (q:ℚ) : equivR (x^q) = (equivR x)^(q:ℝ) := by
+  sorry
 
 
 end Chapter5

@@ -54,14 +54,18 @@ def demoSite : Site := site AnalysisBook.Home /
   "sec33" Book.Analysis.Section_3_3
   "sec34" Book.Analysis.Section_3_4
   "sec35" Book.Analysis.Section_3_5
+  "sec36" Book.Analysis.Section_3_6
+  "sec3e" Book.Analysis.Section_3_epilogue
   "sec41" Book.Analysis.Section_4_1
   "sec42" Book.Analysis.Section_4_2
   "sec43" Book.Analysis.Section_4_3
+  "sec44" Book.Analysis.Section_4_4
   "sec51" Book.Analysis.Section_5_1
   "sec52" Book.Analysis.Section_5_2
   "sec53" Book.Analysis.Section_5_3
   "sec54" Book.Analysis.Section_5_4
   "sec55" Book.Analysis.Section_5_5
+  "sec56" Book.Analysis.Section_5_6
   "sec5e" Book.Analysis.Section_5_epilogue
   "sec61" Book.Analysis.Section_6_1
   "sec62" Book.Analysis.Section_6_2
@@ -69,12 +73,18 @@ def demoSite : Site := site AnalysisBook.Home /
   "sec64" Book.Analysis.Section_6_4
   "sec65" Book.Analysis.Section_6_5
   "sec66" Book.Analysis.Section_6_6
+  "sec67" Book.Analysis.Section_6_7
   "sec6e" Book.Analysis.Section_6_epilogue
   "sec71" Book.Analysis.Section_7_1
   "sec72" Book.Analysis.Section_7_2
   "sec73" Book.Analysis.Section_7_3
   "sec74" Book.Analysis.Section_7_4
   "sec75" Book.Analysis.Section_7_5
+  "sec81" Book.Analysis.Section_8_1
+  "sec82" Book.Analysis.Section_8_2
+  "sec83" Book.Analysis.Section_8_3
+  "sec84" Book.Analysis.Section_8_4
+  "sec85" Book.Analysis.Section_8_5
   "sec91" Book.Analysis.Section_9_1
   "sec92" Book.Analysis.Section_9_2
   "sec93" Book.Analysis.Section_9_3
@@ -98,6 +108,8 @@ def demoSite : Site := site AnalysisBook.Home /
   "sec116" Book.Analysis.Section_11_6
   "sec117" Book.Analysis.Section_11_7
   "sec118" Book.Analysis.Section_11_8
+  "sec119" Book.Analysis.Section_11_9
+  "sec1110" Book.Analysis.Section_11_10
   "appA1" Book.Analysis.Appendix_A_1
   "appA2" Book.Analysis.Appendix_A_2
   "appA3" Book.Analysis.Appendix_A_3
@@ -105,6 +117,7 @@ def demoSite : Site := site AnalysisBook.Home /
   "appA5" Book.Analysis.Appendix_A_5
   "appA6" Book.Analysis.Appendix_A_6
   "appA7" Book.Analysis.Appendix_A_7
+  "appB1" Book.Analysis.Appendix_B_1
 
 def baseUrl := "https://teorth.github.io/analysis/docs/"
 

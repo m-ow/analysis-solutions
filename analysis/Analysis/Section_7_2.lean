@@ -67,6 +67,12 @@ theorem Series.partial_succ (s : Series) {N:ℤ} (h: N ≥ s.m-1) : s.partial (N
   refine (Finset.insert_Icc_right_eq_Icc_add_one ?_).symm
   linarith
 
+theorem Series.partial_of_lt {s : Series} {N:ℤ} (h: N < s.m) : s.partial N = 0 := by
+  unfold Series.partial
+  rw [Finset.sum_eq_zero]
+  intro n hn
+  simp at hn; linarith
+
 abbrev Series.convergesTo (s : Series) (L:ℝ) : Prop :=
   Filter.Tendsto (s.partial) Filter.atTop (nhds L)
 
@@ -85,6 +91,9 @@ theorem Series.converges_of_convergesTo {s : Series} {L:ℝ} (h: s.convergesTo L
 theorem Series.sum_of_converges {s : Series} {L:ℝ} (h: s.convergesTo L) : s.sum = L := by
   simp [sum, converges_of_convergesTo h]
   exact tendsto_nhds_unique ((converges_of_convergesTo h).choose_spec) h
+
+theorem Series.convergesTo_uniq {s : Series} {L L':ℝ} (h: s.convergesTo L) (h': s.convergesTo L') :
+    L = L' := tendsto_nhds_unique h h'
 
 theorem Series.convergesTo_sum {s : Series} (h: s.converges) : s.convergesTo s.sum := by
   simp [sum, h]
@@ -224,7 +233,15 @@ instance Series.inst_add : Add Series where
       simp [hn]
   }
 
-/-- Proposition 7.2.14 (a) (Series laws) / Exercise 7.2.5 -/
+theorem Series.add_coe (a b: ℕ → ℝ) : (a:Series) + (b:Series) = (fun n ↦ a n + b n) := by
+  ext n; rfl
+  by_cases h:n ≥ 0 <;> simp [h, HAdd.hAdd, Add.add]
+
+/-- Proposition 7.2.14 (a) (Series laws) / Exercise 7.2.5.  The `convergesTo` form can be more convenient for applications. -/
+theorem Series.convergesTo.add {s t:Series} {L M: ℝ} (hs: s.convergesTo L) (ht: t.convergesTo M) :
+    (s + t).convergesTo (L + M) := by
+  sorry
+
 theorem Series.add {s t:Series} (hs: s.converges) (ht: t.converges) :
     (s + t).converges ∧ (s+t).sum = s.sum + t.sum := by sorry
 
@@ -237,9 +254,40 @@ instance Series.inst.smul : SMul ℝ Series where
       rw [lt_iff_not_ge] at hn
       simp [hn]
   }
-/-- Proposition 7.2.14 (b) (Series laws) / Exercise 7.2.5 -/
+
+theorem Series.smul_coe (a: ℕ → ℝ) (c: ℝ) : (c • a:Series) = (fun n ↦ c * a n) := by
+  ext n; rfl
+  by_cases h:n ≥ 0 <;> simp [h, HSMul.hSMul, SMul.smul]
+
+/-- Proposition 7.2.14 (b) (Series laws) / Exercise 7.2.5.  The `convergesTo` form can be more convenient for applications. -/
+theorem Series.convergesTo.smul {s:Series} {L c: ℝ} (hs: s.convergesTo L) :
+    (c • s).convergesTo (c * L) := by
+  sorry
+
 theorem Series.smul {c:ℝ} {s:Series} (hs: s.converges) :
     (c • s).converges ∧ (c • s).sum = c * s.sum := by sorry
+
+/-- The corresponding API for subtraction was not in the textbook, but is useful in later sections, so is included here. -/
+instance Series.inst_sub : Sub Series where
+  sub a b := {
+    m := max a.m b.m
+    seq := fun (n:ℤ) ↦ if n ≥ max a.m b.m then a.seq n - b.seq n else 0
+    vanish := by
+      intro n hn
+      rw [lt_iff_not_ge] at hn
+      simp [hn]
+  }
+
+theorem Series.sub_coe (a b: ℕ → ℝ) : (a:Series) - (b:Series) = (fun n ↦ a n - b n) := by
+  ext n; rfl
+  by_cases h:n ≥ 0 <;> simp [h, HSub.hSub, Sub.sub]
+
+theorem Series.convergesTo.sub {s t:Series} {L M: ℝ} (hs: s.convergesTo L) (ht: t.convergesTo M) :
+    (s - t).convergesTo (L - M) := by
+  sorry
+
+theorem Series.sub {s t:Series} (hs: s.converges) (ht: t.converges) :
+    (s - t).converges ∧ (s-t).sum = s.sum - t.sum := by sorry
 
 abbrev Series.from (s:Series) (m₁:ℤ) : Series :=
   mk' (m := max s.m m₁) (fun n ↦ s.seq (n:ℤ))

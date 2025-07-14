@@ -22,6 +22,8 @@ derivative in such cases (or `0`, if no derivative exists).
 
 namespace Chapter10
 
+variable (x₀ : ℝ)
+
 /-- Definition 10.1.1 (Differentiability at a point).  For the Mathlib notion `HasDerivWithinAt`, the
 hypothesis that `x₀` is a limit point is not needed. -/
 theorem _root_.HasDerivWithinAt.iff (X: Set ℝ) (x₀ : ℝ) (f: ℝ → ℝ)
@@ -50,7 +52,7 @@ theorem derivative_unique {X: Set ℝ} {x₀ : ℝ}
   L = L' := by
     rw [_root_.HasDerivWithinAt.iff] at hL hL'
     rw [ClusterPt.eq_1] at hx₀
-    apply tendsto_nhds_unique hL hL'
+    solve_by_elim [tendsto_nhds_unique]
 
 #check DifferentiableWithinAt.hasDerivWithinAt
 
@@ -58,8 +60,8 @@ theorem derivative_unique' (X: Set ℝ) {x₀ : ℝ}
   (hx₀: ClusterPt x₀ (Filter.principal (X \ {x₀}))) {f: ℝ → ℝ} {L :ℝ}
   (hL: HasDerivWithinAt f L X x₀)
   (hdiff : DifferentiableWithinAt ℝ f X x₀):
-  L = derivWithin f X x₀ :=
-  derivative_unique hx₀ hL (DifferentiableWithinAt.hasDerivWithinAt hdiff)
+  L = derivWithin f X x₀ := by
+  solve_by_elim [derivative_unique, DifferentiableWithinAt.hasDerivWithinAt]
 
 
 /-- Example 10.1.3 -/
@@ -120,7 +122,7 @@ theorem _root_.HasDerivWithinAt.iff_approx_linear (X: Set ℝ) (x₀ :ℝ) (f: �
   ∀ ε > 0, ∃ δ > 0, ∀ x ∈ X, |x - x₀| < δ → |f x - f x₀ - L * (x - x₀)| ≤ ε * |x - x₀| := by
   sorry
 
-/-- Proposition 10.0.1 / Exercise 10.1.3 -/
+/-- Proposition 10.1.10 / Exercise 10.1.3 -/
 theorem _root_.ContinuousWithinAt.of_differentiableWithinAt {X: Set ℝ} {x₀ : ℝ} {f: ℝ → ℝ}
   (h: DifferentiableWithinAt ℝ f X x₀) :
   ContinuousWithinAt f X x₀ := by
@@ -134,8 +136,7 @@ theorem _root_.ContinuousOn.of_differentiableOn {X: Set ℝ} {f: ℝ → ℝ}
   (h: DifferentiableOn ℝ f X) :
   ContinuousOn f X := by
   intro x hx
-  have hdiff := h x hx
-  exact ContinuousWithinAt.of_differentiableWithinAt hdiff
+  solve_by_elim [ContinuousWithinAt.of_differentiableWithinAt]
 
 /-- Theorem 10.1.13 (a) (Differential calculus) / Exercise 10.1.4 -/
 theorem _root_.HasDerivWithinAt.of_const (X: Set ℝ) (x₀ : ℝ) (c:ℝ) :

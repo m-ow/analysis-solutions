@@ -123,6 +123,9 @@ theorem SetTheory.Set.univ_imp (U: Set) (hU: ∀ x, x ∈ U) :
   have : set_to_object U ∉ U := not_mem_self U
   contradiction
 
+theorem SetTheory.Set.univ_iff : axiom_of_universal_specification ↔
+  ∃ (U:Set), ∀ x, x ∈ U := by sorry
+
 /-- Exercise 3.2.3 -/
 theorem SetTheory.Set.no_univ : ¬ ∃ (U:Set), ∀ (x:Object), x ∈ U := by
   simp; intro A
