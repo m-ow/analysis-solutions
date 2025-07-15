@@ -460,8 +460,7 @@ example (X: Set) : (SetTheory.Set.f_3_3_11 X).onto ↔ sorry := by sorry
 example (X: Set) : (SetTheory.Set.f_3_3_11 X).bijective ↔ sorry := by sorry
 
 /--
-  Exercise 3.3.4.  State and prove theorems or counterexamples in the case that `hg` or `hf` is
-  omitted as a hypothesis.
+  Exercise 3.3.4.
 -/
 theorem Function.comp_cancel_left {X Y Z:Set} {f f': Function X Y} {g : Function Y Z}
   (heq : g ○ f = g ○ f') (hg: g.one_to_one) : f = f' := by sorry
@@ -469,15 +468,32 @@ theorem Function.comp_cancel_left {X Y Z:Set} {f f': Function X Y} {g : Function
 theorem Function.comp_cancel_right {X Y Z:Set} {f: Function X Y} {g g': Function Y Z}
   (heq : g ○ f = g' ○ f) (hf: f.onto) : g = g' := by sorry
 
+def Function.comp_cancel_left_without_hg : Decidable (∀ (X Y Z:Set) (f f': Function X Y) (g : Function Y Z) (heq : g ○ f = g ○ f'), f = f') := by
+  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  sorry
+
+def Function.comp_cancel_right_without_hg : Decidable (∀ (X Y Z:Set) (f: Function X Y) (g g': Function Y Z) (heq : g ○ f = g' ○ f), g = g') := by
+  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  sorry
+
 /--
-  Exercise 3.3.5.  State or prove theorems or counterexamples in the case that `f` is replaced
-  with `g` or vice versa in the conclusion.
+  Exercise 3.3.5.
 -/
 theorem Function.comp_injective {X Y Z:Set} {f: Function X Y} {g : Function Y Z} (hinj :
     (g ○ f).one_to_one) : f.one_to_one := by sorry
 
 theorem Function.comp_surjective {X Y Z:Set} {f: Function X Y} {g : Function Y Z}
   (hinj : (g ○ f).onto) : g.onto := by sorry
+
+def Function.comp_injective' : Decidable (∀ (X Y Z:Set) (f: Function X Y) (g : Function Y Z) (hinj :
+    (g ○ f).one_to_one), g.one_to_one) := by
+  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  sorry
+
+def Function.comp_surjective' : Decidable (∀ (X Y Z:Set) (f: Function X Y) (g : Function Y Z) (hinj :
+    (g ○ f).onto), f.onto) := by
+  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  sorry
 
 /-- Exercise 3.3.6 -/
 theorem Function.inverse_comp_self {X Y: Set} {f: Function X Y} (h: f.bijective) (x: X) :

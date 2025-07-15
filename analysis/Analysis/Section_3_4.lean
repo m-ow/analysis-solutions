@@ -97,7 +97,7 @@ theorem SetTheory.Set.image_f_3_4_2 : image f_3_4_2 {1,2,3} = {2,4,6} := by
         rw [this]; rfl
 
 
-/-- Example 3.4.3 is written using Mathlib's notion of image -/
+/-- Example 3.4.3 is written using Mathlib's notion of image. -/
 example : (fun n:ℤ ↦ n^2) '' {-1,0,1,2} = {0,1,4} := by sorry
 
 theorem SetTheory.Set.mem_image_of_eval {X Y:Set} (f:X → Y) (S: Set) (x:X) :
