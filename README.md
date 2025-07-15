@@ -16,9 +16,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
 
 ## Sections
 
-- Chapter 1: Introduction
-  - _Section 1.1: What is analysis? (planned)_
-  - _Section 1.2: Why do analysis? (planned)_
+- _Chapter 1: Introduction (not formalized)_
 - Chapter 2: Starting at the beginning: the natural numbers
   - Section 2.1: The Peano axioms ([Verso page](https://teorth.github.io/analysis/sec21/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_2_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_2_1.lean))
   - Section 2.2: Addition ([Verso page](https://teorth.github.io/analysis/sec22/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_2_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_2_2.lean))
@@ -104,7 +102,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - A.7: Equality ([Verso page](https://teorth.github.io/analysis/appA7/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_7.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_7.lean))
 - Appendix B: The decimal system
   - B.1: The decimal representation of natural numbers ([Verso page](https://teorth.github.io/analysis/appB1/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_B_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_B_1.lean))
-  - B.2: _The decimal representation of real numbers (planned)_
+  - B.2: The decimal representation of real numbers ([Verso page](https://teorth.github.io/analysis/appB2/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_B_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_B_2.lean))
 
 ## Other resources
 

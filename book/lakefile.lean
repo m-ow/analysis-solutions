@@ -148,7 +148,8 @@ def sections := #[
   (`Analysis.Appendix_A_5, "Nested quantifiers"),
   (`Analysis.Appendix_A_6, "Some examples of proofs and quantifiers"),
   (`Analysis.Appendix_A_7, "Equality"),
-  (`Analysis.Appendix_B_1, "The decimal representation of natural numbers")
+  (`Analysis.Appendix_B_1, "The decimal representation of natural numbers"),
+  (`Analysis.Appendix_B_2, "The decimal representation of real numbers")
 ]
 
 /--
