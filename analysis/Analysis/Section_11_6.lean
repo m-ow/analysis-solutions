@@ -3,7 +3,7 @@ import Analysis.Section_9_8
 import Analysis.Section_11_5
 
 /-!
-# Analysis I, Section 11.6
+# Analysis I, Section 11.6: Riemann integrability of monotone functions
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -12,7 +12,7 @@ Lean code could be "golfed" to be more elegant and idiomatic, but I have conscio
 doing so.
 
 Main constructions and results of this section:
-- Riemann integrability of monotone functions
+- Riemann integrability of monotone functions.
 
 -/
 
@@ -39,14 +39,12 @@ theorem integ_of_monotone {a b:ℝ} {f:ℝ → ℝ} (hf: MonotoneOn f (Icc a b))
       linarith
     set δ := (b-a)/N
     have hδpos : 0 < δ := by positivity
-    have hbeq : b = a + δ*N := by
-      simp [δ]; field_simp
+    have hbeq : b = a + δ*N := by simp [δ]; field_simp
     set e : ℕ ↪ BoundedInterval := {
       toFun j := Ico (a + δ*j) (a + δ*(j+1))
       inj' j k hjk := by
         simp at hjk
-        rcases hjk with hjk | hjk
-        all_goals linarith
+        rcases hjk with hjk | hjk <;> linarith
     }
     set P : Partition I := {
       intervals := insert (Icc b b) (Finset.map e (Finset.range N))
@@ -55,8 +53,7 @@ theorem integ_of_monotone {a b:ℝ} {f:ℝ → ℝ} (hf: MonotoneOn f (Icc a b))
         by_cases hb: x = b
         . apply ExistsUnique.intro (Icc b b)
           . simp [hb, mem_iff]
-          intro J ⟨ hJ, hJb ⟩
-          rcases hJ with hJ | ⟨ j, hA, hej ⟩
+          rintro J ⟨ hJ | ⟨ j, hA, hej ⟩, hJb ⟩
           . exact hJ
           simp [←hej, e, mem_iff, hb, hbeq] at hJb
           replace hJb := hJb.2
@@ -81,8 +78,7 @@ theorem integ_of_monotone {a b:ℝ} {f:ℝ → ℝ} (hf: MonotoneOn f (Icc a b))
           right; use j
           simp [j, Nat.floor_lt hxaδ, div_lt_iff₀' hδpos]
           linarith
-        rintro J ⟨ hJ, hxJ ⟩
-        rcases hJ with hJ | ⟨ k, hk, hkx ⟩
+        rintro J ⟨ hJ | ⟨ k, hk, hkx ⟩, hxJ ⟩
         . simp [hJ, mem_iff] at hxJ; linarith
         simp [←hkx, mem_iff, e] at hxJ hxj
         rcases lt_trichotomy j k with hjk | hjk | hjk
@@ -95,9 +91,8 @@ theorem integ_of_monotone {a b:ℝ} {f:ℝ → ℝ} (hf: MonotoneOn f (Icc a b))
         linarith
       contains J hJ := by
         simp at hJ
-        rcases hJ with rfl | ⟨ j, hj, rfl ⟩
-        . simp [subset_iff, I]; linarith
-        simp [subset_iff, e, I]
+        rcases hJ with rfl | ⟨ j, hj, rfl ⟩ <;> simp [subset_iff, e, I]
+        . linarith
         apply Set.Ico_subset_Icc_self.trans (Set.Icc_subset_Icc _ _)
         . simp; positivity
         simp [hbeq]; gcongr; norm_cast
@@ -113,16 +108,12 @@ theorem integ_of_monotone {a b:ℝ} {f:ℝ → ℝ} (hf: MonotoneOn f (Icc a b))
           simp [le_of_lt hδpos]
         apply csSup_le
         . simp; ring_nf; linarith
-        intro y hy
-        simp at hy
-        obtain ⟨ x, ⟨ hx1, hx2 ⟩, rfl ⟩ := hy
-        have : a + δ*(j+1) ≤ b := by
-          simp [hbeq]; gcongr; norm_cast; simp at hj; linarith
+        intro y hy; simp at hy; obtain ⟨ x, ⟨ hx1, hx2 ⟩, rfl ⟩ := hy
+        have : a + δ*(j+1) ≤ b := by simp [hbeq]; gcongr; norm_cast; simp at hj; linarith
         have hδj : 0 ≤ δ*j := by positivity
         have hδj1 : 0 ≤ δ*(j+1) := by positivity
-        apply hf _ _ (le_of_lt hx2)
-        . simp [I]; exact ⟨ by linarith, by linarith ⟩
-        simp [I, hδj1, this]
+        apply hf _ _ (le_of_lt hx2) <;> simp [I, hδj1, this]
+        exact ⟨ by linarith, by linarith ⟩
     have hdown := calc
       lower_integral f I ≥ ∑ J ∈ P.intervals, (sInf (f '' (J:Set ℝ))) * |J|ₗ :=
         lower_integ_ge_lower_sum hbound P
@@ -131,15 +122,11 @@ theorem integ_of_monotone {a b:ℝ} {f:ℝ → ℝ} (hf: MonotoneOn f (Icc a b))
         apply Finset.sum_le_sum
         intro j hj
         convert (mul_le_mul_right hδpos).mpr ?_
-        . simp [length]; ring_nf
-          simp [le_of_lt hδpos]
+        . simp [length]; ring_nf; simp [le_of_lt hδpos]
         apply le_csInf
         . simp; ring_nf; linarith
-        intro y hy
-        simp at hy
-        obtain ⟨ x, ⟨ hx1, hx2 ⟩, rfl ⟩ := hy
-        have hajb' : a + δ*(j+1) ≤ b := by
-          simp [hbeq]; gcongr; norm_cast; simp at hj; linarith
+        intro y hy; simp at hy; obtain ⟨ x, ⟨ hx1, hx2 ⟩, rfl ⟩ := hy
+        have hajb': a + δ*(j+1) ≤ b := by simp [hbeq]; gcongr; norm_cast; simp at hj; linarith
         have hδj : 0 ≤ δ*j := by positivity
         have hδj1 : 0 ≤ δ*(j+1) := by positivity
         apply hf _ _ hx1

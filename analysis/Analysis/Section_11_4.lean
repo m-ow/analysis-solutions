@@ -3,7 +3,7 @@ import Analysis.Section_9_6
 import Analysis.Section_11_3
 
 /-!
-# Analysis I, Section 11.4
+# Analysis I, Section 11.4: Basic properties of the Riemann integral
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -12,7 +12,7 @@ Lean code could be "golfed" to be more elegant and idiomatic, but I have conscio
 doing so.
 
 Main constructions and results of this section:
-- Basic properties of the Riemann integral
+- Basic properties of the Riemann integral.
 
 -/
 
@@ -32,8 +32,7 @@ theorem integ_of_smul {I: BoundedInterval} (c:ℝ) {f:ℝ → ℝ} (hf: Integrab
 theorem integ_of_neg {I: BoundedInterval} {f:ℝ → ℝ} (hf: IntegrableOn f I) :
   IntegrableOn (-f) I ∧ integ (-f) I = -integ f I := by
   have := integ_of_smul (-1) hf
-  simp at this
-  exact this
+  simpa using this
 
 /-- Theorem 11.4.1(c) / Exercise 11.4.1 -/
 theorem integ_of_sub {I: BoundedInterval} {f g:ℝ → ℝ} (hf: IntegrableOn f I) (hg: IntegrableOn g I) :
@@ -112,8 +111,7 @@ theorem integ_of_max {I: BoundedInterval} {f g:ℝ → ℝ} (hf: IntegrableOn f 
   have hmax_bound : BddOn (max f g) I := by
     obtain ⟨ M, hM ⟩ := hf.1
     obtain ⟨ M', hM' ⟩ := hg.1
-    use max M M'
-    intro x hx
+    use max M M'; intro x hx
     specialize hM x hx
     specialize hM' x hx
     simp only [Pi.sup_apply]
@@ -218,14 +216,12 @@ theorem integ_of_mul_nonneg {I: BoundedInterval} {f g:ℝ → ℝ} (hf: Integrab
       . intro x hx
         specialize hf_nonneg x hx
         specialize hf'min x hx
-        simp
-        exact ⟨hf'min, hf_nonneg⟩
+        aesop
       . exact PiecewiseConstantOn.max hf'const hzero
       . apply lt_of_lt_of_le hf'int (PiecewiseConstantOn.integ_mono _ hf'const _)
         . intro x hx; simp
         exact PiecewiseConstantOn.max hf'const hzero
-      intro x hx
-      simp
+      intro x hx; simp
     obtain ⟨ f', hf'min, hf'const, hf'int, hf'_nonneg ⟩ := this
     have : ∃ g', MinorizesOn g' g I ∧ PiecewiseConstantOn g' I ∧ integ g I - ε < PiecewiseConstantOn.integ g' I ∧ MajorizesOn g' 0 I := by
       obtain ⟨ g', hg'min, hg'const, hg'int ⟩ := gt_of_lt_lower_integral hg.1 (show integ g I - ε < lower_integral g I by linarith)
@@ -235,14 +231,12 @@ theorem integ_of_mul_nonneg {I: BoundedInterval} {f g:ℝ → ℝ} (hf: Integrab
       . intro x hx
         specialize hg_nonneg x hx
         specialize hg'min x hx
-        simp
-        exact ⟨hg'min, hg_nonneg⟩
+        aesop
       . exact PiecewiseConstantOn.max hg'const hzero
       . apply lt_of_lt_of_le hg'int (PiecewiseConstantOn.integ_mono _ hg'const _)
         . intro x hx; simp
         exact PiecewiseConstantOn.max hg'const hzero
-      intro x hx
-      simp
+      intro x hx; simp
     obtain ⟨ g', hg'min, hg'const, hg'int, hg'_nonneg ⟩ := this
     have : ∃ f'', MajorizesOn f'' f I ∧ PiecewiseConstantOn f'' I ∧ PiecewiseConstantOn.integ f'' I < integ f I + ε ∧ MinorizesOn f'' (fun _ ↦ M₁) I := by
       obtain ⟨ f'', hf''maj, hf''const, hf''int ⟩ := lt_of_gt_upper_integral hf.1 (show upper_integral f I < integ f I + ε  by linarith)
@@ -257,8 +251,7 @@ theorem integ_of_mul_nonneg {I: BoundedInterval} {f g:ℝ → ℝ} (hf: Integrab
       . apply lt_of_le_of_lt (PiecewiseConstantOn.integ_mono _ _ hf''const) hf''int
         . intro x hx; simp [hf''maj, hM₁_piece]
         exact PiecewiseConstantOn.min hf''const hM₁_piece
-      intro x hx
-      simp
+      intro x hx; simp
     obtain ⟨ f'', hf''maj, hf''const, hf''int, hf''bound ⟩ := this
     have : ∃ g'', MajorizesOn g'' g I ∧ PiecewiseConstantOn g'' I ∧ PiecewiseConstantOn.integ g'' I < integ g I + ε ∧ MinorizesOn g'' (fun _ ↦ M₂) I := by
       obtain ⟨ g'', hg''maj, hg''const, hg''int ⟩ := lt_of_gt_upper_integral hg.1 (show upper_integral g I < integ g I + ε  by linarith)
@@ -273,8 +266,7 @@ theorem integ_of_mul_nonneg {I: BoundedInterval} {f g:ℝ → ℝ} (hf: Integrab
       . apply lt_of_le_of_lt (PiecewiseConstantOn.integ_mono _ _ hg''const) hg''int
         . intro x hx; simp [hg''maj, hM₂_piece]
         exact PiecewiseConstantOn.min hg''const hM₂_piece
-      intro x hx
-      simp
+      intro x hx; simp
     obtain ⟨ g'', hg''maj, hg''const, hg''int, hg''bound ⟩ := this
     have hf'g'_const := PiecewiseConstantOn.mul hf'const hg'const
     have hf'g'_maj : MinorizesOn (f' * g') (f * g) I := by
@@ -328,10 +320,7 @@ theorem integ_of_mul_nonneg {I: BoundedInterval} {f g:ℝ → ℝ} (hf: Integrab
     have hsum_bound := PiecewiseConstantOn.integ_mono hhmin hh_const hsum_const
     calc
       _ ≤ M₁ * PiecewiseConstantOn.integ (g'' - g') I + M₂ * PiecewiseConstantOn.integ (f'' - f') I := by linarith
-      _ ≤ M₁ * (2*ε) + M₂ * (2*ε) := by
-        gcongr
-        . linarith
-        linarith
+      _ ≤ M₁ * (2*ε) + M₂ * (2*ε) := by gcongr <;> linarith
       _ = _ := by ring
   refine ⟨ hmul_bound, ?_ ⟩
   replace := nonneg_of_le_const_mul_eps this

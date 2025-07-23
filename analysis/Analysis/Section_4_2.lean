@@ -12,23 +12,22 @@ text. When there is a choice between a more idiomatic Lean solution and a more f
 translation, I have generally chosen the latter. In particular, there will be places where the
 Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
 doing so.
--/
 
-namespace Section_4_2
-variable (a b : ℤ)
-
-/-!
 Main constructions and results of this section:
 
 - Definition of the "Section 4.2" rationals, `Section_4_2.Rat`, as formal differences `a // b` of
   integers `a b:ℤ`, up to equivalence.  (This is a quotient of a scaffolding type
   `Section_4_2.PreRat`, which consists of formal differences without any equivalence imposed.)
 
-- field operations and order on these rationals, as well as an embedding of ℕ and ℤ
+- Field operations and order on these rationals, as well as an embedding of ℕ and ℤ.
 
 - Equivalence with the Mathlib rationals `_root_.Rat` (or `ℚ`), which we will use going forward.
+
+Note: here (and in the sequel) we use Mathlib's natural numbers `ℕ` and integers `ℤ` rather than
+the Chapter 2 natural numbers and Section 4.1 integers.
 -/
 
+namespace Section_4_2
 
 structure PreRat where
   numerator : ℤ
@@ -64,8 +63,7 @@ theorem Rat.eq (a c:ℤ) {b d:ℤ} (hb: b ≠ 0) (hd: d ≠ 0): a // b = c // d 
 theorem Rat.eq_diff (n:Rat) : ∃ a b, b ≠ 0 ∧ n = a // b := by
   apply Quot.ind _ n; intro ⟨ a, b, h ⟩
   use a, b; refine ⟨ h, ?_ ⟩
-  simp [formalDiv, h]
-  rfl
+  simp [formalDiv, h]; rfl
 
 /--
   Decidability of equality. Hint: modify the proof of `DecidableEq Int` from the previous
@@ -118,21 +116,20 @@ instance Rat.instNatCast : NatCast Rat where
 instance Rat.instOfNat {n:ℕ} : OfNat Rat n where
   ofNat := (n:ℤ) // 1
 
-theorem Rat.coe_Int_eq (a:ℤ) : (a:Rat) = a // 1 := by
-  rfl
+theorem Rat.coe_Int_eq (a:ℤ) : (a:Rat) = a // 1 := rfl
 
-theorem Rat.coe_Nat_eq (n:ℕ) : (n:Rat) = n // 1 := by
-  rfl
+theorem Rat.coe_Nat_eq (n:ℕ) : (n:Rat) = n // 1 := rfl
 
-theorem Rat.of_Nat_eq (n:ℕ) : (ofNat(n):Rat) = (ofNat(n):Nat) // 1 := by
-  rfl
+theorem Rat.of_Nat_eq (n:ℕ) : (ofNat(n):Rat) = (ofNat(n):Nat) // 1 := rfl
 
-lemma Rat.add_of_int (a b:ℤ) : (a:Rat) + (b:Rat) = (a+b:ℤ) := by sorry
+/-- intCast distributes over addition -/
+lemma Rat.intCast_add (a b:ℤ) : (a:Rat) + (b:Rat) = (a+b:ℤ) := by sorry
 
-lemma Rat.mul_of_int (a b:ℤ) : (a:Rat) * (b:Rat) = (a*b:ℤ) := by sorry
+/-- intCast distributes over multiplication -/
+lemma Rat.intCast_mul (a b:ℤ) : (a:Rat) * (b:Rat) = (a*b:ℤ) := by sorry
 
-lemma Rat.neg_of_int (a:ℤ) : - (a:Rat) = (-a:ℤ) := by
-  rfl
+/-- intCast commutes with negation -/
+lemma Rat.intCast_neg (a:ℤ) : - (a:Rat) = (-a:ℤ) := rfl
 
 theorem Rat.coe_Int_inj : Function.Injective (fun n:ℤ ↦ (n:Rat)) := by sorry
 
@@ -146,12 +143,10 @@ instance Rat.instInv : Inv Rat where
 )
 
 lemma Rat.inv_eq (a:ℤ) {b:ℤ} (hb: b ≠ 0) : (a // b)⁻¹ = b // a := by
-  convert Quotient.lift_mk _ _ _
-  all_goals simp [hb]
+  convert Quotient.lift_mk _ _ _ <;> simp [hb]
 
 @[simp]
-theorem Rat.inv_zero : (0:Rat)⁻¹ = 0 := by
-  rfl
+theorem Rat.inv_zero : (0:Rat)⁻¹ = 0 := rfl
 
 /-- Proposition 4.2.4 (laws of algebra) / Exercise 4.2.3 -/
 instance Rat.addGroup_inst : AddGroup Rat :=
@@ -166,7 +161,7 @@ AddGroup.ofLeftAxioms (by
   have hbdf : b*d*f ≠ 0 := Int.mul_ne_zero hbd hf
 
   rw [add_eq _ _ hb hd, add_eq _ _ hbd hf, add_eq _ _ hd hf,
-      add_eq _ _ hb hdf, ←mul_assoc b d f, eq _ _ hbdf hbdf]
+      add_eq _ _ hb hdf, ←mul_assoc b, eq _ _ hbdf hbdf]
   ring
 )
  (by sorry) (by sorry)
@@ -214,7 +209,7 @@ theorem Rat.div_eq (q r:Rat) : q/r = q * r⁻¹ := by rfl
 instance Rat.instField : Field Rat where
   exists_pair_ne := by sorry
   mul_inv_cancel := by sorry
-  inv_zero := by rfl
+  inv_zero := rfl
   ratCast_def := by
     intro q
     set num := q.num
@@ -230,8 +225,8 @@ example : (3//4) / (5//6) = 9 // 10 := by sorry
 
 def Rat.coe_int_hom : ℤ →+* Rat where
   toFun n := (n:Rat)
-  map_zero' := by rfl
-  map_one' := by rfl
+  map_zero' := rfl
+  map_one' := rfl
   map_add' := by sorry
   map_mul' := by sorry
 

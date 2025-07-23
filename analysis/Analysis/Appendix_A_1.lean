@@ -1,7 +1,7 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Appendix A.1
+# Analysis I, Appendix A.1: Mathematical Statements
 
 An introduction to mathematical statements.  Showcases some basic tactics and Lean syntax.
 

@@ -1,7 +1,7 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Section 2.1
+# Analysis I, Section 2.1: The Peano Axioms
 
 This file is a translation of Section 2.1 of Analysis I to Lean 4.  All numbering refers to the
 original text.
@@ -18,12 +18,12 @@ Main constructions and results of this section:
   Chapter2 namespace. (In the book, the natural numbers are treated in a purely axiomatic
   fashion, as a type that obeys the Peano axioms; but here we take advantage of Lean's native
   inductive types to explicitly construct a version of the natural numbers that obey those
-  axioms.  One could also proceed more axiomatically, as is done in Section 3 for set theory, but
-  we leave this as an exercise for the reader.)
-- Establishment of the Peano axioms for `Chapter2.Nat`
-- Recursive definitions for `Chapter2.Nat`
+  axioms.  One could also proceed more axiomatically, as is done in Section 3 for set theory:
+  see the epilogue to this chapter.)
+- Establishment of the Peano axioms for `Chapter2.Nat`.
+- Recursive definitions for `Chapter2.Nat`.
 
-Note: at the end of this Chapter, the `Chapter2.Nat` class will be deprecated in favor of the
+Note: at the end of this chapter, the `Chapter2.Nat` class will be deprecated in favor of the
 standard Mathlib class `_root_.Nat`, or `ℕ`.  However, we will develop the properties of
 `Chapter2.Nat` "by hand" in the next few sections for pedagogical purposes.
 
@@ -52,7 +52,7 @@ postfix:100 "++" => Nat.succ
 
 /--
   Definition 2.1.3 (Definition of the numerals 0, 1, 2, etc.). Note: to avoid ambiguity, one may
-  need to use explicit casts such as (0:Nat), (1:Nat), etc. to refer to this Chapter's version of
+  need to use explicit casts such as (0:Nat), (1:Nat), etc. to refer to this chapter's version of
   the natural numbers.
 -/
 instance Nat.instOfNat {n:_root_.Nat} : OfNat Nat n where
@@ -90,7 +90,7 @@ theorem Nat.four_ne : (4:Nat) ≠ 0 := by
 -/
 theorem Nat.succ_cancel {n m:Nat} (hnm: n++ = m++) : n = m := by
   injection hnm
-  
+
 /--
   Axiom 2.4 (Different natural numbers have different successors).
   Compare with Mathlib's `Nat.succ_ne_succ`.
@@ -116,7 +116,7 @@ theorem Nat.six_ne_two' : (6:Nat) ≠ 2 := by
   decide
 
 /--
-  Axiom 2.5 (principle of mathematical induction). The `induction` (or `induction'`) tactic in
+  Axiom 2.5 (Principle of mathematical induction). The `induction` (or `induction'`) tactic in
   Mathlib serves as a substitute for this axiom.
 -/
 theorem Nat.induction (P : Nat → Prop) (hbase : P 0) (hind : ∀ n, P n → P (n++)) :

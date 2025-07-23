@@ -26,6 +26,10 @@ theorem ExistsUnique.choose_iff {α: Sort*} {p: α → Prop} (h : ∃! x, p x) (
   p x ↔ x = h.choose :=
   ⟨ by intro hx; exact (h.choose_eq hx).symm, by rintro rfl; exact h.choose_spec ⟩
 
+theorem ExistsUnique.choose_eq_choose {α: Sort*} {p: α → Prop} (h : ∃! x, p x) : Exists.choose h = h.choose := by
+  rw [←choose_iff]; exact (Exists.choose_spec h).1
+
+
 /-- An alternate form of the axiom of unique choice.   -/
 noncomputable def Subsingleton.choose {α: Sort*} [Subsingleton α] [hn: Nonempty α] : α := hn.some
 

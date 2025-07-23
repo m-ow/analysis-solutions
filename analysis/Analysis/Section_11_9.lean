@@ -10,7 +10,7 @@ import Analysis.Section_11_8
 
 
 /-!
-# Analysis I, Section 11.9
+# Analysis I, Section 11.9: The two fundamental theorems of calculus
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the
 original text. When there is a choice between a more idiomatic Lean solution and a
@@ -19,7 +19,7 @@ be places where the Lean code could be "golfed" to be more elegant and idiomatic
 have consciously avoided doing so.
 
 Main constructions and results of this section:
-- The fundamental theorems of calculus
+- The fundamental theorems of calculus.
 -/
 
 namespace Chapter11
@@ -79,9 +79,7 @@ theorem deriv_of_integ {a b:ℝ} (hab: a < b) {f:ℝ → ℝ} (hf: IntegrableOn 
   intro ε hε
   simp [(ContinuousWithinAt.tfae _ f hx₀).out 0 2] at hcts
   specialize hcts ε hε
-  obtain ⟨ δ, hδ, hconv ⟩ := hcts
-  use δ, hδ
-  intro y hy hyδ
+  obtain ⟨ δ, hδ, hconv ⟩ := hcts; use δ, hδ; intro y hy hyδ
   rcases lt_trichotomy x₀ y with hx₀y | hx₀y | hx₀y
   . have := (integ_of_join (join_Icc_Ioc hy.1 hy.2) hf).1
     replace := (integ_of_join (join_Icc_Ioc hx₀.1 (le_of_lt hx₀y)) this).2
@@ -149,8 +147,7 @@ theorem integ_eq_antideriv_sub {a b:ℝ} (h:a ≤ b) {f F: ℝ → ℝ}
   rcases lt_or_eq_of_le h with h | h
   . have hF_cts : ContinuousOn F (Set.Icc a b) := by
       intro x hx
-      apply ContinuousWithinAt.of_differentiableWithinAt
-      exact hF.1 x hx
+      exact ContinuousWithinAt.of_differentiableWithinAt (hF.1 x hx)
     -- for technical reasons we need to extend F by constant outside of Icc a b
     let F' : ℝ → ℝ := fun x ↦ F (max (min x b) a)
 
@@ -161,7 +158,7 @@ theorem integ_eq_antideriv_sub {a b:ℝ} (h:a ≤ b) {f F: ℝ → ℝ}
     have hF'_cts : ContinuousOn F' (Ioo (a-1) (b+1)) := by
       apply Continuous.continuousOn
       convert ContinuousOn.comp_continuous hF_cts (f := fun x ↦ max (min x b) a) ?_ ?_ using 1
-      . continuity
+      . fun_prop
       intro x; simp [le_of_lt h]
 
     have hupper (P: Partition (Icc a b)) : upper_riemann_sum f P ≥ F b - F a := by
@@ -169,8 +166,7 @@ theorem integ_eq_antideriv_sub {a b:ℝ} (h:a ≤ b) {f F: ℝ → ℝ}
       calc
         _ ≥ ∑ J ∈ P.intervals, F'[J]ₗ := by
           apply Finset.sum_le_sum
-          intro J hJ
-          by_cases hJ_empty : (J:Set ℝ) = ∅
+          intro J hJ; by_cases hJ_empty : (J:Set ℝ) = ∅
           . simp [α_length_of_empty _ hJ_empty, length_of_empty hJ_empty]
           rcases le_or_gt J.b J.a with hJab | hJab
           . push_neg at hJ_empty
@@ -208,9 +204,8 @@ theorem integ_eq_antideriv_sub {a b:ℝ} (h:a ≤ b) {f F: ℝ → ℝ}
               simp [subset_iff] at hJ
               apply HasDerivWithinAt.congr (f := F)
               . exact HasDerivWithinAt.mono (hF.2 e (hJ he)) hJ
-              . intro x hx
-                exact hFF' (hJ hx)
-              exact hFF' (hJ he)
+              . intros; solve_by_elim
+              solve_by_elim
             replace := derivative_unique ?_ this hmean
             . calc
                 _ = F' d - F' c := rfl
@@ -231,8 +226,7 @@ theorem integ_eq_antideriv_sub {a b:ℝ} (h:a ≤ b) {f F: ℝ → ℝ}
                       forall_apply_eq_imp_iff₂, F'] at hM ⊢
                     intro x hx
                     rw [subset_iff] at hJ
-                    specialize hM x (hJ hx)
-                    tauto
+                    specialize hM x (hJ hx); tauto
                   simp; use e; simp
                   exact ((subset_iff _ _).mp (Ioo_subset J)) he
             rw [←mem_closure_iff_clusterPt]
@@ -252,8 +246,7 @@ theorem integ_eq_antideriv_sub {a b:ℝ} (h:a ≤ b) {f F: ℝ → ℝ}
           have : x ∈ Set.Icc a b := by
             replace hJ := (Ioo_subset J).trans hJ _ hx
             simpa using hJ
-          simp only [ite_eq_left_iff, F']
-          tauto
+          simp only [ite_eq_left_iff, F']; tauto
         _ = F'[Icc a b]ₗ := Partition.sum_of_α_length P F'
         _ = F' b - F' a := by
           apply α_length_of_cts (by linarith) _ (by linarith) _ hF'_cts
@@ -265,15 +258,11 @@ theorem integ_eq_antideriv_sub {a b:ℝ} (h:a ≤ b) {f F: ℝ → ℝ}
       sorry
     replace hupper : upper_integral f (Icc a b) ≥ F b - F a := by
       rw [upper_integ_eq_inf_upper_sum hf.1]
-      apply le_csInf
-      . simp [Set.range_nonempty]
-      simp
+      apply le_csInf <;> simp [Set.range_nonempty]
       intro P; specialize hupper P; linarith
     replace hlower : lower_integral f (Icc a b) ≤ F b - F a := by
       rw [lower_integ_eq_sup_lower_sum hf.1]
-      apply csSup_le
-      . simp [Set.range_nonempty]
-      simp
+      apply csSup_le <;> simp [Set.range_nonempty]
       intro P; specialize hlower P; linarith
     replace hf := hf.2
     linarith

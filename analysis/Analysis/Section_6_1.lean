@@ -4,7 +4,7 @@ import Analysis.Section_5_3
 import Analysis.Section_5_epilogue
 
 /-!
-# Analysis I, Section 6.1
+# Analysis I, Section 6.1: Convergence and limit laws
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -14,8 +14,8 @@ doing so.
 
 Main constructions and results of this section:
 
-- Definition of $ε$-closeness, $ε$-steadiness, and their eventual counterparts
-- Notion of a Cauchy sequence, convergent sequence, and bounded sequence of reals
+- Definition of $ε$-closeness, $ε$-steadiness, and their eventual counterparts.
+- Notion of a Cauchy sequence, convergent sequence, and bounded sequence of reals.
 
 -/
 
@@ -52,9 +52,7 @@ abbrev Sequence.ofNatFun (a:ℕ → ℝ) : Sequence :=
  {
     m := 0
     seq := fun n ↦ if n ≥ 0 then a n.toNat else 0
-    vanish := by
-      intro n hn
-      simp [hn]
+    vanish := by intros; simp_all
  }
 
 /-- Functions from ℕ to ℝ can be thought of as sequences. -/
@@ -65,9 +63,7 @@ instance Sequence.instCoe : Coe (ℕ → ℝ) Sequence where
 abbrev Sequence.mk' (m:ℤ) (a: { n // n ≥ m } → ℝ) : Sequence where
   m := m
   seq := fun n ↦ if h : n ≥ m then a ⟨n, h⟩ else 0
-  vanish := by
-    intro n hn
-    simp [hn]
+  vanish := by intros; simp_all
 
 
 lemma Sequence.eval_mk {n m:ℤ} (a: { n // n ≥ m } → ℝ) (h: n ≥ m) :
@@ -80,14 +76,12 @@ lemma Sequence.eval_coe (n:ℕ) (a: ℕ → ℝ) : (a:Sequence) n = a n := by si
   a.from n₁ starts `a:Sequence` from `n₁`.  It is intended for use when `n₁ ≥ n₀`, but returns
   the "junk" value of the original sequence `a` otherwise.
 -/
-abbrev Sequence.from (a:Sequence) (m₁:ℤ) : Sequence :=
-  mk' (max a.m m₁) (fun n ↦ a (n:ℤ))
+abbrev Sequence.from (a:Sequence) (m₁:ℤ) : Sequence := mk' (max a.m m₁) (a ↑·)
 
 lemma Sequence.from_eval (a:Sequence) {m₁ n:ℤ} (hn: n ≥ m₁) :
   (a.from m₁) n = a n := by
   simp [Sequence.from, seq, hn]
-  intro h
-  exact (a.vanish n h).symm
+  intros; symm; solve_by_elim [a.vanish]
 
 end Chapter6
 
@@ -123,22 +117,52 @@ abbrev Sequence.IsCauchy (a:Sequence) : Prop := ∀ ε > (0:ℝ), ε.EventuallyS
 lemma Sequence.isCauchy_def (a:Sequence) :
   a.IsCauchy ↔ ∀ ε > (0:ℝ), ε.EventuallySteady a := by rfl
 
-lemma Sequence.isCauchy_of_coe (a:ℕ → ℝ) :
-    (a:Sequence).IsCauchy ↔ ∀ ε > 0, ∃ N, ∀ j ≥ N, ∀ k ≥ N, dist (a j) (a k) ≤ ε := by sorry
+/-- This is almost the same as Chapter5.Sequence.IsCauchy.coe -/
+lemma Sequence.IsCauchy.coe (a:ℕ → ℝ) :
+    (a:Sequence).IsCauchy ↔ ∀ ε > 0, ∃ N, ∀ j ≥ N, ∀ k ≥ N, dist (a j) (a k) ≤ ε := by
+  constructor <;> intro h ε hε
+  · obtain ⟨ N, hN, h' ⟩ := h ε hε
+    lift N to ℕ using hN; use N
+    intro j hj k hk
+    simp [Real.steady_def] at h'
+    specialize h' j (by omega) k (by omega)
+    simp_all
+  obtain ⟨ N, h' ⟩ := h ε hε; use max N 0
+  constructor
+  · simp
+  intro n hn m hm; simp at hn hm
+  have npos : 0 ≤ n := by omega
+  have mpos : 0 ≤ m := by omega
+  simp [hn, hm, npos, mpos]
+  lift n to ℕ using npos
+  lift m to ℕ using mpos
+  specialize h' n (by omega) m (by omega)
+  norm_cast
 
-lemma Sequence.isCauchy_of_mk {n₀:ℤ} (a: {n // n ≥ n₀} → ℝ) :
+lemma Sequence.IsCauchy.mk {n₀:ℤ} (a: {n // n ≥ n₀} → ℝ) :
     (mk' n₀ a).IsCauchy
-    ↔ ∀ ε > 0, ∃ N ≥ n₀, ∀ j ≥ N, ∀ k ≥ N, dist (mk' n₀ a j) (mk' n₀ a k) ≤ ε := by sorry
+    ↔ ∀ ε > 0, ∃ N ≥ n₀, ∀ j ≥ N, ∀ k ≥ N, dist (mk' n₀ a j) (mk' n₀ a k) ≤ ε := by
+  constructor <;> intro h ε hε
+  · obtain ⟨ N, hN, h' ⟩ := h ε hε; use N
+    dsimp at hN
+    constructor
+    · exact hN
+    intro j hj k hk
+    simp only [Real.Steady, show max n₀ N = N by omega] at h'
+    specialize h' j (by omega) k (by omega)
+    simp_all [show n₀ ≤ j by omega, hj, show n₀ ≤ k by omega]
+  obtain ⟨ N, hN, h' ⟩ := h ε hε; use max n₀ N
+  constructor
+  · simp
+  intro n hn m hm
+  simp_all
 
 @[coe]
 abbrev Sequence.ofChapter5Sequence (a: Chapter5.Sequence) : Sequence :=
 {
   m := a.n₀
   seq := fun n ↦ (a n:ℝ)
-  vanish := by
-    intro n hn
-    have := a.vanish n hn
-    simp [this]
+  vanish := by intro n hn; simp [a.vanish n hn]
 }
 
 instance Chapter5.Sequence.inst_coe_sequence : Coe Chapter5.Sequence Sequence  where
@@ -151,7 +175,7 @@ theorem Sequence.is_steady_of_rat (ε:ℚ) (a: Chapter5.Sequence) :
     ε.Steady a ↔ (ε:ℝ).Steady (a:Sequence) := by sorry
 
 theorem Sequence.is_eventuallySteady_of_rat (ε:ℚ) (a: Chapter5.Sequence) :
-    ε.eventuallySteady a ↔ (ε:ℝ).EventuallySteady (a:Sequence) := by sorry
+    ε.EventuallySteady a ↔ (ε:ℝ).EventuallySteady (a:Sequence) := by sorry
 
 /-- Proposition 6.1.4 -/
 theorem Sequence.isCauchy_of_rat (a: Chapter5.Sequence) : a.IsCauchy ↔ (a:Sequence).IsCauchy := by
@@ -168,8 +192,7 @@ theorem Sequence.isCauchy_of_rat (a: Chapter5.Sequence) : a.IsCauchy ↔ (a:Sequ
   rw [Chapter5.Sequence.isCauchy_def] at h
   rw [isCauchy_def]
   intro ε hε
-  have : ∃ ε' > (0:ℚ), ε' < ε := exists_pos_rat_lt hε
-  obtain ⟨ ε', hε', hlt ⟩ := this
+  obtain ⟨ ε', hε', hlt ⟩ := exists_pos_rat_lt hε
   specialize h ε' hε'
   rw [is_eventuallySteady_of_rat] at h
   exact Real.eventuallySteady_mono (le_of_lt hlt) h
@@ -180,7 +203,7 @@ end Chapter6
 abbrev Real.CloseSeq (ε: ℝ) (a: Chapter6.Sequence) (L:ℝ) : Prop := ∀ n ≥ a.m, ε.Close (a n) L
 
 /-- Definition 6.1.5 -/
-theorem Real.close_seq_def (ε: ℝ) (a: Chapter6.Sequence) (L:ℝ) :
+theorem Real.closeSeq_def (ε: ℝ) (a: Chapter6.Sequence) (L:ℝ) :
   ε.CloseSeq a L ↔ ∀ n ≥ a.m, dist (a n) L ≤ ε := by rfl
 
 /-- Definition 6.1.5 -/
@@ -236,10 +259,8 @@ theorem Sequence.tendsTo_unique (a:Sequence) {L L':ℝ} (h:L ≠ L') :
   set ε := |L-L'| / 3
   have hε : ε > 0 := by positivity
   rw [tendsTo_iff] at hL hL'
-  specialize hL ε hε
-  obtain ⟨ N, hN ⟩ := hL
-  specialize hL' ε hε
-  obtain ⟨ M, hM ⟩ := hL'
+  specialize hL ε hε; obtain ⟨ N, hN ⟩ := hL
+  specialize hL' ε hε; obtain ⟨ M, hM ⟩ := hL'
   set n := max N M
   specialize hN n (le_max_left N M)
   specialize hM n (le_max_right N M)
@@ -247,11 +268,9 @@ theorem Sequence.tendsTo_unique (a:Sequence) {L L':ℝ} (h:L ≠ L') :
     _ = dist L L' := by rw [Real.dist_eq]
     _ ≤ dist L (a.seq n) + dist (a.seq n) L' := dist_triangle _ _ _
     _ ≤ ε + ε := by
-      rw [←Real.dist_eq] at hN hM
-      rw [dist_comm] at hN
+      rw [←Real.dist_eq] at hN hM; rw [dist_comm] at hN
       gcongr
-    _ = 2 * |L-L'|/3 := by
-      simp [ε]; ring
+    _ = 2 * |L-L'|/3 := by simp [ε]; ring
   linarith
 
 /-- Definition 6.1.8 -/
@@ -274,22 +293,19 @@ noncomputable abbrev lim (a:Sequence) : ℝ := if h: a.Convergent then h.choose 
 
 /-- Definition 6.1.8 -/
 theorem Sequence.lim_def {a:Sequence} (h: a.Convergent) : a.TendsTo (lim a) := by
-  unfold lim
-  simp [h]
-  convert h.choose_spec
+  unfold lim; simp [h]
+  exact h.choose_spec
 
 /-- Definition 6.1.8-/
 theorem Sequence.lim_eq {a:Sequence} {L:ℝ} :
 a.TendsTo L ↔ a.Convergent ∧ lim a = L := by
   constructor
-  . intro h
-    by_contra! eq
+  . intro h; by_contra! eq
     have : a.Convergent := by rw [convergent_def]; use L
     replace eq := a.tendsTo_unique (eq this)
     replace this := lim_def this
     tauto
-  intro ⟨ h, h' ⟩
-  convert lim_def h
+  intro ⟨ h, h' ⟩; convert lim_def h
   rw [h']
 
 
@@ -299,9 +315,7 @@ theorem Sequence.lim_harmonic :
   -- This proof is written to follow the structure of the original text.
   rw [←lim_eq, tendsTo_iff]
   intro ε hε
-  have : ∃ (N:ℤ), N > 1/ε := exists_int_gt (1 / ε)
-  obtain ⟨ N, hN ⟩ := this
-  use N
+  obtain ⟨ N, hN ⟩ := exists_int_gt (1 / ε); use N
   intro n hn
   have hNpos : (N:ℝ) > 0 := by apply LT.lt.trans _ hN; positivity
   simp at hNpos
@@ -319,8 +333,7 @@ theorem Sequence.lim_harmonic :
     _ ≤ ε := by
       rw [inv_le_comm₀ (by positivity) (by positivity)]
       apply le_of_lt
-      rw [gt_iff_lt, ←inv_eq_one_div _] at hN
-      assumption
+      rwa [←inv_eq_one_div _] at hN
 
 /-- Proposition 6.1.12 / Exercise 6.1.5 -/
 theorem Sequence.Cauchy_of_convergent {a:Sequence} (h:a.Convergent) : a.IsCauchy := by
@@ -344,7 +357,7 @@ abbrev Sequence.BoundedBy (a:Sequence) (M:ℝ) : Prop :=
   ∀ n, |a n| ≤ M
 
 /-- Definition 6.1.16 -/
-lemma Sequence.BoundedBy_def (a:Sequence) (M:ℝ) :
+lemma Sequence.boundedBy_def (a:Sequence) (M:ℝ) :
   a.BoundedBy M ↔ ∀ n, |a n| ≤ M := by rfl
 
 /-- Definition 6.1.16 -/
@@ -371,10 +384,7 @@ instance Sequence.inst_add : Add Sequence where
   add a b := {
     m := max a.m b.m
     seq := fun (n:ℤ) ↦ if n ≥ max a.m b.m then a n + b n else 0
-    vanish := by
-      intro n hn
-      rw [lt_iff_not_ge] at hn
-      simp [hn]
+    vanish := by intro n hn; rw [lt_iff_not_ge] at hn; simp [hn]
   }
 
 theorem Sequence.add_coe (a b: ℕ → ℝ) : (a:Sequence) + (b:Sequence) = (fun n ↦ a n + b n) := by
@@ -395,10 +405,7 @@ instance Sequence.inst_mul : Mul Sequence where
   mul a b := {
     m := max a.m b.m
     seq := fun (n:ℤ) ↦ if n ≥ max a.m b.m then a n * b n else 0
-    vanish := by
-      intro n hn
-      rw [lt_iff_not_ge] at hn
-      simp [hn]
+    vanish := by intro n hn; rw [lt_iff_not_ge] at hn; simp [hn]
   }
 
 theorem Sequence.mul_coe (a b: ℕ → ℝ) : (a:Sequence) * (b:Sequence) = (fun n ↦ a n * b n) := by
@@ -420,9 +427,7 @@ instance Sequence.inst_smul : SMul ℝ Sequence where
   smul c a := {
     m := a.m
     seq := fun (n:ℤ) ↦ c * a n
-    vanish := by
-      intro n hn
-      simp [a.vanish n hn]
+    vanish := by intro n hn; simp [a.vanish n hn]
   }
 
 theorem Sequence.smul_coe (c:ℝ) (a:ℕ → ℝ) : (c • (a:Sequence)) = (fun n ↦ c * a n) := by
@@ -443,10 +448,7 @@ instance Sequence.inst_sub : Sub Sequence where
   sub a b := {
     m := max a.m b.m
     seq := fun (n:ℤ) ↦ if n ≥ max a.m b.m then a n - b n else 0
-    vanish := by
-      intro n hn
-      rw [lt_iff_not_ge] at hn
-      simp [hn]
+    vanish := by intro n hn; rw [lt_iff_not_ge] at hn; simp [hn]
   }
 
 theorem Sequence.sub_coe (a b: ℕ → ℝ) : (a:Sequence) - (b:Sequence) = (fun n ↦ a n - b n) := by
@@ -467,9 +469,7 @@ noncomputable instance Sequence.inst_inv : Inv Sequence where
   inv a := {
     m := a.m
     seq := fun (n:ℤ) ↦ (a n)⁻¹
-    vanish := by
-      intro n hn
-      simp [a.vanish n hn]
+    vanish := by intro n hn; simp [a.vanish n hn]
   }
 
 theorem Sequence.inv_coe (a: ℕ → ℝ) : (a:Sequence)⁻¹ = (fun n ↦ (a n)⁻¹) := by
@@ -491,10 +491,7 @@ noncomputable instance Sequence.inst_div : Div Sequence where
   div a b := {
     m := max a.m b.m
     seq := fun (n:ℤ) ↦ if n ≥ max a.m b.m then a n / b n else 0
-    vanish := by
-      intro n hn
-      rw [lt_iff_not_ge] at hn
-      simp [hn]
+    vanish := by intro n hn; rw [lt_iff_not_ge] at hn; simp [hn]
   }
 
 theorem Sequence.div_coe (a b: ℕ → ℝ) : (a:Sequence) / (b:Sequence) = (fun n ↦ a n / b n) := by
@@ -515,10 +512,7 @@ instance Sequence.inst_max : Max Sequence where
   max a b := {
     m := max a.m b.m
     seq := fun (n:ℤ) ↦ if n ≥ max a.m b.m then max (a n) (b n) else 0
-    vanish := by
-      intro n hn
-      rw [lt_iff_not_ge] at hn
-      simp [hn]
+    vanish := by intro n hn; rw [lt_iff_not_ge] at hn; simp [hn]
   }
 
 theorem Sequence.max_coe (a b: ℕ → ℝ) : (a:Sequence) ⊔ (b:Sequence) = (fun n ↦ max (a n) (b n)) := by
@@ -539,10 +533,7 @@ instance Sequence.inst_min : Min Sequence where
   min a b := {
     m := max a.m b.m
     seq := fun (n:ℤ) ↦ if n ≥ max a.m b.m then min (a n) (b n) else 0
-    vanish := by
-      intro n hn
-      rw [lt_iff_not_ge] at hn
-      simp [hn]
+    vanish := by intro n hn; rw [lt_iff_not_ge] at hn; simp [hn]
   }
 
 theorem Sequence.min_coe (a b: ℕ → ℝ) : (a:Sequence) ⊓ (b:Sequence) = (fun n ↦ min (a n) (b n)) := by
@@ -574,7 +565,7 @@ theorem Sequence.tendsTo_of_shift {a: Sequence} {c:ℝ} (k:ℕ) :
 
 /-- Exercise 6.1.7 -/
 theorem Sequence.isBounded_of_rat (a: Chapter5.Sequence) :
-    a.isBounded ↔ (a:Sequence).IsBounded := by
+    a.IsBounded ↔ (a:Sequence).IsBounded := by
   sorry
 
 /-- Exercise 6.1.9 -/

@@ -2,7 +2,7 @@ import Mathlib.Tactic
 import Analysis.Section_9_6
 
 /-!
-# Analysis I, Section 10.2
+# Analysis I, Section 10.2: Local maxima, local minima, and derivatives
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text.  When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -11,9 +11,9 @@ the Lean code could be "golfed" to be more elegant and idiomatic, but I have con
 doing so.
 
 Main constructions and results of this section:
-- Relation between local extrema and derivatives
-- Rolle's theorem
-- mean value theorem
+- Relation between local extrema and derivatives.
+- Rolle's theorem.
+- mean value theorem.
 
 -/
 
@@ -30,9 +30,9 @@ theorem IsLocalMaxOn.iff (X:Set ℝ) (f:ℝ → ℝ) (x₀:ℝ) :
   apply and_congr_right; intro hε
   apply forall_congr'; intro x
   constructor
-  . intro h hx hxm hxp
+  . intro h hx _ _
     exact h (by linarith) (by linarith) hx
-  intro h hxm hxp hx
+  intro h _ _ hx
   exact h hx (by linarith) (by linarith)
 
 theorem IsLocalMinOn.iff (X:Set ℝ) (f:ℝ → ℝ) (x₀:ℝ) :
@@ -44,9 +44,9 @@ theorem IsLocalMinOn.iff (X:Set ℝ) (f:ℝ → ℝ) (x₀:ℝ) :
   apply and_congr_right; intro hε
   apply forall_congr'; intro x
   constructor
-  . intro h hx hxm hxp
+  . intro h hx _ _
     exact h (by linarith) (by linarith) hx
-  intro h hxm hxp hx
+  intro h _ _ hx
   exact h hx (by linarith) (by linarith)
 
 /-- Example 10.2.3 -/

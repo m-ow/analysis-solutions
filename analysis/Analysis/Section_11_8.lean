@@ -3,7 +3,7 @@ import Mathlib.Topology.Instances.Irrational
 import Analysis.Section_11_6
 
 /-!
-# Analysis I, Section 11.8
+# Analysis I, Section 11.8: The Riemann-Stieltjes integral
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -12,9 +12,9 @@ Lean code could be "golfed" to be more elegant and idiomatic, but I have conscio
 doing so.
 
 Main constructions and results of this section:
-- Definition of α-length
-- The piecewise constant Riemann-Stieltjes integral
-- The full Riemann-Stieltjes integral
+- Definition of α-length.
+- The piecewise constant Riemann-Stieltjes integral.
+- The full Riemann-Stieltjes integral.
 
 Technical notes:
 - In Lean it is more convenient to make definitions such as α-length and the Riemann-Stieltjes
@@ -72,7 +72,7 @@ theorem right_lim_of_continuous {X:Set ℝ} {f: ℝ → ℝ} {x₀:ℝ}
   convert hf using 1
   have h1 : Set.Ioo x₀ (x₀ + ε) ∈ nhdsWithin x₀ (Set.Ioi x₀) := by
     convert inter_mem_nhdsWithin (t := Set.Ioo (x₀-ε) (x₀+ε)) _ _
-    . ext x; simp; intros; linarith
+    . ext; simp; intros; linarith
     exact Ioo_mem_nhds (by linarith) (by linarith)
   rw [←nhdsWithin_inter_of_mem h1]
   congr 1
@@ -92,13 +92,12 @@ theorem left_lim_of_continuous {X:Set ℝ} {f: ℝ → ℝ} {x₀:ℝ}
   convert hf using 1
   have h1 : Set.Ioo (x₀-ε) x₀ ∈ nhdsWithin x₀ (Set.Iio x₀) := by
     convert inter_mem_nhdsWithin (t := Set.Ioo (x₀-ε) (x₀+ε)) _ _
-    . ext x; simp; constructor
-      . rintro ⟨ h1, h2 ⟩; simp [h1, h2]; linarith
-      rintro ⟨ h1, h2, h3 ⟩; exact ⟨ h2, h1 ⟩
+    . ext; simp; constructor
+      . intro ⟨ h1, h2 ⟩; simp [h1, h2]; linarith
+      aesop
     exact Ioo_mem_nhds (by linarith) (by linarith)
   rw [←nhdsWithin_inter_of_mem h1]
-  congr 1
-  simp [Set.Ioo_subset_Iio_self]
+  congr 1; simp [Set.Ioo_subset_Iio_self]
 
 /-- No jump for continuous functions -/
 theorem jump_of_continuous {X:Set ℝ} {f: ℝ → ℝ} {x₀:ℝ}
@@ -157,8 +156,7 @@ theorem jump_of_monotone {f: ℝ → ℝ} (x₀:ℝ) (hf: Monotone f) :
   intro a ha
   apply le_csInf
   . simp
-  intro b hb
-  simp at ha hb
+  intro b hb; simp at ha hb
   obtain ⟨ x, hx, rfl ⟩ := ha
   obtain ⟨ y, hy, rfl ⟩ := hb
   apply hf; linarith
@@ -431,21 +429,19 @@ lemma RS_integral_bound_upper_of_bounded {f:ℝ → ℝ} {M:ℝ} {I: BoundedInte
   (h: ∀ x ∈ (I:Set ℝ), |f x| ≤ M) {α:ℝ → ℝ} (hα:Monotone α)
   : M * α[I]ₗ ∈ (fun g ↦ PiecewiseConstantOn.RS_integ g I α) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I} := by
   simp
-  refine ⟨ fun _ ↦ M , ⟨ ⟨ ?_, ?_, ⟩, ?_ ⟩ ⟩
-  . intro x hx
-    specialize h x hx
+  refine ⟨ fun _ ↦ M, ⟨ ⟨ ?_, ?_, ⟩, PiecewiseConstantOn.RS_integ_const M I hα ⟩ ⟩
+  . intro x hx; specialize h x hx
     simp [abs_le'] at h
     simp [h.1]
-  . apply PiecewiseConstantOn.of_const (ConstantOn.of_const (c := M) _)
-    simp
-  exact PiecewiseConstantOn.RS_integ_const M I hα
+  apply PiecewiseConstantOn.of_const (ConstantOn.of_const (c := M) _)
+  simp
+
 
 lemma RS_integral_bound_lower_of_bounded {f:ℝ → ℝ} {M:ℝ} {I: BoundedInterval} (h: ∀ x ∈ (I:Set ℝ), |f x| ≤ M) {α:ℝ → ℝ} (hα:Monotone α)
   : -M * α[I]ₗ ∈ (fun g ↦ PiecewiseConstantOn.RS_integ g I α) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I} := by
   simp
-  refine ⟨ fun _ ↦ -M , ⟨ ⟨ ?_, ?_, ⟩, ?_ ⟩ ⟩
-  . intro x hx
-    specialize h x hx
+  refine ⟨ fun _ ↦ -M, ⟨ ⟨ ?_, ?_, ⟩, ?_ ⟩ ⟩
+  . intro x hx; specialize h x hx
     simp [abs_le'] at h
     simp; linarith
   . apply PiecewiseConstantOn.of_const (ConstantOn.of_const (c := -M) _)
@@ -457,15 +453,13 @@ lemma RS_integral_bound_upper_nonempty {f:ℝ → ℝ} {I: BoundedInterval} (h: 
   {α:ℝ → ℝ} (hα: Monotone α) :
   ((fun g ↦ PiecewiseConstantOn.RS_integ g I α) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I}).Nonempty := by
   obtain ⟨ M, h ⟩ := h
-  apply Set.nonempty_of_mem
-  exact RS_integral_bound_upper_of_bounded h hα
+  exact Set.nonempty_of_mem (RS_integral_bound_upper_of_bounded h hα)
 
 lemma RS_integral_bound_lower_nonempty {f:ℝ → ℝ} {I: BoundedInterval} (h: BddOn f I)
   {α:ℝ → ℝ} (hα: Monotone α) :
   ((fun g ↦ PiecewiseConstantOn.RS_integ g I α) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I}).Nonempty := by
   obtain ⟨ M, h ⟩ := h
-  apply Set.nonempty_of_mem
-  exact RS_integral_bound_lower_of_bounded h hα
+  exact Set.nonempty_of_mem (RS_integral_bound_lower_of_bounded h hα)
 
 lemma RS_integral_bound_lower_le_upper {f:ℝ → ℝ} {I: BoundedInterval} {a b:ℝ}
   {α:ℝ → ℝ} (hα: Monotone α)
@@ -477,8 +471,7 @@ lemma RS_integral_bound_lower_le_upper {f:ℝ → ℝ} {I: BoundedInterval} {a b
     rw [←hgi, ←hhi]
     apply PiecewiseConstantOn.RS_integ_mono hα _ hhp hgp
     intro x hx
-    have := hmaj x hx
-    apply (ge_iff_le.mp (hmin x hx)).trans (hmaj x hx)
+    exact (ge_iff_le.mp (hmin x hx)).trans (hmaj x hx)
 
 lemma RS_integral_bound_below {f:ℝ → ℝ} {I: BoundedInterval} (h: BddOn f I)
   {α:ℝ → ℝ} (hα: Monotone α) :
@@ -522,14 +515,14 @@ lemma upper_RS_integral_le_integ {f g:ℝ → ℝ} {I: BoundedInterval} (hf: Bdd
   {α:ℝ → ℝ} (hα: Monotone α) :
   upper_RS_integral f I α ≤ PiecewiseConstantOn.RS_integ g I α := by
   apply ConditionallyCompleteLattice.csInf_le _ _ (RS_integral_bound_below hf hα) _
-  use g; simp [hg]; exact hfg
+  use g; simpa [hg]
 
 lemma integ_le_lower_RS_integral {f h:ℝ → ℝ} {I: BoundedInterval} (hf: BddOn f I)
   (hfh: MinorizesOn h f I) (hg: PiecewiseConstantOn h I)
   {α:ℝ → ℝ} (hα: Monotone α) :
   PiecewiseConstantOn.RS_integ h I α ≤ lower_RS_integral f I α := by
   apply ConditionallyCompleteLattice.le_csSup _ _ (RS_integral_bound_above hf hα) _
-  use h; simp [hg]; exact hfh
+  use h; simpa [hg]
 
 lemma lt_of_gt_upper_RS_integral {f:ℝ → ℝ} {I: BoundedInterval} (hf: BddOn f I)
   {α: ℝ → ℝ} (hα: Monotone α) {X:ℝ} (hX: upper_RS_integral f I α < X ) :

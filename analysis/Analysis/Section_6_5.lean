@@ -2,7 +2,7 @@ import Mathlib.Tactic
 import Analysis.Section_6_4
 
 /-!
-# Analysis I, Section 6.5
+# Analysis I, Section 6.5: Some standard limits
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -24,25 +24,19 @@ instance Sequence.inst_pow: Pow Sequence ℕ where
   pow a k := {
     m := a.m
     seq := fun (n:ℤ) ↦ if n ≥ a.m then a n ^ k else 0
-    vanish := by
-      intro n hn
-      rw [lt_iff_not_ge] at hn
-      simp [hn]
+    vanish := by intro n hn; rw [lt_iff_not_ge] at hn; simp [hn]
   }
 
 @[simp]
 lemma Sequence.pow_one (a:Sequence) : a^1 = a := by
-  ext n
-  . rfl
+  ext n; rfl
   simp only [HPow.hPow, Pow.pow]
-  by_cases h: n ≥ a.m
-  . simp [h]
-  simp [h, a.vanish n (by linarith)]
+  by_cases h: n ≥ a.m <;> simp [h]
+  simp [a.vanish n (by linarith)]
 
 lemma Sequence.pow_succ (a:Sequence) (k:ℕ) : a^(k+1) = a^k * a := by
   ext n
-  . simp only [HPow.hPow, Pow.pow, HMul.hMul, Mul.mul]
-    simp
+  . simp only [HPow.hPow, Pow.pow, HMul.hMul, Mul.mul]; simp
   simp only [HPow.hPow, Pow.pow, HMul.hMul, Mul.mul]
   by_cases h: n ≥ a.m
   . simp [h]; rfl
@@ -54,13 +48,10 @@ theorem Sequence.lim_of_power_decay {k:ℕ} :
   -- This proof is written to follow the structure of the original text.
   set a := ((fun (n:ℕ) ↦ 1/((n:ℝ)+1)^(1/(k+1:ℝ))):Sequence)
   have ha : a.BddBelow := by
-    use 0
-    intro n hn
-    simp [a]
-    positivity
+    use 0; intro n hn
+    simp [a]; positivity
   have ha' : a.IsAntitone := by
-    intro n hn
-    simp [a] at hn ⊢
+    intro n hn; simp [a] at hn ⊢
     have hn' : 0 ≤ n+1 := by linarith
     simp [hn,hn']
     rw [inv_le_inv₀ (by positivity) (by positivity),
@@ -72,15 +63,13 @@ theorem Sequence.lim_of_power_decay {k:ℕ} :
     . simp only [zero_add, pow_one, _root_.pow_one, ha', true_and]
     rw [pow_succ]
     convert lim_mul ih.1 ha'
-    rw [ih.2]
-    rfl
+    rw [ih.2]; rfl
   have hlim : (lim a)^(k+1) = 0 := by
     rw [←(hpow k).2]
     convert lim_harmonic.2
     ext n; rfl
     simp only [HPow.hPow, Pow.pow, a]
-    by_cases h : n ≥ 0
-    all_goals simp [h]
+    by_cases h : n ≥ 0 <;> simp [h]
     rw [←Real.rpow_natCast,←Real.rpow_mul (by positivity)]
     convert Real.rpow_one _
     field_simp

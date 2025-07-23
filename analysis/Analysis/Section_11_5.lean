@@ -3,7 +3,7 @@ import Analysis.Section_9_9
 import Analysis.Section_11_4
 
 /-!
-# Analysis I, Section 11.5
+# Analysis I, Section 11.5: Riemann integrability of continuous functions
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -12,8 +12,8 @@ Lean code could be "golfed" to be more elegant and idiomatic, but I have conscio
 doing so.
 
 Main constructions and results of this section:
-- Riemann integrability of uniformly continuous functions
-- Riemann integrability of bounded continuous functions
+- Riemann integrability of uniformly continuous functions.
+- Riemann integrability of bounded continuous functions.
 
 -/
 
@@ -37,10 +37,9 @@ theorem integ_of_uniform_cts {I: BoundedInterval} {f:ℝ → ℝ} (hf: UniformCo
   have hsing' : 0 < b-a := by linarith
   have (ε:ℝ) (hε: ε > 0) : upper_integral f I - lower_integral f I ≤ ε * (b-a) := by
     rw [UniformContinuousOn.iff] at hf
-    specialize hf ε hε
-    obtain ⟨ δ, hδ, hf ⟩ := hf
+    specialize hf ε hε; obtain ⟨ δ, hδ, hf ⟩ := hf
     simp [Real.Close, Real.dist_eq] at hf
-    obtain ⟨ N, hN ⟩ :=exists_nat_gt ((b-a)/δ)
+    obtain ⟨ N, hN ⟩ := exists_nat_gt ((b-a)/δ)
     have hNpos : 0 < N := by
       have : 0 < (b-a)/δ := by positivity
       replace := this.trans hN
@@ -64,9 +63,7 @@ theorem integ_of_uniform_cts {I: BoundedInterval} {f:ℝ → ℝ} (hf: UniformCo
         have (x y:ℝ) (hx: x ∈ J) (hy: y ∈ J) : f x ≤ f y + ε := by
           have : J ⊆ I := P.contains J hJ
           have : |f x - f y| ≤ ε := by
-            apply hf y _ x _ _
-            . exact this _ hy
-            . exact this _ hx
+            apply hf y _ x _ _ <;> try solve_by_elim
             apply (BoundedInterval.dist_le_length hx hy).trans
             simp [hlength J hJ, le_of_lt hN']
           rw [abs_le'] at this
@@ -80,16 +77,11 @@ theorem integ_of_uniform_cts {I: BoundedInterval} {f:ℝ → ℝ} (hf: UniformCo
           linarith
         replace (y:ℝ) (hy:y ∈ J) : sSup (f '' J) ≤ f y + ε := by
           apply csSup_le hJnon
-          intro a ha
-          simp at ha
-          obtain ⟨ x, hx, rfl ⟩ := ha
-          simp_rw [mem_iff] at this
-          exact this x y hx hy
+          intro a ha; simp at ha; obtain ⟨ x, hx, rfl ⟩ := ha
+          simp_rw [mem_iff] at this; solve_by_elim
         replace : sSup (f '' J) - ε ≤ sInf (f '' J) := by
           apply le_csInf hJnon
-          intro a ha
-          simp at ha
-          obtain ⟨ y, hy, rfl ⟩ := ha
+          intro a ha; simp at ha; obtain ⟨ y, hy, rfl ⟩ := ha
           simp_rw [mem_iff] at this
           specialize this y hy
           linarith
@@ -97,8 +89,7 @@ theorem integ_of_uniform_cts {I: BoundedInterval} {f:ℝ → ℝ} (hf: UniformCo
       _ = ∑ J ∈ P.intervals, ε * (b-a)/N := by
         apply Finset.sum_congr rfl
         intro J hJ; simp [hlength J hJ]; ring
-      _ = _ := by
-        simp [hcard]; field_simp
+      _ = _ := by simp [hcard]; field_simp
   have lower_le_upper : 0 ≤ upper_integral f I - lower_integral f I := by linarith [lower_integral_le_upper hfbound]
   rw [le_iff_lt_or_eq] at lower_le_upper
   rcases lower_le_upper with h | h
@@ -188,9 +179,7 @@ theorem integ_of_bdd_cts {I: BoundedInterval} {f:ℝ → ℝ} (hbound: BddOn f I
     have hf' : IntegrableOn f I' := by
       apply integ_of_cts (ContinuousOn.mono hf _)
       apply subset_trans _ ((subset_iff _ _).mp (Ioo_subset I))
-      intro x
-      simp
-      intro h1 h2; exact ⟨ by linarith, by linarith ⟩
+      intro x; simp; intros; exact ⟨ by linarith, by linarith ⟩
     obtain ⟨ h, hhmin, hhconst, hhint ⟩ := lt_of_gt_upper_integral hf'.1 (show upper_integral f I' < integ f I' + ε by linarith [hf'.2])
     classical
     set h' : ℝ → ℝ := fun x ↦ if x ∈ I' then h x else M
@@ -198,15 +187,13 @@ theorem integ_of_bdd_cts {I: BoundedInterval} {f:ℝ → ℝ} (hbound: BddOn f I
       simp [h', hx, mem_iff]
       intro hx'
       replace hjoin1 := Set.eq_empty_iff_forall_notMem.mp hjoin1.1 x
-      simp at hjoin1
-      tauto
+      simp at hjoin1; tauto
     have h'const_right (x:ℝ) (hx: x ∈ Iright) : h' x = M := by
       simp [h', hx, mem_iff]
       intro hx'
       replace hjoin2 := Set.eq_empty_iff_forall_notMem.mp hjoin2.1 x
       replace hjoin1 := congrArg (fun A ↦ x ∈ A) hjoin1.2.1
-      simp at hjoin1 hjoin2
-      tauto
+      simp at hjoin1 hjoin2; tauto
     have h'const : PiecewiseConstantOn h' I := by
       rw [PiecewiseConstantOn.of_join hjoin2 _]
       constructor
@@ -215,14 +202,12 @@ theorem integ_of_bdd_cts {I: BoundedInterval} {f:ℝ → ℝ} (hbound: BddOn f I
         . apply PiecewiseConstantOn.of_const
           exact ConstantOn.of_const h'const_left
         apply (PiecewiseConstantOn.congr _).mp hhconst
-        intro x hx
-        simp [h', hx, mem_iff]
+        intro x hx; simp [h', hx, mem_iff]
       apply PiecewiseConstantOn.of_const
       exact ConstantOn.of_const h'const_right
     have h'maj : MajorizesOn h' f I := by
       intro x hx
-      by_cases hxI': x ∈ I'
-      all_goals simp [h', hxI']
+      by_cases hxI': x ∈ I' <;> simp [h', hxI']
       . exact hhmin x hxI'
       specialize hM x hx; rw [abs_le'] at hM; tauto
     replace h'maj := upper_integral_le_integ hbound h'maj h'const
@@ -234,23 +219,20 @@ theorem integ_of_bdd_cts {I: BoundedInterval} {f:ℝ → ℝ} (hbound: BddOn f I
       rw [PiecewiseConstantOn.integ_congr h'const_right, PiecewiseConstantOn.integ_const, Irightlen]
     have h'integ5 : PiecewiseConstantOn.integ h' I' = PiecewiseConstantOn.integ h I' := by
       apply PiecewiseConstantOn.integ_congr
-      intro x hx
-      simp [h', hx, mem_iff]
+      intro x hx; simp [h', hx, mem_iff]
     obtain ⟨ g, hgmin, hgconst, hgint ⟩ := gt_of_lt_lower_integral hf'.1 (show integ f I' - ε < lower_integral f I' by linarith [hf'.2])
     set g' : ℝ → ℝ := fun x ↦ if x ∈ I' then g x else -M
     have g'const_left (x:ℝ) (hx: x ∈ Ileft) : g' x = -M := by
       simp [g', hx, mem_iff]
       intro hx'
       replace hjoin1 := Set.eq_empty_iff_forall_notMem.mp hjoin1.1 x
-      simp at hjoin1
-      tauto
+      simp at hjoin1; tauto
     have g'const_right (x:ℝ) (hx: x ∈ Iright) : g' x = -M := by
       simp [g', hx, mem_iff]
       intro hx'
       replace hjoin2 := Set.eq_empty_iff_forall_notMem.mp hjoin2.1 x
       replace hjoin1 := congrArg (fun A ↦ x ∈ A) hjoin1.2.1
-      simp at hjoin1 hjoin2
-      tauto
+      simp at hjoin1 hjoin2; tauto
     have g'const : PiecewiseConstantOn g' I := by
       rw [PiecewiseConstantOn.of_join hjoin2 _]
       constructor
@@ -265,8 +247,7 @@ theorem integ_of_bdd_cts {I: BoundedInterval} {f:ℝ → ℝ} (hbound: BddOn f I
       exact ConstantOn.of_const g'const_right
     have g'maj : MinorizesOn g' f I := by
       intro x hx
-      by_cases hxI': x ∈ I'
-      all_goals simp [g', hxI']
+      by_cases hxI': x ∈ I' <;> simp [g', hxI']
       . exact hgmin x hxI'
       specialize hM x hx; rw [abs_le'] at hM; linarith
     replace g'maj := integ_le_lower_integral hbound g'maj g'const
@@ -278,8 +259,7 @@ theorem integ_of_bdd_cts {I: BoundedInterval} {f:ℝ → ℝ} (hbound: BddOn f I
       rw [PiecewiseConstantOn.integ_congr g'const_right, PiecewiseConstantOn.integ_const, Irightlen]
     have g'integ5 : PiecewiseConstantOn.integ g' I' = PiecewiseConstantOn.integ g I' := by
       apply PiecewiseConstantOn.integ_congr
-      intro x hx
-      simp [g', hx, mem_iff]
+      intro x hx; simp [g', hx, mem_iff]
     ring_nf
     linarith
   replace := nonneg_of_le_const_mul_eps this

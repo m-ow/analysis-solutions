@@ -1,7 +1,7 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Section 10.3
+# Analysis I, Section 10.3: Monotone functions and derivatives
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text.  When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -10,7 +10,7 @@ the Lean code could be "golfed" to be more elegant and idiomatic, but I have con
 doing so.
 
 Main constructions and results of this section:
-- Relations between monotonicity and differentiability
+- Relations between monotonicity and differentiability.
 
 -/
 

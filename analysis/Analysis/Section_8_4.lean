@@ -3,7 +3,7 @@ import Analysis.Section_8_1
 import Analysis.Section_8_2
 
 /-!
-# Analysis I, Section 8.4
+# Analysis I, Section 8.4: The axiom of choice
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -13,8 +13,8 @@ doing so.
 
 Main constructions and results of this section:
 
-- Review of Mathlib's dependent product type `∀ α, X α`
-- The axiom of choice in various equivalent forms, as well as the countable axiom of choice
+- Review of Mathlib's dependent product type `∀ α, X α`.
+- The axiom of choice in various equivalent forms, as well as the countable axiom of choice.
 
 As the Chapter 3 set theory has been deprecated for many chapters at this point, we will not insert the axiom of choice directly into that theory in this text; but this could be accomplished if desired
 (e.g., by extending the `Chapter3.SetTheory` class to a `Chapter3.SetTheoryWithChoice` class), and
@@ -67,7 +67,7 @@ def product_one_equiv {X: Fin 1 → Type} : (∀ i:Fin 1, X i) ≃ X 0 := {
   toFun f := f 0
   invFun x i := by rwa [←Fin.fin_one_eq_zero i] at x
   left_inv f := by ext i; rw [Fin.fin_one_eq_zero i]; simp
-  right_inv f := by rfl
+  right_inv f := rfl
 }
 
 def product_two_equiv {X: Fin 2 → Type} : (∀ i:Fin 2, X i) ≃ (X 0 × X 1) := {
@@ -76,7 +76,7 @@ def product_two_equiv {X: Fin 2 → Type} : (∀ i:Fin 2, X i) ≃ (X 0 × X 1) 
     | 0 => f.1
     | 1 => f.2
   left_inv f := by aesop
-  right_inv f := by rfl
+  right_inv f := rfl
 }
 
 def product_three_equiv {X: Fin 3 → Type} : (∀ i:Fin 3, X i) ≃ (X 0 × X 1 × X 2) := {
@@ -86,7 +86,7 @@ def product_three_equiv {X: Fin 3 → Type} : (∀ i:Fin 3, X i) ≃ (X 0 × X 1
     | 1 => f.2.1
     | 2 => f.2.2
   left_inv f := by aesop
-  right_inv f := by rfl
+  right_inv f := rfl
 }
 
 /-- Axiom 8.1 (Choice) -/
@@ -180,6 +180,6 @@ from `Function.Injective.inv_surjective`, avoiding previous results that relied 
 on the axiom of choice. -/
 theorem axiom_of_choice_from_function_injective_inv_surjective {I: Type} {X: I → Type} (h : ∀ i, Nonempty (X i)) :
   Nonempty (∀ i, X i) := by
-  use fun i ↦ (h i).some
+  sorry
 
 end Chapter8

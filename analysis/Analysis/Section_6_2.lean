@@ -3,7 +3,7 @@ import Analysis.Section_5_5
 import Analysis.Section_5_epilogue
 
 /-!
-# Analysis I, Section 6.2
+# Analysis I, Section 6.2: The extended real number system
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -36,8 +36,7 @@ abbrev EReal.IsInfinite (x:EReal) : Prop := x = ⊤ ∨ x = ⊥
 
 theorem EReal.infinite_iff_not_finite (x:EReal): x.IsInfinite ↔ ¬ x.IsFinite := by
   unfold IsFinite IsInfinite
-  rcases EReal.def x with h | h | h
-  all_goals simp [h]
+  rcases EReal.def x with h | rfl | rfl <;> simp
   obtain ⟨ y, rfl ⟩ := h
   simp
 
@@ -50,9 +49,7 @@ theorem EReal.neg_of_real (x:Real) : -(x:EReal) = (-x:ℝ) := rfl
 /-- Definition 6.2.3 (Ordering of extended reals) -/
 theorem EReal.le_iff (x y:EReal) :
     x ≤ y ↔ (∃ (x' y':Real), x = x' ∧ y = y' ∧ x' ≤ y') ∨ y = ⊤ ∨ x = ⊥ := by
-  rcases EReal.def x with hx | rfl | rfl
-  all_goals rcases EReal.def y with hy | rfl | rfl
-  all_goals simp
+  rcases EReal.def x with hx | rfl | rfl <;> rcases EReal.def y with hy | rfl | rfl <;> simp
   obtain ⟨ x', rfl ⟩ := hx
   obtain ⟨ y', rfl ⟩ := hy
   simp
@@ -102,11 +99,9 @@ theorem EReal.sup_of_bounded_nonempty {E: Set ℝ} (hbound: BddAbove E) (hnon: E
     sSup ((fun (x:ℝ) ↦ (x:EReal)) '' E) = sSup E := calc
   _ = sSup
       ((fun (x:WithTop ℝ) ↦ (x:WithBot (WithTop ℝ))) '' ((fun (x:ℝ) ↦ (x:WithTop ℝ)) '' E)) := by
-    rw [←Set.image_comp]
-    congr
+    rw [←Set.image_comp]; congr
   _ = sSup ((fun (x:ℝ) ↦ (x:WithTop ℝ)) '' E) := by
-    symm
-    convert WithBot.coe_sSup' _ _
+    symm; convert WithBot.coe_sSup' _ _
     . simp [hnon]
     exact Monotone.map_bddAbove WithTop.coe_mono hbound
   _ = ((sSup E : ℝ) : WithTop ℝ) := by
@@ -122,11 +117,9 @@ theorem EReal.sup_of_unbounded_nonempty {E: Set ℝ} (hunbound: ¬ BddAbove E) (
   rcases EReal.def b with hb' | rfl | rfl
   . obtain ⟨ y, rfl ⟩ := hb'
     simp
-    contrapose! hunbound
-    exact ⟨ y, hunbound ⟩
+    contrapose! hunbound; exact ⟨ y, hunbound ⟩
   . simp at hb
-  simp
-  exact hnon
+  simpa
 
 /-- Definition 6.2.6 -/
 theorem EReal.sup_of_empty : sSup (∅:Set EReal) = ⊥ := sSup_empty
@@ -146,9 +139,7 @@ theorem EReal.inf_eq_neg_sup (E: Set EReal) : sInf E = - sSup (-E) := by
   . intro h a ha
     specialize h (-a) (by simp [ha])
     exact neg_le_neg_iff.mp h
-  intro h a ha
-  specialize h ha
-  exact EReal.le_neg_of_le_neg h
+  intros; solve_by_elim [EReal.le_neg_of_le_neg]
 
 /-- Example 6.2.7 -/
 abbrev Example_6_2_7 : Set EReal := { x | ∃ n:ℕ, x = -((n+1):EReal)} ∪ {⊥}

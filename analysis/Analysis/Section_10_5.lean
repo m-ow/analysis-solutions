@@ -4,7 +4,7 @@ import Analysis.Section_10_1
 import Analysis.Section_10_2
 
 /-!
-# Analysis I, Section 10.5
+# Analysis I, Section 10.5: L'Hôpital's rule
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text.  When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -13,7 +13,7 @@ the Lean code could be "golfed" to be more elegant and idiomatic, but I have con
 doing so.
 
 Main constructions and results of this section:
-- L'Hôpital's rule
+- L'Hôpital's rule.
 
 -/
 
@@ -45,14 +45,10 @@ theorem _root_.Filter.Tendsto.of_div' {a b L:ℝ} (hab: a < b) {f g f' g': ℝ �
     by_contra this
     simp at hx
     have := HasDerivWithinAt.exist_zero hx.1 (ContinuousOn.mono hgcon ?_) (DifferentiableOn.mono hg ?_) (by rw [hga, this])
-    . obtain ⟨ y, hy, hgy ⟩ := this
-      simp at hy
-      have : y ∈ Set.Icc a b := by
-        simp at ⊢
-        exact ⟨ by linarith, by linarith ⟩
+    . obtain ⟨ y, hy, hgy ⟩ := this; simp at hy
+      have : y ∈ Set.Icc a b := by simp; exact ⟨ by linarith, by linarith ⟩
       specialize hgnon y this
-      rw [DifferentiableOn.eq_1] at hf hg
-      specialize hg y this
+      rw [DifferentiableOn.eq_1] at hf hg; specialize hg y this
       replace hg := DifferentiableWithinAt.hasDerivWithinAt hg
       replace hg : HasDerivWithinAt g (g' y) (Set.Ioo a x) y:= by
         rw [hg']
@@ -62,9 +58,9 @@ theorem _root_.Filter.Tendsto.of_div' {a b L:ℝ} (hab: a < b) {f g f' g': ℝ �
       . contradiction
       apply ClusterPt.mono _ ((Filter.principal_mono (s := Set.Ioo a y)).mpr  _)
       . simp [←mem_closure_iff_clusterPt, closure_Ioo (show a ≠ y by linarith), le_of_lt hy.1]
-      intro z; simp; intro h1 h2; exact ⟨ ⟨ by linarith, by linarith ⟩, by linarith ⟩
-    . intro z; simp; intro h1 h2; exact ⟨ h1, by linarith ⟩
-    intro z; simp; intro h1 h2; exact ⟨ le_of_lt h1, by linarith ⟩
+      intro _; simp; intros; exact ⟨ ⟨ by linarith, by linarith ⟩, by linarith ⟩
+    . intro _; simp; intro h1 _; exact ⟨ h1, by linarith ⟩
+    intro _; simp; intro h1 _; exact ⟨ le_of_lt h1, by linarith ⟩
   refine ⟨ this, ?_ ⟩
   rw [nhdsWithin.eq_1] at hderiv ⊢
   rw [←Convergesto.iff, Convergesto.iff_conv _ _ _]
@@ -76,10 +72,10 @@ theorem _root_.Filter.Tendsto.of_div' {a b L:ℝ} (hab: a < b) {f g f' g': ℝ �
       specialize hx n; simp at hx
       replace hcon : ContinuousOn h (Set.Icc a (x n)) := by
         apply ContinuousOn.mono hcon
-        intro z; simp; intro h1 h2; exact ⟨ by linarith, by linarith ⟩
+        intro _; simp; intros; exact ⟨ by linarith, by linarith ⟩
       replace hdiff : DifferentiableOn ℝ h (Set.Ioo a (x n)) := by
         apply DifferentiableOn.mono hdiff
-        intro z; simp; intro h1 h2; exact ⟨ by linarith, by linarith ⟩
+        intro _; simp; intros; exact ⟨ by linarith, by linarith ⟩
       have ha : h a = 0 := by simp [h, hfa, hga]
       have hb : h (x n) = 0 := by simp [h]; ring
       obtain ⟨ yn, hyn, hdh ⟩ := HasDerivWithinAt.exist_zero hx.1 hcon hdiff (by rw [ha, hb])
@@ -87,16 +83,14 @@ theorem _root_.Filter.Tendsto.of_div' {a b L:ℝ} (hab: a < b) {f g f' g': ℝ �
       rw [DifferentiableOn.eq_1] at hf hg
       have h1 : HasDerivWithinAt f (f' yn) (Set.Ioo a (x n)) yn := by
         specialize hf yn (by simp at hyn ⊢; exact ⟨ by linarith, by linarith ⟩)
-        replace hf := DifferentiableWithinAt.hasDerivWithinAt hf
         rw [hf']
-        apply HasDerivWithinAt.mono hf
-        intro z; simp; intro h1 h2; exact ⟨ by linarith, by linarith ⟩
+        apply HasDerivWithinAt.mono (DifferentiableWithinAt.hasDerivWithinAt hf)
+        intro _; simp; intros; exact ⟨ by linarith, by linarith ⟩
       have h2 : HasDerivWithinAt g (g' yn) (Set.Ioo a (x n)) yn := by
         specialize hg yn (by simp at hyn ⊢; exact ⟨ by linarith, by linarith ⟩)
-        replace hg := DifferentiableWithinAt.hasDerivWithinAt hg
         rw [hg']
-        apply HasDerivWithinAt.mono hg
-        intro z; simp; intro h1 h2; exact ⟨ by linarith, by linarith ⟩
+        apply HasDerivWithinAt.mono (DifferentiableWithinAt.hasDerivWithinAt hg)
+        intro _; simp; intros; exact ⟨ by linarith, by linarith ⟩
       have h3 : HasDerivWithinAt (fun x' ↦ (f x') * (g (x n))) ((f' yn)*(g (x n))) (Set.Ioo a (x n)) yn :=
         HasDerivWithinAt.mul_const h1 _
       have h4 : HasDerivWithinAt (fun x' ↦ (g x') * (f (x n))) ((g' yn)*(f (x n))) (Set.Ioo a (x n)) yn :=
@@ -109,11 +103,10 @@ theorem _root_.Filter.Tendsto.of_div' {a b L:ℝ} (hab: a < b) {f g f' g': ℝ �
         simp at hyn
         apply ClusterPt.mono _ ((Filter.principal_mono (s := Set.Ioo a yn)).mpr  _)
         . simp [←mem_closure_iff_clusterPt, closure_Ioo (show a ≠ yn by linarith), le_of_lt hyn.1]
-        intro z; simp; intro h1 h2; exact ⟨ ⟨ by linarith, by linarith ⟩, by linarith ⟩
+        intro _; simp; intros; exact ⟨ ⟨ by linarith, by linarith ⟩, by linarith ⟩
       have h7 : g (x n) ≠ 0 := this _ (by simp [hx])
       have h8 : g' (yn) ≠ 0 := hgnon _ (by simp at hyn; exact ⟨ by linarith, by linarith ⟩)
-      field_simp
-      rw [mul_comm]; linarith
+      field_simp; rw [mul_comm]; linarith
     set y : ℕ → ℝ := fun n ↦ (hxy n).choose
     have hy (n:ℕ) : y n ∈ Set.Ioo a (x n) := (hxy n).choose_spec.1
     have hy' (n:ℕ) : (f (x n))/(g (x n)) = f' (y n) / (g' (y n)) := (hxy n).choose_spec.2

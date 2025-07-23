@@ -1,7 +1,7 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Appendix A.2
+# Analysis I, Appendix A.2: Implication
 
 An introduction to implications.  Showcases some basic tactics and Lean syntax.
 
@@ -65,7 +65,7 @@ example {NYC_capital_US:Prop} : (2+2=3) → NYC_capital_US := by
 example : ((2+2:ℤ)=5) → (4=(10-4:ℤ)) := by
   intro h
   have : (4 + 4:ℤ) = 10 := by
-    apply_fun (fun (x:ℤ) ↦ 2*x) at h
+    replace h := congr(2*$h)
     convert h using 1
   rwa [←eq_sub_iff_add_eq] at this
 
@@ -134,9 +134,7 @@ example {x:ℝ} (h:x>0) (hsin: Real.sin x = 1) : x ≥ Real.pi / 2 := by
       linarith
     linarith
   have h2 : Real.sin x < Real.sin (Real.pi / 2) := by
-    apply Real.sin_lt_sin_of_lt_of_le_pi_div_two _ _ h'
-    . linarith
-    linarith
+  -- the <;> tactic applies the next tactic to all currently visible goals.
+    apply Real.sin_lt_sin_of_lt_of_le_pi_div_two _ _ h' <;> linarith
   simp at h1 h2
   linarith
-

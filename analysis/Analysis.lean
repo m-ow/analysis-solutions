@@ -71,3 +71,11 @@ import Analysis.Appendix_A_5
 import Analysis.Appendix_A_6
 import Analysis.Appendix_A_7
 import Analysis.Appendix_B_1
+import Analysis.Appendix_B_2
+
+import Analysis.Misc.UnitsSystem
+import Analysis.Misc.UnitsSystemExamples
+import Analysis.Misc.SI
+import Analysis.Misc.SIExamples
+import Analysis.Misc.FiniteChoice
+import Analysis.Misc.Probability

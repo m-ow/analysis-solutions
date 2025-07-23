@@ -4,7 +4,7 @@ import Analysis.Section_9_3
 import Analysis.Section_9_4
 
 /-!
-# Analysis I, Section 9.6
+# Analysis I, Section 9.6: The maximum principle
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text.  When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -13,33 +13,27 @@ the Lean code could be "golfed" to be more elegant and idiomatic, but I have con
 doing so.
 
 Main constructions and results of this section:
-- Continuous functions on closed and bounded intervals are bounded
-- Continuous functions on closed and bounded intervals attain their maximum and minimum
+- Continuous functions on closed and bounded intervals are bounded.
+- Continuous functions on closed and bounded intervals attain their maximum and minimum.
 -/
 
 namespace Chapter9
 
 /-- Definition 9.6.1 -/
-abbrev BddAboveOn (f:ℝ → ℝ) (X:Set ℝ) : Prop :=
-  ∃ M, ∀ x ∈ X, f x ≤ M
+abbrev BddAboveOn (f:ℝ → ℝ) (X:Set ℝ) : Prop := ∃ M, ∀ x ∈ X, f x ≤ M
 
-abbrev BddBelowOn (f:ℝ → ℝ) (X:Set ℝ) : Prop :=
-  ∃ M, ∀ x ∈ X, -M ≤ f x
+abbrev BddBelowOn (f:ℝ → ℝ) (X:Set ℝ) : Prop := ∃ M, ∀ x ∈ X, -M ≤ f x
 
-abbrev BddOn (f:ℝ → ℝ) (X:Set ℝ) : Prop :=
-  ∃ M, ∀ x ∈ X, |f x| ≤ M
+abbrev BddOn (f:ℝ → ℝ) (X:Set ℝ) : Prop := ∃ M, ∀ x ∈ X, |f x| ≤ M
 
 /-- Remark 9.6.2 -/
-theorem BddOn.iff (f:ℝ → ℝ) (X:Set ℝ) :
-  BddOn f X ↔ BddAboveOn f X ∧ BddBelowOn f X := by
+theorem BddOn.iff (f:ℝ → ℝ) (X:Set ℝ) : BddOn f X ↔ BddAboveOn f X ∧ BddBelowOn f X := by
   sorry
 
-theorem BddOn.iff' (f:ℝ → ℝ) (X:Set ℝ) :
-  BddOn f X ↔ Bornology.IsBounded (f '' X) := by
+theorem BddOn.iff' (f:ℝ → ℝ) (X:Set ℝ) :  BddOn f X ↔ Bornology.IsBounded (f '' X) := by
   sorry
 
-theorem BddOn.of_bounded {f :ℝ → ℝ} {X: Set ℝ} {M:ℝ} (h: ∀ x ∈ X, |f x| ≤ M) :
-  BddOn f X := by use M
+theorem BddOn.of_bounded {f :ℝ → ℝ} {X: Set ℝ} {M:ℝ} (h: ∀ x ∈ X, |f x| ≤ M) : BddOn f X := by use M
 
 example : Continuous (fun x:ℝ ↦ x) := by sorry
 
@@ -57,8 +51,7 @@ theorem why_7_6_3 {n: ℕ → ℕ} (hn: StrictMono n) (j:ℕ) : n j ≥ j := by 
 theorem BddOn.of_continuous_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf: ContinuousOn f (Set.Icc a b) ) :
   BddOn f (Set.Icc a b) := by
   -- This proof is written to follow the structure of the original text.
-  by_contra! hunbound
-  simp [BddOn] at hunbound
+  by_contra! hunbound; simp [BddOn] at hunbound
   set x := fun (n:ℕ) ↦ (hunbound n).choose
   have hx (n:ℕ) : a ≤ x n ∧ x n ≤ b ∧ n < |f (x n)| := (hunbound n).choose_spec
   set X := Set.Icc a b
@@ -71,12 +64,10 @@ theorem BddOn.of_continuous_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf: 
   rw [ContinuousWithinAt.iff] at hf
   replace hf := Convergesto.comp (AdherentPt.of_mem hLX) hf (fun j ↦ haX (n j)) hconv
   replace hf := Metric.isBounded_range_of_tendsto _ hf
-  rw [isBounded_def] at hf
-  obtain ⟨ M, hpos, hM ⟩ := hf
+  rw [isBounded_def] at hf; obtain ⟨ M, hpos, hM ⟩ := hf
   obtain ⟨ j, hj ⟩ := exists_nat_gt M
   replace hx := (hx (n j)).2.2
-  replace hM : f (x (n j)) ∈ Set.Icc (-M) M := by
-    apply hM; simp
+  replace hM : f (x (n j)) ∈ Set.Icc (-M) M := by apply hM; simp
   simp [←abs_le] at hM
   have : n j ≥ (j:ℝ) := by simp [why j]
   linarith
@@ -94,20 +85,12 @@ theorem BddBelowOn.isMinOn {f:ℝ → ℝ} {X:Set ℝ} {x₀:ℝ} (h: IsMinOn f 
 theorem IsMaxOn.of_continuous_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf: ContinuousOn f (Set.Icc a b)) :
   ∃ xmax ∈ Set.Icc a b, IsMaxOn f (Set.Icc a b) xmax := by
   -- This proof is written to follow the structure of the original text.
-  have hbound := BddOn.of_continuous_on_compact h hf
-  obtain ⟨ M, hM ⟩ := hbound
+  obtain ⟨ M, hM ⟩ := BddOn.of_continuous_on_compact h hf
   set E := f '' (Set.Icc a b)
-  have hE : E ⊆ Set.Icc (-M) M := by
-    rintro _ ⟨ x, hx, rfl ⟩
-    simp [hM x hx, ←abs_le]
-  have hnon : E ≠ ∅ := by
-    simp [E]
-    contrapose! h
-    rw [Set.Icc_eq_empty_iff] at h
-    linarith
+  have hE : E ⊆ Set.Icc (-M) M := by rintro _ ⟨ x, hx, rfl ⟩; simp [hM x hx, ←abs_le]
+  have hnon : E ≠ ∅ := by simp [E]; contrapose! h; rw [Set.Icc_eq_empty_iff] at h; linarith
   set m := sSup E
-  have claim1 {y:ℝ} (hy: y ∈ E) : y ≤ m :=
-    le_csSup (BddAbove.mono hE bddAbove_Icc) hy
+  have claim1 {y:ℝ} (hy: y ∈ E) : y ≤ m := le_csSup (BddAbove.mono hE bddAbove_Icc) hy
   suffices h : ∃ xmax, xmax ∈ Set.Icc a b ∧ f xmax = m
   . sorry
   have claim2 (n:ℕ) : ∃ x ∈ Set.Icc a b, m - 1/(n+1:ℝ) < f x := by
@@ -115,12 +98,11 @@ theorem IsMaxOn.of_continuous_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf
     replace : m - 1/(n+1:ℝ) < sSup E := by linarith
     rw [←Set.nonempty_iff_ne_empty] at hnon
     replace := exists_lt_of_lt_csSup hnon this
-    simp only [Set.mem_image, exists_exists_and_eq_and, E] at this
-    exact this
+    simpa [Set.mem_image, exists_exists_and_eq_and, E] using this
   set x : ℕ → ℝ := fun n ↦ (claim2 n).choose
   have hx (n:ℕ) : x n ∈ Set.Icc a b := (claim2 n).choose_spec.1
   have hfx (n:ℕ) : m - 1/(n+1:ℝ) < f (x n) := (claim2 n).choose_spec.2
-  have hclosed : IsClosed (Set.Icc a b) := Icc_closed 
+  have hclosed : IsClosed (Set.Icc a b) := Icc_closed
   have hbounded : Bornology.IsBounded (Set.Icc a b) := Icc_bounded _ _
   obtain ⟨ n, hn, ⟨ xmax, hmax, hconv⟩ ⟩ := (Heine_Borel (Set.Icc a b)).mp ⟨ hclosed, hbounded⟩ x hx
   use xmax, hmax
@@ -133,8 +115,7 @@ theorem IsMaxOn.of_continuous_on_compact {a b:ℝ} (h:a < b) {f:ℝ → ℝ} (hf
     exact hn_lower j
   have hupper (j:ℕ) : f (x (n j)) ≤ m := by
     apply claim1
-    simp only [Set.mem_image, E]
-    use x (n j), hx (n j)
+    simp only [Set.mem_image, E]; use x (n j), hx (n j)
   have hconvm : Filter.Tendsto (fun j ↦ f (x (n j))) Filter.atTop (nhds m) := by
     apply Filter.Tendsto.squeeze (g := fun j ↦ m - 1/(j+1:ℝ)) (h := fun j ↦ m) (f := fun j ↦ f (x (n j)))
     . convert Filter.Tendsto.const_sub m (c:=0) _

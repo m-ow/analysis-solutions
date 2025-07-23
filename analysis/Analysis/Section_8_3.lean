@@ -3,7 +3,7 @@ import Analysis.Section_8_1
 import Analysis.Section_8_2
 
 /-!
-# Analysis I, Section 8.3
+# Analysis I, Section 8.3: Uncountable sets
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -13,7 +13,7 @@ doing so.
 
 Main constructions and results of this section:
 
-- Uncountable sets
+- Uncountable sets.
 
 Some non-trivial API is provided beyond what is given in the textbook in order connect these
 notions with existing summation notions.
@@ -25,13 +25,10 @@ namespace Chapter8
 /-- Theorem 8.3.1 -/
 theorem EqualCard.power_set_false (X:Type) : ¬ EqualCard X (Set X) := by
   -- This proof is written to follow the structure of the original text.
-  by_contra!
-  obtain ⟨f, hf⟩ := this
-  set A := {x | x ∉ f x }
-  obtain ⟨ x, hx ⟩ := hf.2 A
+  by_contra!; obtain ⟨f, hf⟩ := this
+  set A := {x | x ∉ f x }; obtain ⟨ x, hx ⟩ := hf.2 A
   by_cases h : x ∈ A <;> have h' := h
-  . simp [A] at h'
-    simp_all
+  . simp [A] at h'; simp_all
   rw [←hx] at h'
   have : x ∈ A := by simp [A, h']
   contradiction
@@ -51,8 +48,7 @@ theorem Uncountable.power_set_nat : Uncountable (Set ℕ) := by
   unfold AtMostCountable
   have : ¬ CountablyInfinite (Set ℕ) := by
     have := EqualCard.power_set_false ℕ
-    contrapose! this
-    exact this.symm
+    contrapose! this; exact this.symm
   have : ¬ Finite (Set ℕ) := by
     by_contra!
     have : Finite ((fun x:ℕ ↦ ({x}:Set ℕ)) '' (Set.univ)) := Finite.Set.subset (s := Set.univ) (by aesop)
@@ -92,14 +88,11 @@ theorem Uncountable.real : Uncountable ℝ := by
     obtain ⟨ h1, h2 ⟩ := this
     wlog h : n₀ ∈ A ∧ n₀ ∉ B generalizing A B
     . simp [h] at h1
-      specialize this hAB.symm
+      exact this hAB.symm
         (by simp [symmDiff_comm]; tauto)
         (by intro n hn; specialize h2 n (by tauto); simp [symmDiff_comm, n₀, h2])
         (by simp [symmDiff_comm]; assumption)
-      assumption
-    replace h2 {n:ℕ} (hn: n < n₀) : n ∈ A ↔ n ∈ B := by
-      contrapose! hn
-      exact h2 n (by tauto)
+    replace h2 {n:ℕ} (hn: n < n₀) : n ∈ A ↔ n ∈ B := by contrapose! hn; exact h2 n (by tauto)
     have : (0:ℝ) > 0 := calc
       _ = f A - f B := by linarith
       _ = ∑' n:A, a n - ∑' n:B, a n := rfl
@@ -123,18 +116,16 @@ theorem Uncountable.real : Uncountable ℝ := by
           ((∑' n:{n ∈ B|n < n₀}, a n + 0) + ∑' n:{n ∈ B|n > n₀}, a n) := by
         congr 3
         . calc
-            _ = ∑' n:({n₀}:Set ℕ), a n := by
-              apply h_congr; ext n; simp; rintro rfl; tauto
+            _ = ∑' n:({n₀}:Set ℕ), a n := by apply h_congr; ext n; simp; rintro rfl; tauto
             _ = _ := by simp
         . calc
-            _ = ∑' n:(∅:Set ℕ), a n := by
-              apply h_congr; ext n; simp; contrapose! h; simp [←h.2, h.1]
+            _ = ∑' n:(∅:Set ℕ), a n := by apply h_congr; ext n; simp; contrapose! h; simp [←h.2, h.1]
             _ = _ := by simp
       _ = (∑' n:{n ∈ A|n < n₀}, a n - ∑' n:{n ∈ B|n < n₀}, a n) + a n₀ +
           ∑' n:{n ∈ A|n > n₀}, a n - ∑' n:{n ∈ B|n > n₀}, a n := by abel
       _ = 0 + a n₀ + ∑' n:{n ∈ A|n > n₀}, a n - ∑' n:{n ∈ B|n > n₀}, a n := by
         congr; rw [sub_eq_zero]; apply tsum_congr_set_coe
-        ext n; simp; intro hn; specialize h2 hn; assumption
+        ext n; simp; intro hn; exact h2 hn
       _ ≥ 0 + a n₀ + 0 - ∑' n:{n|n > n₀}, a n := by
         gcongr
         . positivity
@@ -151,7 +142,7 @@ theorem Uncountable.real : Uncountable ℝ := by
         set ι : ℕ → {n | n > n₀} := fun j ↦ ⟨ j+(n₀+1), by simp; linarith ⟩
         have hι : Function.Bijective ι := by
           constructor
-          . intro j k hjk; simp [ι] at hjk; assumption
+          . intro j k hjk; simpa [ι] using hjk
           intro ⟨ n, hn ⟩; simp [ι] at hn ⊢; use n - n₀ - 1; omega
         rw [←Equiv.tsum_eq (Equiv.ofBijective ι hι)]
         simp [ι,a]
@@ -176,7 +167,7 @@ theorem Uncountable.real : Uncountable ℝ := by
     use (Equiv.ofInjective _ this).toFun
     exact (Equiv.ofInjective _ this).bijective
   replace := (Uncountable.equiv this).mp power_set_nat
-  contrapose! this
+  contrapose this
   rw [not_uncountable_iff] at this ⊢
   exact SetCoe.countable _
 

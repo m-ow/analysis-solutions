@@ -1,10 +1,10 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Section 7.1
+# Analysis I, Section 7.1: Finite series
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. hen there is a choice between a more idiomatic Lean solution and a more faithful
+text. When there is a choice between a more idiomatic Lean solution and a more faithful
 translation, I have generally chosen the latter. In particular, there will be places where the
 Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
 doing so.
@@ -96,8 +96,6 @@ theorem abs_finite_series_le {m n:ℤ}   (a: ℤ → ℝ) (c:ℝ) :
 theorem finite_series_of_le {m n:ℤ}  {a b: ℤ → ℝ} (h: ∀ i, m ≤ i → i ≤ n → a i ≤ b i) :
   ∑ i ∈ Icc m n, a i ≤ ∑ i ∈ Icc m n, b i := by sorry
 
--- This lemma is not part of the original textbook, but proven similarly to the other results
--- above, and is handy.
 #check sum_congr
 
 /--
@@ -122,20 +120,16 @@ theorem finite_series_of_rearrange {n:ℕ} {X':Type*} (X: Finset X') (hcard: X.c
       ∑ i ∈ Icc (1:ℤ) (n+1), (if hi:i ∈ Icc (1:ℤ) (n+1) then f (g ⟨ i, hi ⟩) else 0)
       = ∑ i ∈ Icc (1:ℤ) (n+1), f (g (π i)) := by
     apply sum_congr rfl _
-    intro i hi
-    simp only [hi, ↓reduceDIte, π]
+    intro i hi; simp only [hi, ↓reduceDIte, π]
   simp only [Nat.cast_add, Nat.cast_one, Int.natCast_add, Int.cast_ofNat_Int, hπ]
   rw [sum_of_nonempty (by linarith) _]
   set x := g (π (n+1))
-
   obtain ⟨⟨j, hj'⟩, hj⟩ := Function.Bijective.surjective hh x
-  simp at hj'
-  obtain ⟨ hj1, hj2 ⟩ := hj'
+  simp at hj'; obtain ⟨ hj1, hj2 ⟩ := hj'
   set h' : ℤ → X := fun i ↦ if (i:ℤ) < j then h (π i) else h (π (i+1))
-  have :  ∑ i ∈ Icc (1:ℤ) (n + 1), f (h (π i)) = ∑ i ∈ Icc (1:ℤ) n, f (h' i) + f x := calc
+  have : ∑ i ∈ Icc (1:ℤ) (n + 1), f (h (π i)) = ∑ i ∈ Icc (1:ℤ) n, f (h' i) + f x := calc
     _ = ∑ i ∈ Icc (1:ℤ) j, f (h (π i)) + ∑ i ∈ Icc (j+1:ℤ) (n + 1), f (h (π i)) := by
-      convert (concat_finite_series _ _ _).symm
-      all_goals linarith
+      convert (concat_finite_series _ _ _).symm <;> linarith
     _ = ∑ i ∈ Icc (1:ℤ) (j-1), f (h (π i)) + f ( h (π j) ) + ∑ i
         ∈ Icc (j+1:ℤ) (n + 1), f (h (π i)) := by
       congr
@@ -183,15 +177,13 @@ theorem finite_series_of_rearrange {n:ℕ} {X':Type*} (X: Finset X') (hcard: X.c
   calc
     _ = ∑ i ∈ Icc (1:ℤ) n, if hi: i ∈ Icc (1:ℤ) n then ftil (gtil ⟨ i, hi ⟩ ) else 0 := by
       apply sum_congr rfl _
-      intro i hi
-      simp [hi, gtil, ftil]
+      intro i hi; simp [hi, gtil, ftil]
     _ = ∑ i ∈ Icc (1:ℤ) n, if hi: i ∈ Icc (1:ℤ) n then ftil (htil ⟨ i, hi ⟩ ) else 0 := by
       convert hn _ _ gtil htil why why2
       rw [Finset.card_erase_of_mem _, hX] <;> simp
     _ = _ := by
       apply sum_congr rfl _
-      intro i hi
-      simp [hi, htil, ftil]
+      intro i hi; simp [hi, htil, ftil]
 
 /--
   This fact ensures that Definition 7.1.6 would be well-defined even if we did not appeal to the
@@ -201,8 +193,7 @@ theorem exist_bijection {n:ℕ} {Y:Type*} (X: Finset Y) (hcard: X.card = n) :
     ∃ g: Icc (1:ℤ) n → X, Function.Bijective g := by
   have : (Icc (1:ℤ) n).card = X.card := by simp [hcard]
   replace this := Finset.equivOfCardEq this
-  use this
-  exact Equiv.bijective this
+  use this; exact Equiv.bijective this
 
 /-- Definition 7.1.6 -/
 theorem finite_series_eq {n:ℕ} {Y:Type*} (X: Finset Y) (f: Y → ℝ) (g: Icc (1:ℤ) n → X)
@@ -212,11 +203,11 @@ theorem finite_series_eq {n:ℕ} {Y:Type*} (X: Finset Y) (f: Y → ℝ) (g: Icc 
   convert sum_bij (t:=X) (fun i hi ↦ g ⟨ i, hi ⟩ ) _ _ _ _
   . intro i hi; simp [hi]
   . intro i hi j hj h
-    simp [Subtype.val_inj, (Function.Bijective.injective hg).eq_iff] at h; assumption
+    simpa [Subtype.val_inj, (Function.Bijective.injective hg).eq_iff] using h
   . intro b hb
     obtain ⟨⟨i, hi⟩, h⟩ := (Function.Bijective.surjective hg) ⟨ b, hb ⟩
     use i, hi; simp [h]
-  intro i hi; simp [hi]
+  intros; simp_all
 
 /-- Proposition 7.1.11(a) / Exercise 7.1.2 -/
 theorem finite_series_of_empty {X':Type*} (f: X' → ℝ) : ∑ i ∈ ∅, f i = 0 := by sorry
@@ -264,17 +255,14 @@ theorem finite_series_of_finite_series {XX YY:Type*} (X: Finset XX) (Y: Finset Y
   (f: XX × YY → ℝ) :
     ∑ x ∈ X, ∑ y ∈ Y, f (x, y) = ∑ z ∈ Finset.product X Y, f z := by
   generalize h: X.card = n
-  revert X
-  induction' n with n hn
+  revert X; induction' n with n hn
   . sorry
   intro X hX
   have hnon : X.Nonempty := by rw [←card_ne_zero]; linarith
   obtain ⟨ x₀, hx₀ ⟩ := hnon.exists_mem
   set X' := X.erase x₀
   have hcard : X'.card = n := by simp [X', card_erase_of_mem hx₀, hX]
-  have hunion : X = X' ∪ {x₀} := by
-    ext x
-    by_cases h:x = x₀ <;> simp [h,X', hx₀]
+  have hunion : X = X' ∪ {x₀} := by ext x; by_cases h:x = x₀ <;> simp [h,X', hx₀]
   have hdisj : Disjoint X' {x₀} := by simp [X']
   calc
     _ = ∑ x ∈ X', ∑ y ∈ Y, f (x, y) + ∑ x ∈ {x₀}, ∑ y ∈ Y, f (x, y) := by
@@ -292,8 +280,7 @@ theorem finite_series_of_finite_series {XX YY:Type*} (X: Finset XX) (Y: Finset Y
         . intro ⟨ ⟨ x, y ⟩, hz ⟩ ⟨ ⟨ x', y' ⟩, hz' ⟩ hzz'
           simp [π] at hz hz' hzz' ⊢
           simp [hzz', ←hz.2, ←hz'.2]
-        intro ⟨ y, hy ⟩
-        use ⟨ (x₀, y), by simp [hy] ⟩
+        intro ⟨ y, hy ⟩; use ⟨ (x₀, y), by simp [hy] ⟩
       convert map_finite_series _ hπ with z
       obtain ⟨⟨x, y⟩, hz ⟩ := z
       simp at hz ⊢; tauto
@@ -312,8 +299,7 @@ theorem finite_series_refl {XX YY:Type*} (X: Finset XX) (Y: Finset YY) (f: XX ×
     . intro ⟨ ⟨ y, x ⟩, hz ⟩ ⟨ ⟨ y', x' ⟩, hz' ⟩ hzz'
       simp [h] at hz hz' hzz' ⊢
       simp [hzz']
-    intro ⟨ z, hz ⟩
-    simp at hz
+    intro ⟨ z, hz ⟩; simp at hz
     use ⟨ (z.2, z.1), by simp [hz] ⟩
   rw [finite_series_of_fintype]
   nth_rewrite 2 [finite_series_of_fintype]
@@ -338,7 +324,7 @@ theorem finite_series_comm {XX YY:Type*} (X: Finset XX) (Y: Finset YY) (f: XX ×
 theorem binomial_theorem (x y:ℝ) (n:ℕ) :
     (x + y)^n
     = ∑ j ∈ Icc (0:ℤ) n,
-    n.factorial / (j.toNat.factorial * (n-j).toNat.factorial) * x^k * y^(n - k) := by
+    n.factorial / (j.toNat.factorial * (n-j).toNat.factorial) * x^j * y^(n - j) := by
   sorry
 
 /-- Exercise 7.1.5 -/

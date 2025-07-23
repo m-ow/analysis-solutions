@@ -89,3 +89,5 @@ Currently formalized sections:
 - [Appendix A.5: Nested quantifiers](./secA5/)
 - [Appendix A.6: Some examples of proofs and quantifiers](./secA6/)
 - [Appendix A.7: Equality](./secA7/)
+- [Appendix B.1: The decimal representation of natural numbers](./appB1/)
+- [Appendix B.2: The decimal representation of real numbers](./appB2/)

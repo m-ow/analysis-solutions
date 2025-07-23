@@ -2,28 +2,23 @@ import Mathlib.Tactic
 import Analysis.Section_7_3
 
 /-!
-# Analysis I, Section 7.4
+# Analysis I, Section 7.4: Rearrangement of series
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original text.  When there is a choice between a more idiomatic Lean solution and a more faithful translation, I have generally chosen the latter.  In particular, there will be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing so.
 
 Main constructions and results of this section:
 
-- Rearrangement of non-negative or absolutely convergent series
+- Rearrangement of non-negative or absolutely convergent series.
 -/
 
 namespace Chapter7
 
 theorem Series.sum_eq_sum (b:ℕ → ℝ) {N:ℤ} (hN: N ≥ 0) : ∑ n ∈ Finset.Icc 0 N, (if 0 ≤ n then b n.toNat else 0) = ∑ n ∈ Finset.Iic N.toNat, b n := by
       convert Finset.sum_image (g := fun n:ℕ ↦ (n:ℤ)) _
-      . ext x
-        simp
+      . ext x; simp
         constructor
-        . intro ⟨ hpos, hx ⟩
-          use x.toNat
-          omega
-        intro ⟨ a, ⟨ ha, hb ⟩ ⟩
-        simp [←hb]
-        omega
+        . intro ⟨ hpos, hx ⟩; use x.toNat; omega
+        intro ⟨ a, ⟨ ha, hb ⟩ ⟩; simp [←hb]; omega
       simp
 
 /-- Proposition 7.4.1 -/
@@ -34,10 +29,8 @@ theorem Series.converges_of_permute_nonneg {a:ℕ → ℝ} (ha: (a:Series).nonne
   set af : ℕ → ℝ := fun n ↦ a (f n)
   have haf : (af:Series).nonneg := by
     unfold nonneg at ha ⊢
-    intro n; by_cases h : n ≥ 0
-    all_goals simp [af, h]
-    specialize ha (f n.toNat)
-    aesop
+    intro n; by_cases h : n ≥ 0 <;> simp [h, af]
+    specialize ha (f n.toNat); aesop
   set S := (a:Series).partial
   set T := (af:Series).partial
   have hSmono : Monotone S := Series.partial_of_nonneg ha
@@ -49,24 +42,18 @@ theorem Series.converges_of_permute_nonneg {a:ℕ → ℝ} (ha: (a:Series).nonne
   . have Ssum : L = (a:Series).sum := by
       apply (sum_of_converges _).symm
       simp [convergesTo, L]
-      apply tendsto_atTop_isLUB  hSmono _
-      apply isLUB_csSup
+      apply tendsto_atTop_isLUB hSmono (isLUB_csSup _ _)
       . use (S 0); aesop
-      obtain ⟨ Q, hQ ⟩ := hSBound
-      use Q
+      obtain ⟨ Q, hQ ⟩ := hSBound; use Q
       simp [upperBounds, hQ]
     have Tsum : L' = (af:Series).sum := by
       apply (sum_of_converges _).symm
       simp [convergesTo, L']
-      apply tendsto_atTop_isLUB  hTmono _
-      apply isLUB_csSup
+      apply tendsto_atTop_isLUB hTmono (isLUB_csSup _ _)
       . use (T 0); aesop
-      obtain ⟨ Q, hQ ⟩ := this.1
-      use Q
+      obtain ⟨ Q, hQ ⟩ := this.1; use Q
       simp [upperBounds, hQ]
-    rw [←Ssum, ←Tsum]
-    simp [this.2]
-    rw [converges_of_nonneg_iff haf]
+    simp [←Ssum, ←Tsum, this.2, converges_of_nonneg_iff haf]
     convert this.1
   have hTL (M:ℤ) : T M ≤ L := by
     by_cases hM : M ≥ 0
@@ -77,8 +64,7 @@ theorem Series.converges_of_permute_nonneg {a:ℕ → ℝ} (ha: (a:Series).nonne
       simp [BddAbove, Set.Nonempty, upperBounds, hSBound]
     set Y := Finset.Iic M.toNat
     have hN : ∃ N, ∀ m ∈ Y, f m ≤ N := by
-      use (Y.image f).sup id
-      intro m hm
+      use (Y.image f).sup id; intro m hm
       apply Finset.le_sup (f := id)
       simp; use m
     obtain ⟨ N, hN ⟩ := hN
@@ -98,14 +84,13 @@ theorem Series.converges_of_permute_nonneg {a:ℕ → ℝ} (ha: (a:Series).nonne
         · intro n hn
           simp at hn ⊢
           obtain ⟨ a, ha, rfl ⟩ := hn
-          exact hN a ha
+          exact hN _ ha
         intro i _ _
         specialize ha i
-        simp at ha; exact ha
+        simpa using ha
       _ = S N := by
         simp [S, Series.partial]
-        symm
-        exact sum_eq_sum (N:=N) a (by positivity)
+        exact (sum_eq_sum (N:=N) a (by positivity)).symm
       _ ≤ L := by
         apply le_ciSup _ (N:ℤ)
         simp [BddAbove, Set.Nonempty, upperBounds, hSBound]
@@ -122,8 +107,7 @@ theorem Series.converges_of_permute_nonneg {a:ℕ → ℝ} (ha: (a:Series).nonne
     set X := Finset.Iic N.toNat
     have hM : ∃ M, ∀ n ∈ X, ∃ m, f m = n ∧ m ≤ M := by
       use (X.preimage f (Set.injOn_of_injective hf.1)).sup id
-      intro n hn
-      obtain ⟨ m, hm ⟩ := hf.2 n
+      intro n hn; obtain ⟨ m, hm ⟩ := hf.2 n
       refine ⟨ m, hm, ?_ ⟩
       apply Finset.le_sup (f := id)
       simp [Finset.mem_preimage, hm, hn]
@@ -155,14 +139,13 @@ theorem Series.converges_of_permute_nonneg {a:ℕ → ℝ} (ha: (a:Series).nonne
           . intro m; simp; tauto
           intro i _ _
           specialize haf i
-          simp at haf
-          exact haf
+          simpa using haf
         intro x _ y _ hxy
         exact hf.injective hxy
       _ = T M := by
         simp [T, Series.partial, af]
         symm
-        apply sum_eq_sum af (by positivity)
+        exact sum_eq_sum af (by positivity)
       _ ≤ L' := by
         apply le_ciSup _ (M:ℤ)
         simp [BddAbove, Set.Nonempty, upperBounds, hTbound]
@@ -225,9 +208,7 @@ theorem Series.absConverges_of_permute {a:ℕ → ℝ} (ha : (a:Series).absConve
     apply Finset.le_sup (f := id)
     simp [Finset.mem_image]
     use n
-  obtain ⟨ M, hM ⟩ := this
-  use M
-  intro M' hM'
+  obtain ⟨ M, hM ⟩ := this; use M; intro M' hM'
   have hM'_pos : M' ≥ 0 := by linarith
   have why : Finset.image f (Finset.Iic M'.toNat) ⊇ Finset.Iic N.toNat := by
     sorry
@@ -236,8 +217,7 @@ theorem Series.absConverges_of_permute {a:ℕ → ℝ} (ha : (a:Series).absConve
     _ = ∑ n ∈ Finset.image f (Finset.Iic M'.toNat), a n := by
       symm
       apply Finset.sum_image
-      intro x _ y _ hxy
-      exact hf.1 hxy
+      solve_by_elim [hf.1]
     _ = _ := by
       convert Finset.sum_union _ using 2
       . simp [X, why]
@@ -304,4 +284,5 @@ theorem Series.absConverges_of_subseries {a:ℕ → ℝ} (ha: (a:Series).absConv
 theorem Series.absConverges_of_permute' {a:ℕ → ℝ} (ha : (a:Series).absConverges)
   {f: ℕ → ℕ} (hf: Function.Bijective f) :
     (fun n ↦ a (f n):Series).absConverges  ∧ (a:Series).sum = (fun n ↦ a (f n) : Series).sum := by sorry
+
 end Chapter7

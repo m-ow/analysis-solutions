@@ -2,7 +2,7 @@ import Mathlib.Tactic
 import Analysis.Section_8_4
 
 /-!
-# Analysis I, Section 8.5
+# Analysis I, Section 8.5: Ordered sets
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -12,9 +12,9 @@ doing so.
 
 Main constructions and results of this section:
 
-- Review of `PartialOrder`, `LinearOrder`, and `WellFoundedLT`, with some API
-- Strong induction
-- Zorn's lemma
+- Review of `PartialOrder`, `LinearOrder`, and `WellFoundedLT`, with some API.
+- Strong induction.
+- Zorn's lemma.
 
 -/
 
@@ -101,13 +101,11 @@ theorem WellFoundedLT.iff (X:Type) [LinearOrder X] :
   WellFoundedLT X ↔ ∀ A:Set X, A.Nonempty → ∃ x:A, IsMin x := by
   unfold WellFoundedLT IsMin
   rw [isWellFounded_iff, WellFounded.wellFounded_iff_has_min]
-  constructor
-  . intro h A hA; specialize h A hA
-    obtain ⟨ x, hxA, h ⟩ := h
+  constructor <;> intro h A hA <;> specialize h A hA
+  . obtain ⟨ x, hxA, h ⟩ := h
     use ⟨ x, hxA ⟩; intro ⟨ y, hy ⟩ this
     specialize h y hy
     simp at this ⊢; order
-  intro h A hA; specialize h A hA
   obtain ⟨ ⟨ x, hx ⟩, h ⟩ := h
   refine ⟨ _, hx, ?_ ⟩
   intro y hy; specialize h (b := ⟨ _, hy ⟩)
@@ -149,7 +147,7 @@ theorem WellFoundedLT.subset {X:Type} [PartialOrder X] {A B: Set X} (hA: IsTotal
   obtain ⟨ ⟨ ⟨ x, hx ⟩, hx' ⟩, hmin ⟩ := hwell; simp at hx'
   obtain ⟨ y, hy, hyC, this ⟩ := hx'; use ⟨ _, hyC ⟩
   simp_all [IsMin, Set.embeddingOfSubset]; subst this
-  intro a ha haC hax; exact hmin _ (hAB ha) _ ha haC rfl hax
+  intros; aesop
 
 /-- Proposition 8.5.10 / Exercise 8.5.10 -/
 theorem WellFoundedLT.strong_induction {X:Type} [LinearOrder X] [WellFoundedLT X] {P:X → Prop}
@@ -319,7 +317,7 @@ theorem WellFoundedLT.partialOrder {X:Type} [PartialOrder X] (x₀ : X) : ∃ Y 
       convert hF _
       . ext y; simp; constructor
         . intro h; simp [h]; solve_by_elim
-        intro ⟨ h1, h2 ⟩; rcases h1 with h1 | h1
+        rintro ⟨ h1 | h1, h2 ⟩
         . order
         assumption
       simp; replace hs := hs (y := x₀) (by simp [hmem]); order
@@ -333,7 +331,7 @@ theorem WellFoundedLT.partialOrder {X:Type} [PartialOrder X] (x₀ : X) : ∃ Y 
       constructor
       . intro h
         rcases h with rfl | ⟨ Y', ⟨hY'Ω₀, hY'Ω⟩, hyY' ⟩
-        . specialize hs x hx'; order
+        . specialize hs _ hx'; order
         by_contra!
         specialize ex_8_5_13 (Y := ⟨_, hYΩ'⟩) (Y' := ⟨_, hY'Ω⟩) y (by simp [hyY', this])
         rw [IsStrictUpperBound.iff] at ex_8_5_13

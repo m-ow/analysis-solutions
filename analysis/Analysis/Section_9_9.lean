@@ -4,7 +4,7 @@ import Mathlib.Data.Nat.Nth
 import Analysis.Section_9_6
 
 /-!
-# Analysis I, Section 9.9
+# Analysis I, Section 9.9: Uniform continuity
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text.  When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -12,18 +12,15 @@ translation, I have generally chosen the latter.  In particular, there will be p
 the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
 doing so.
 
+Main constructions and results of this section:
+- API for Mathlib's `UniformContinuousOn`.
+- Continuous functions on compact intervals are uniformly continuous.
+
 -/
 
 open Chapter6
 
 namespace Chapter9
-
-/-!
-Main constructions and results of this section:
-- API for Mathlib's `UniformContinuousOn`
-- Continuous functions on compact intervls are uniformly continuous
-
--/
 
 example : ContinuousOn (fun x:ℝ ↦ 1/x) (Set.Icc 0 2) := by
   sorry
@@ -75,9 +72,7 @@ theorem UniformContinuousOn.iff (f: ℝ → ℝ) (X:Set ℝ) : UniformContinuous
   apply imp_congr_right; intro hε
   apply exists_congr; intro δ
   apply and_congr_right; intro hδ
-  constructor
-  . exact fun h x₀ hx₀ x hx ↦ h x hx x₀ hx₀
-  exact fun h x hx y hy ↦ h y hy x hx
+  constructor <;> intros <;> solve_by_elim
 
 theorem ContinuousOn.ofUniformContinuousOn {X:Set ℝ} (f: ℝ → ℝ) (hf: UniformContinuousOn f X) :
   ContinuousOn f X := by
@@ -187,8 +182,7 @@ theorem UniformContinuousOn.of_continuousOn {a b:ℝ} {f:ℝ → ℝ}
   (hcont: ContinuousOn f (Set.Icc a b)) :
   UniformContinuousOn f (Set.Icc a b) := by
   -- This proof is written to follow the structure of the original text.
-  by_contra h
-  rw [iff_preserves_equiv] at h
+  by_contra h; rw [iff_preserves_equiv] at h
   simp only [ge_iff_le, Function.comp_apply, not_forall, Classical.not_imp, gt_iff_lt, not_exists,
   not_and, sup_le_iff, dite_eq_ite, and_imp, not_le, forall_const, exists_and_left] at h
   obtain ⟨ x, y, hx, hy, hequiv, ε, hε, h ⟩ := h
@@ -202,14 +196,11 @@ theorem UniformContinuousOn.of_continuousOn {a b:ℝ} {f:ℝ → ℝ}
   have : Countable E := by infer_instance
   set n : ℕ → ℕ := Nat.nth E
   rw [Set.infinite_coe_iff] at hE
-  have hmono : StrictMono n := by
-    apply Nat.nth_strictMono
-    convert hE
+  have hmono : StrictMono n := by apply Nat.nth_strictMono; exact hE
   have hmem (j:ℕ) : n j ∈ E := Nat.nth_mem_of_infinite hE j
   have hsep (j:ℕ) : |f (x (n j)) - f (y (n j))| > ε := by
     specialize hmem j
-    simp [E, Real.Close, Real.dist_eq] at hmem
-    exact hmem
+    simpa [E, Real.Close, Real.dist_eq] using hmem
   have hxmem (j:ℕ) : x (n j) ∈ Set.Icc a b := hx (n j)
   have hymem (j:ℕ) : y (n j) ∈ Set.Icc a b := hy (n j)
   have hclosed : IsClosed (Set.Icc a b) := Icc_closed
@@ -222,7 +213,7 @@ theorem UniformContinuousOn.of_continuousOn {a b:ℝ} {f:ℝ → ℝ}
     have hj' : Filter.Tendsto j Filter.atTop Filter.atTop := StrictMono.tendsto_atTop hj
     have hn' : Filter.Tendsto n Filter.atTop Filter.atTop := StrictMono.tendsto_atTop hmono
     have hcoe : Filter.Tendsto (fun n:ℕ ↦ (n:ℤ)) Filter.atTop Filter.atTop := tendsto_natCast_atTop_atTop
-    convert hequiv.comp (hcoe.comp (hn'.comp hj'))
+    exact hequiv.comp (hcoe.comp (hn'.comp hj'))
   have hyconv : Filter.Tendsto (fun k ↦ y (n (j k))) Filter.atTop (nhds L) := by
     convert Filter.Tendsto.sub hconv hequiv with k
     . abel

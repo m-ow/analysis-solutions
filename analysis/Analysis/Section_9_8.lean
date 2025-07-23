@@ -2,7 +2,7 @@ import Mathlib.Tactic
 import Analysis.Section_9_6
 
 /-!
-# Analysis I, Section 9.8
+# Analysis I, Section 9.8: Monotonic functions
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text.  When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -11,7 +11,7 @@ the Lean code could be "golfed" to be more elegant and idiomatic, but I have con
 doing so.
 
 Main constructions and results of this section:
-- Review of Mathlib monotonicity concepts
+- Review of Mathlib monotonicity concepts.
 -/
 
 namespace Chapter9
@@ -19,37 +19,27 @@ namespace Chapter9
 /-- Definition 9.8.1 -/
 theorem MonotoneOn.iff {X: Set ℝ} (f: ℝ → ℝ) : MonotoneOn f X  ↔ ∀ x ∈ X, ∀ y ∈ X, y > x → f y ≥ f x := by
   constructor
-  . intro h x hx y hy hxy
-    exact h hx hy (le_of_lt hxy)
-  intro h x hx y hy hxy
+  . intros; solve_by_elim [le_of_lt]
+  intro _ _ _ _ _ hxy
   rw [le_iff_lt_or_eq] at hxy
   rcases hxy with hxy | hxy
-  . exact h x hx y hy hxy
+  . solve_by_elim
   simp [hxy]
 
 theorem StrictMono.iff {X: Set ℝ} (f: ℝ → ℝ) : StrictMonoOn f X  ↔ ∀ x ∈ X, ∀ y ∈ X, y > x → f y > f x := by
-  constructor
-  . intro h x hx y hy hxy
-    exact h hx hy hxy
-  intro h x hx y hy hxy
-  exact h x hx y hy hxy
+  constructor <;> intros <;> solve_by_elim
 
 theorem AntitoneOn.iff {X: Set ℝ} (f: ℝ → ℝ) : AntitoneOn f X  ↔ ∀ x ∈ X, ∀ y ∈ X, y > x → f y ≤ f x := by
   constructor
-  . intro h x hx y hy hxy
-    exact h hx hy (le_of_lt hxy)
-  intro h x hx y hy hxy
+  . intros; solve_by_elim [le_of_lt]
+  intro _ _ _ _ _ hxy
   rw [le_iff_lt_or_eq] at hxy
   rcases hxy with hxy | hxy
-  . exact h x hx y hy hxy
+  . solve_by_elim
   simp [hxy]
 
 theorem StrictAntitone.iff {X: Set ℝ} (f: ℝ → ℝ) : StrictAntiOn f X  ↔ ∀ x ∈ X, ∀ y ∈ X, y > x → f y < f x := by
-  constructor
-  . intro h x hx y hy hxy
-    exact h hx hy hxy
-  intro h x hx y hy hxy
-  exact h x hx y hy hxy
+  constructor <;> intros <;> solve_by_elim
 
 /-- Examples 9.8.2 -/
 example : StrictMonoOn (fun x:ℝ ↦ x^2) (Set.Ici 0) := by sorry
@@ -91,8 +81,7 @@ example {R :ℝ} (hR: R > 0) {n:ℕ} (hn: n > 0) : ∃ g : ℝ → ℝ, ∀ x �
   set f : ℝ → ℝ := fun x ↦ x^n
   have hcont : ContinuousOn f (Set.Icc 0 R) := by fun_prop
   have hmono : StrictMonoOn f (Set.Icc 0 R) := by
-    intro x hx y hy hxy
-    simp at hx
+    intro _ hx _ _ hxy; simp at hx
     simp [f]
     exact pow_lt_pow_left₀ hxy (by contrapose! hn; linarith) (by linarith)
   obtain ⟨ g, ⟨ _, _, _, _, hg⟩ ⟩ := (MonotoneOn.exist_inverse (by positivity) f hcont hmono).2

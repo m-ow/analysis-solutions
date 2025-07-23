@@ -4,7 +4,7 @@ import Analysis.Section_6_2
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
 /-!
-# Analysis I, Section 6.3
+# Analysis I, Section 6.3: Suprema and infima of sequences
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -14,7 +14,7 @@ doing so.
 
 Main constructions and results of this section:
 
-- Suprema and infima of sequences
+- Suprema and infima of sequences.
 
 -/
 
@@ -123,24 +123,18 @@ theorem lim_of_exp {x:ℝ} (hpos: 0 < x) (hbound: x < 1) :
   -- This proof is written to follow the structure of the original text.
   set a := ((fun (n:ℕ) ↦ x^n):Sequence)
   have why : a.IsAntitone := sorry
-  have hbound : a.BddBelowBy 0 := by
-    intro n hn; positivity
+  have hbound : a.BddBelowBy 0 := by intro n hn; positivity
   have hbound' : a.BddBelow := by use 0
   have hconv := a.convergent_of_antitone hbound' why
   set L := lim a
   have : lim ((fun (n:ℕ) ↦ x^(n+1)):Sequence) = x * L := calc
     _ = lim (x • ((fun (n:ℕ) ↦ x^n):Sequence)) := by
-      congr; ext n
-      . rfl
-      by_cases h: n ≥ 0
-      all_goals simp [h, pow_succ', HSMul.hSMul, SMul.smul]
-    _ = x * lim ((fun (n:ℕ) ↦ x^n):Sequence) := by
-      exact (Sequence.lim_smul x hconv).2
+      congr; ext n; rfl
+      by_cases h: n ≥ 0 <;> simp [h, pow_succ', HSMul.hSMul, SMul.smul]
+    _ = x * lim ((fun (n:ℕ) ↦ x^n):Sequence) := (Sequence.lim_smul x hconv).2
     _ = _ := rfl
   have why2 :lim ((fun (n:ℕ) ↦ x^(n+1)):Sequence) = lim ((fun (n:ℕ) ↦ x^n):Sequence) := by sorry
-  rw [this] at why2
-  change x * L = L at why2
-  replace why2 : x * L = 1 * L := by simp [why2]
+  convert_to x * L = 1 * L at why2; simp [a,L]
   have hx : x ≠ 1 := by linarith
   simp only [mul_eq_mul_right_iff, hx, false_or] at why2
   simp [hconv, why2]

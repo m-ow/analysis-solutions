@@ -1,7 +1,7 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Appendix B.1
+# Analysis I, Appendix B.1: The decimal representation of natural numbers
 
 Am implementation of the decimal representation of Mathlib's natural numbers `ℕ`.
 
@@ -155,7 +155,7 @@ theorem PosintDecimal.pos (p:PosintDecimal) : 0 < (p:ℕ) := by
       convert Finset.single_le_sum _ (Finset.mem_univ a)
       . simp [a, head, List.head_eq_getElem]
       . infer_instance
-      intro i _; positivity
+      intros; positivity
 
 /-- An operation implicit in the proof of Theorem B.1.5: -/
 abbrev PosintDecimal.append (p:PosintDecimal) (d:Digit) : PosintDecimal :=
@@ -175,20 +175,17 @@ theorem PosintDecimal.append_toNat (p:PosintDecimal) (d:Digit) :
   congr 2
   have : p.head :: (p.digits.tail ++ [d]) = p.digits ++ [d] := by
     rw [←List.cons_append, head, List.head_cons_tail]
-  have hlen : p.digits.length - 1 - ↑i < (p.digits ++ [d]).length := by
-    simp; omega
+  have hlen : p.digits.length - 1 - ↑i < (p.digits ++ [d]).length := by simp; omega
   calc
     _ = (p.digits ++ [d])[p.digits.length - 1 - ↑i] := by congr
     _ = _ := by apply List.getElem_append_left
 
 theorem PosintDecimal.eq_append {p:PosintDecimal} (h: 2 ≤ p.digits.length) : ∃ (q:PosintDecimal) (d:Digit), p = q.append d := by
   use mk' p.head (p.digits.tail.dropLast) p.head_ne_zero
-  set a := p.digits.getLast p.nonempty
-  use a
+  set a := p.digits.getLast p.nonempty; use a
   apply congr'
   simp [mk', List.cons_append]
-  have := List.head_cons_tail p.digits p.nonempty
-  rw [←this]
+  rw [←List.head_cons_tail p.digits p.nonempty]
   congr 1
   convert (List.dropLast_append_getLast _).symm using 2; swap
   . simp [←List.length_pos_iff]; linarith
@@ -214,14 +211,14 @@ theorem PosintDecimal.exists_unique (n:ℕ) : n > 0 → ∃! p:PosintDecimal, (p
       . simp [hdl, mk']
       intro i hi₁ hi₂
       replace hi₁ : i = 0 := by linarith
-      subst hi₁; simp [mk', Digit.mk, hd]
+      simp [hi₁, mk', Digit.mk, hd]
     have : d.toNat ≥ 10 := calc
       _ ≥ (d.head:ℕ) * 10^(d.digits.length-1) := by
         set a : Fin d.digits.length := ⟨ d.digits.length - 1, by omega ⟩
         convert Finset.single_le_sum _ (Finset.mem_univ a)
         . simp [a, head, List.head_eq_getElem]
         . infer_instance
-        intro i _; positivity
+        intros; positivity
       _ ≥ 1 * 10^(2-1) := by
         gcongr
         . have := d.head_ne_zero'; omega
@@ -256,9 +253,9 @@ theorem PosintDecimal.exists_unique (n:ℕ) : n > 0 → ∃! p:PosintDecimal, (p
 
 @[simp]
 theorem PosintDecimal.coe_inj (p q:PosintDecimal) : (p:ℕ) = (q:ℕ) ↔ p = q := by
-  constructor
-  . intro h; exact (exists_unique _ (q.pos)).unique h rfl
-  intro h; rw [h]
+  constructor <;> intro h
+  . exact (exists_unique _ (q.pos)).unique h rfl
+  rw [h]
 
 
 inductive IntDecimal where

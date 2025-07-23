@@ -2,10 +2,10 @@ import Mathlib.Tactic
 import Analysis.Section_2_2
 
 /-!
-# Analysis I, Section 2.3
+# Analysis I, Section 2.3: Multiplication
 
-This file is a translation of Section 2.3 of Analysis I to Lean 4.
-All numbering refers to the original text.
+This file is a translation of Section 2.3 of Analysis I to Lean 4. All numbering refers to the
+original text.
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -16,7 +16,7 @@ doing so.
 Main constructions and results of this section:
 
 - Definition of multiplication and exponentiation for the "Chapter 2" natural numbers,
-  `Chapter2.Nat`
+  `Chapter2.Nat`.
 
 Note: at the end of this chapter, the `Chapter2.Nat` class will be deprecated in favor of the
 standard Mathlib class `_root_.Nat`, or `ℕ`.  However, we will develop the properties of
@@ -28,6 +28,7 @@ namespace Chapter2
 /-- Definition 2.3.1 (Multiplication of natural numbers) -/
 abbrev Nat.mul (n m : Nat) : Nat := Nat.recurse (fun _ prod ↦ prod + m) 0 n
 
+/-- This instance allows for the `*` notation to be used for natural number multiplication. -/
 instance Nat.instMul : Mul Nat where
   mul := mul
 
@@ -128,7 +129,8 @@ theorem Nat.mul_assoc (a b c: Nat) : (a * b) * c = a * (b * c) := by
     rw [succ_eq_add_one, add_mul, add_mul, add_mul]
     rw [ih]; rfl
 
-/-- (Not from textbook)  Nat is a commutative semiring. -/
+/-- (Not from textbook)  Nat is a commutative semiring.
+    This allows tactics such as `ring` to apply to the Chapter 2 natural numbers. -/
 instance Nat.instCommSemiring : CommSemiring Nat where
   left_distrib := mul_add
   right_distrib := add_mul
@@ -139,34 +141,37 @@ instance Nat.instCommSemiring : CommSemiring Nat where
   mul_one := mul_one
   mul_comm := mul_comm
 
+/-- This illustration of the `ring` tactic is not from the
+    textbook. -/
+example (a b c d:ℕ) : (a+b)*1*(c+d) = d*b+a*c+c*b+a*d+0 := by ring
+
+
 /-- Proposition 2.3.6 (Multiplication preserves order) -/
-theorem Nat.mul_lt_mul_of_pos_right {a b c: Nat} (h: a < b) (hc: c.isPos) : a * c < b * c := by
+theorem Nat.mul_lt_mul_of_pos_right {a b c: Nat} (h: a < b) (hc: c.IsPos) : a * c < b * c := by
   -- This proof is written to follow the structure of the original text.
   rw [lt_iff_add_pos] at h
   obtain ⟨ d, hdpos, hd ⟩ := h
-  apply_fun (· * c) at hd
+  replace hd := congr($hd * c)
   rw [add_mul] at hd
-  have hdcpos : (d * c).isPos := pos_mul_pos hdpos hc
+  have hdcpos : (d * c).IsPos := pos_mul_pos hdpos hc
   rw [lt_iff_add_pos]
   use d*c
 
 /-- Proposition 2.3.6 (Multiplication preserves order) -/
-theorem Nat.mul_gt_mul_of_pos_right {a b c: Nat} (h: a > b) (hc: c.isPos) :
+theorem Nat.mul_gt_mul_of_pos_right {a b c: Nat} (h: a > b) (hc: c.IsPos) :
     a * c > b * c := mul_lt_mul_of_pos_right h hc
 
 /-- Proposition 2.3.6 (Multiplication preserves order) -/
-theorem Nat.mul_lt_mul_of_pos_left {a b c: Nat} (h: a < b) (hc: c.isPos) : c * a < c * b := by
+theorem Nat.mul_lt_mul_of_pos_left {a b c: Nat} (h: a < b) (hc: c.IsPos) : c * a < c * b := by
   simp [mul_comm]
   exact mul_lt_mul_of_pos_right h hc
 
 /-- Proposition 2.3.6 (Multiplication preserves order) -/
-theorem Nat.mul_gt_mul_of_pos_left {a b c: Nat} (h: a > b) (hc: c.isPos) :
+theorem Nat.mul_gt_mul_of_pos_left {a b c: Nat} (h: a > b) (hc: c.IsPos) :
     c * a > c * b := mul_lt_mul_of_pos_left h hc
 
-
-
 /-- Corollary 2.3.7 (Cancellation law) -/
-lemma Nat.mul_cancel_right {a b c: Nat} (h: a * c = b * c) (hc: c.isPos) : a = b := by
+lemma Nat.mul_cancel_right {a b c: Nat} (h: a * c = b * c) (hc: c.IsPos) : a = b := by
   -- This proof is written to follow the structure of the original text.
   have := trichotomous a b
   rcases this with hlt | heq | hgt
@@ -192,8 +197,13 @@ instance Nat.isOrderedRing : IsOrderedRing Nat where
                                    rw [hx]
                                    ring
 
+example (a b c d:Nat) (hab: a ≤ b) : c*a*d ≤ c*b*d := by
+  gcongr
+  . exact d.zero_le
+  exact c.zero_le
+
 /-- Proposition 2.3.9 (Euclid's division lemma) / Exercise 2.3.5 -/
-theorem Nat.exists_div_mod (n :Nat) {q: Nat} (hq: q.isPos) :
+theorem Nat.exists_div_mod (n:Nat) {q: Nat} (hq: q.IsPos) :
     ∃ m r: Nat, 0 ≤ r ∧ r < q ∧ n = m * q + r := by
   revert n; apply induction
   . use 0, 0; constructor

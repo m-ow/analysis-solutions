@@ -2,7 +2,7 @@ import Mathlib.Tactic
 import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
-# Analysis I, Section 10.1
+# Analysis I, Section 10.1: Basic definitions
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text.  When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -35,10 +35,9 @@ theorem _root_.HasDerivWithinAt.iff (X: Set ℝ) (x₀ : ℝ) (f: ℝ → ℝ)
 theorem _root_.DifferentiableWithinAt.iff (X: Set ℝ) (x₀ : ℝ) (f: ℝ → ℝ) :
   DifferentiableWithinAt ℝ f X x₀ ↔ ∃ L, HasDerivWithinAt f L X x₀ := by
   constructor
-  . intro h
-    use derivWithin f X x₀
+  . intro h; use derivWithin f X x₀
     exact DifferentiableWithinAt.hasDerivWithinAt h
-  rintro ⟨ L, h ⟩
+  intro ⟨ L, h ⟩
   exact HasDerivWithinAt.differentiableWithinAt h
 
 theorem _root_.DifferentiableWithinAt.of_hasDeriv {X: Set ℝ} {x₀ : ℝ} {f: ℝ → ℝ} {L:ℝ}
@@ -135,7 +134,6 @@ theorem _root_.ContinuousWithinAt.of_differentiableWithinAt {X: Set ℝ} {x₀ :
 theorem _root_.ContinuousOn.of_differentiableOn {X: Set ℝ} {f: ℝ → ℝ}
   (h: DifferentiableOn ℝ f X) :
   ContinuousOn f X := by
-  intro x hx
   solve_by_elim [ContinuousWithinAt.of_differentiableWithinAt]
 
 /-- Theorem 10.1.13 (a) (Differential calculus) / Exercise 10.1.4 -/

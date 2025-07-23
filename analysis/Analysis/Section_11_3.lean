@@ -3,7 +3,7 @@ import Analysis.Section_9_6
 import Analysis.Section_11_2
 
 /-!
-# Analysis I, Section 11.3
+# Analysis I, Section 11.3: Upper and lower Riemann integrals
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -12,8 +12,8 @@ Lean code could be "golfed" to be more elegant and idiomatic, but I have conscio
 doing so.
 
 Main constructions and results of this section:
-- The upper and lower Riemann integral; the Riemann integral
-- Upper and lower Riemann sums
+- The upper and lower Riemann integral; the Riemann integral.
+- Upper and lower Riemann sums.
 
 -/
 
@@ -36,25 +36,16 @@ noncomputable abbrev lower_integral (f:ℝ → ℝ) (I: BoundedInterval) : ℝ :
 
 theorem upper_integral_congr {f g:ℝ → ℝ} {I: BoundedInterval} (h: Set.EqOn f g I) :
   upper_integral f I = upper_integral g I := by
-  simp [upper_integral]; congr! 2; ext G; simp
-  intro P hP; unfold MajorizesOn
-  apply forall_congr'; intro x
-  apply imp_congr_right; intro hx
-  rw [h hx]
+  simp [upper_integral]; congr! 2; ext; simp; intros; apply forall_congr'; intros; aesop
 
 theorem lower_integral_congr {f g:ℝ → ℝ} {I: BoundedInterval} (h: Set.EqOn f g I) :
   lower_integral f I = lower_integral g I := by
-  simp [lower_integral]; congr! 2; ext G; simp
-  intro P hP; unfold MinorizesOn
-  apply forall_congr'; intro x
-  apply imp_congr_right; intro hx
-  rw [h hx]
+  simp [lower_integral]; congr! 2; ext; simp; intros; apply forall_congr'; intros; aesop
 
 lemma integral_bound_upper_of_bounded {f:ℝ → ℝ} {M:ℝ} {I: BoundedInterval} (h: ∀ x ∈ (I:Set ℝ), |f x| ≤ M) : M * |I|ₗ ∈ (fun g ↦ PiecewiseConstantOn.integ g I) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I} := by
   simp
   refine ⟨ fun _ ↦ M , ⟨ ⟨ ?_, ?_, ⟩, ?_ ⟩ ⟩
-  . intro x hx
-    specialize h x hx
+  . intro x hx; specialize h x hx
     simp [abs_le'] at h
     simp [h.1]
   . apply PiecewiseConstantOn.of_const (ConstantOn.of_const (c := M) _)
@@ -64,8 +55,7 @@ lemma integral_bound_upper_of_bounded {f:ℝ → ℝ} {M:ℝ} {I: BoundedInterva
 lemma integral_bound_lower_of_bounded {f:ℝ → ℝ} {M:ℝ} {I: BoundedInterval} (h: ∀ x ∈ (I:Set ℝ), |f x| ≤ M) : -M * |I|ₗ ∈ (fun g ↦ PiecewiseConstantOn.integ g I) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I} := by
   simp
   refine ⟨ fun _ ↦ -M , ⟨ ⟨ ?_, ?_, ⟩, ?_ ⟩ ⟩
-  . intro x hx
-    specialize h x hx
+  . intro x hx; specialize h x hx
     simp [abs_le'] at h
     simp; linarith
   . apply PiecewiseConstantOn.of_const (ConstantOn.of_const (c := -M) _)
@@ -74,12 +64,12 @@ lemma integral_bound_lower_of_bounded {f:ℝ → ℝ} {M:ℝ} {I: BoundedInterva
   simp
 
 lemma integral_bound_upper_nonempty {f:ℝ → ℝ} {I: BoundedInterval} (h: BddOn f I) : ((fun g ↦ PiecewiseConstantOn.integ g I) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I}).Nonempty := by
-  obtain ⟨ M, h ⟩ := h
+  obtain ⟨ _, h ⟩ := h
   apply Set.nonempty_of_mem
   exact integral_bound_upper_of_bounded h
 
 lemma integral_bound_lower_nonempty {f:ℝ → ℝ} {I: BoundedInterval} (h: BddOn f I) : ((fun g ↦ PiecewiseConstantOn.integ g I) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I}).Nonempty := by
-  obtain ⟨ M, h ⟩ := h
+  obtain ⟨ _, h ⟩ := h
   apply Set.nonempty_of_mem
   exact integral_bound_lower_of_bounded h
 
@@ -132,13 +122,13 @@ lemma upper_integral_le_integ {f g:ℝ → ℝ} {I: BoundedInterval} (hf: BddOn 
   (hfg: MajorizesOn g f I) (hg: PiecewiseConstantOn g I) :
   upper_integral f I ≤ PiecewiseConstantOn.integ g I := by
   apply ConditionallyCompleteLattice.csInf_le _ _ (integral_bound_below hf) _
-  use g; simp [hg]; exact hfg
+  use g; simpa [hg]
 
 lemma integ_le_lower_integral {f h:ℝ → ℝ} {I: BoundedInterval} (hf: BddOn f I)
   (hfh: MinorizesOn h f I) (hg: PiecewiseConstantOn h I) :
   PiecewiseConstantOn.integ h I ≤ lower_integral f I := by
   apply ConditionallyCompleteLattice.le_csSup _ _ (integral_bound_above hf) _
-  use h; simp [hg]; exact hfh
+  use h; simpa [hg]
 
 lemma lt_of_gt_upper_integral {f:ℝ → ℝ} {I: BoundedInterval} (hf: BddOn f I)
   {X:ℝ} (hX: upper_integral f I < X ) :
@@ -157,7 +147,6 @@ lemma gt_of_lt_lower_integral {f:ℝ → ℝ} {I: BoundedInterval} (hf: BddOn f 
   obtain ⟨ h, ⟨ hmin, hhp ⟩, hhi ⟩ := hY
   refine ⟨ h, hmin, hhp, ?_ ⟩
   rwa [hhi]
-
 
 /-- Definition 11.3.4 (Riemann integral)
 As we permit junk values, the simplest definition for the Riemann integral is the upper integral.-/

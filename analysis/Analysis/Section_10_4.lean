@@ -4,7 +4,7 @@ import Analysis.Section_9_4
 import Analysis.Section_10_1
 
 /-!
-# Analysis I, Section 10.4
+# Analysis I, Section 10.4: Inverse functions and derivatives
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text.  When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -13,7 +13,7 @@ the Lean code could be "golfed" to be more elegant and idiomatic, but I have con
 doing so.
 
 Main constructions and results of this section:
-- The inverse function theorem
+- The inverse function theorem.
 
 -/
 
@@ -49,8 +49,7 @@ theorem _root_.HasDerivWithinAt.of_inverse_of_zero_deriv {X Y: Set ℝ} {f: ℝ 
   (hcluster: ClusterPt x₀ (Filter.principal (X \ {x₀})))
   (hf: HasDerivWithinAt f 0 X x₀) :
   ¬ DifferentiableWithinAt ℝ g Y y₀ := by
-  by_contra this
-  rw [DifferentiableWithinAt.iff] at this
+  by_contra this; rw [DifferentiableWithinAt.iff] at this
   obtain ⟨ L, hg ⟩ := this
   replace hg := HasDerivWithinAt.of_inverse hfXY hgf hx₀ hfx₀ hcluster hf hg
   simp at hg
@@ -68,17 +67,13 @@ theorem inverse_function_theorem {X Y: Set ℝ} {f: ℝ → ℝ} {g:ℝ → ℝ}
     -- This proof is written to follow the structure of the original text.
     have had : AdherentPt y₀ (Y \ {y₀}) := by
       simp [←AdherentPt_def, limit_of_AdherentPt] at hcluster ⊢
-      obtain ⟨ x, hx, hconv ⟩ := hcluster
-      use f ∘ x
+      obtain ⟨ x, hx, hconv ⟩ := hcluster; use f ∘ x
       constructor
       . intro n
-        constructor
-        . aesop
-        . have hx2 := (hx n).2
-          contrapose! hx2
-          apply_fun g at hx2
-          simp [←hfx₀, hgf _ hx₀, hgf _ (hx n).1] at hx2
-          exact hx2
+        refine ⟨ by aesop, ?_ ⟩
+        have hx2 := (hx n).2
+        contrapose! hx2; apply_fun g at hx2
+        simpa [←hfx₀, hgf _ hx₀, hgf _ (hx n).1] using hx2
       rw [←hfx₀]
       apply Filter.Tendsto.comp_of_continuous hx₀ _ (fun n ↦ (hx n).1) hconv
       exact ContinuousWithinAt.of_differentiableWithinAt (DifferentiableWithinAt.of_hasDeriv hf)

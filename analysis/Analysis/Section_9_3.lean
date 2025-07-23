@@ -3,18 +3,13 @@ import Mathlib.Data.Real.Sign
 import Analysis.Section_9_1
 
 /-!
-# Analysis I, Section 9.3
+# Analysis I, Section 9.3: Limiting values of functions
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text.  When there is a choice between a more idiomatic Lean solution and a more faithful
 translation, I have generally chosen the latter.  In particular, there will be places where
 the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
 doing so.
--/
-
-variable (f : ℝ → ℝ) (X : Set ℝ)
-
-/-!
 
 Main constructions and results of this section:
 
@@ -22,7 +17,12 @@ Main constructions and results of this section:
 - Connection with Mathilb's filter convergence concepts
 - Limit laws for functions
 
-Technical point: in the text, the functions `f` studied are defined only on subsets `X` of `ℝ`, and left undefined elsewhere.  However, in Lean, this then creates some fiddly conversions when trying to restrict `f` to various subsets of `X` (which, technically, are not precisely subsets of `ℝ`, though they can be coerced to such).  To avoid this issue we will deviate from the text by having our functions defined on all of `ℝ` (with the understanding that they are assigned "junk" values outside of the domain `X` of interest).
+Technical point: in the text, the functions `f` studied are defined only on subsets `X` of `ℝ`, and
+left undefined elsewhere.  However, in Lean, this then creates some fiddly conversions when trying
+to restrict `f` to various subsets of `X` (which, technically, are not precisely subsets of `ℝ`,
+though they can be coerced to such).  To avoid this issue we will deviate from the text by having
+our functions defined on all of `ℝ` (with the understanding that they are assigned "junk" values
+outside of the domain `X` of interest).
 -/
 
 /-- Definition 9.3.1 -/
@@ -58,8 +58,7 @@ example: (0.1:ℝ).CloseNear (Set.Icc 1 3) (fun x ↦ x^2) 9 3 := by
   sorry
 
 /-- Definition 9.3.6 (Convergence of functions at a point)-/
-abbrev Convergesto (X:Set ℝ) (f: ℝ → ℝ) (L:ℝ) (x₀:ℝ) : Prop :=
-  ∀ ε > (0:ℝ), ε.CloseNear X f L x₀
+abbrev Convergesto (X:Set ℝ) (f: ℝ → ℝ) (L:ℝ) (x₀:ℝ) : Prop := ∀ ε > (0:ℝ), ε.CloseNear X f L x₀
 
 /-- Connection with Mathlib filter convergence concepts -/
 theorem Convergesto.iff (X:Set ℝ) (f: ℝ → ℝ) (L:ℝ) (x₀:ℝ) :
@@ -71,12 +70,11 @@ theorem Convergesto.iff (X:Set ℝ) (f: ℝ → ℝ) (L:ℝ) (x₀:ℝ) :
   rw [Filter.eventually_inf_principal]
   simp [Filter.Eventually, mem_nhds_iff_exists_Ioo_subset]
   constructor
-  . rintro ⟨ δ, hpos, hδ ⟩
-    use (x₀-δ), (x₀+δ), ⟨ by linarith, by linarith⟩
-    intro x
+  . intro ⟨ δ, hpos, hδ ⟩
+    use (x₀-δ), (x₀+δ), ⟨ by linarith, by linarith⟩; intro x
     simp
     exact fun h1 h2 hX ↦ hδ x hX h1 h2
-  rintro ⟨ l, u, ⟨ h1, h2 ⟩, h ⟩
+  intro ⟨ l, u, ⟨ h1, h2 ⟩, h ⟩
   have h1' : 0 < x₀ - l := by linarith
   have h2' : 0 < u - x₀ := by linarith
   set δ := min (x₀ - l) (u - x₀)
@@ -84,11 +82,8 @@ theorem Convergesto.iff (X:Set ℝ) (f: ℝ → ℝ) (L:ℝ) (x₀:ℝ) :
   have hδ2 : δ ≤ u - x₀ := min_le_right _ _
   use δ, (by positivity)
   intro x hxX hx1 hx2
-  have hmem : x ∈ Set.Ioo l u := by
-    simp
-    exact ⟨ by linarith, by linarith ⟩
-  specialize h hmem
-  simp [hxX] at h; exact h
+  have hmem : x ∈ Set.Ioo l u := by simp; exact ⟨ by linarith, by linarith ⟩
+  specialize h hmem; simp [hxX] at h; exact h
 
 /-- Example 9.3.8 -/
 example: Convergesto (Set.Icc 1 3) (fun x ↦ x^2) 4 2 := by
@@ -104,7 +99,7 @@ theorem Convergesto.iff_conv {E:Set ℝ} (f: ℝ → ℝ) (L:ℝ) {x₀:ℝ} (h:
 theorem Convergesto.comp {E:Set ℝ} {f: ℝ → ℝ} {L:ℝ} {x₀:ℝ} (h: AdherentPt x₀ E) (hf: Convergesto E f L x₀) {a:ℕ → ℝ} (ha: ∀ n:ℕ, a n ∈ E) (hconv: Filter.Tendsto a Filter.atTop (nhds x₀)) :
   Filter.Tendsto (fun n ↦ f (a n)) Filter.atTop (nhds L) := by
   rw [iff_conv f L h] at hf
-  exact hf a ha hconv
+  solve_by_elim
 
 -- Remark 9.3.11 may possibly be inaccurate, in that one may be able to safely delete the hypothesis `AdherentPt x₀ E` in the above theorems.  This is something that formalization might be able to clarify!  If so, the hypothesis may also be deletable in several of the theorems below.
 
@@ -115,7 +110,7 @@ theorem Convergesto.uniq {E:Set ℝ} {f: ℝ → ℝ} {L L':ℝ} {x₀:ℝ} (h: 
   let ⟨ a, ha, hconv ⟩ := (limit_of_AdherentPt _ _).mp h
   have hL := hf.comp h ha hconv
   have hL' := hf'.comp h ha hconv
-  exact tendsto_nhds_unique  hL hL'
+  exact tendsto_nhds_unique hL hL'
 
 /-- Proposition 9.3.14 (Limit laws for functions) -/
 theorem Convergesto.add {E:Set ℝ} {f g: ℝ → ℝ} {L M:ℝ} {x₀:ℝ} (h: AdherentPt x₀ E)

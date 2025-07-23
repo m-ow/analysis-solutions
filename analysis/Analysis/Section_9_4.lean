@@ -4,7 +4,7 @@ import Mathlib.Topology.ContinuousOn
 import Analysis.Section_9_3
 
 /-!
-# Analysis I, Section 9.4
+# Analysis I, Section 9.4: Continuous functions
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text.  When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -13,7 +13,7 @@ the Lean code could be "golfed" to be more elegant and idiomatic, but I have con
 doing so.
 
 Main constructions and results of this section:
-- Continuity of functions
+- Continuity of functions, using the Mathlib notions
 
 -/
 

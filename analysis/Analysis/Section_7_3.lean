@@ -7,25 +7,25 @@ import Analysis.Section_6_epilogue
 import Analysis.Section_7_2
 
 /-!
-# Analysis I, Section 7.3
+# Analysis I, Section 7.3: Sums of non-negative numbers
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original text.  When there is a choice between a more idiomatic Lean solution and a more faithful translation, I have generally chosen the latter.  In particular, there will be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing so.
 
 Main constructions and results of this section:
 
-- Equivalent characterizations of convergence of nonnegative series
-- Cauchy condensation test
+- Equivalent characterizations of convergence of nonnegative series.
+- Cauchy condensation test.
 
 -/
 
 namespace Chapter7
 
-abbrev Series.nonneg (s : Series) : Prop := ∀ n, s.seq n ≥ 0
+abbrev Series.nonneg (s: Series) : Prop := ∀ n, s.seq n ≥ 0
 
-abbrev Series.partial_of_nonneg {s : Series} (h : s.nonneg) : Monotone s.partial := by sorry
+abbrev Series.partial_of_nonneg {s: Series} (h: s.nonneg) : Monotone s.partial := by sorry
 
 /-- Proposition 7.3.1 -/
-theorem Series.converges_of_nonneg_iff {s : Series} (h : s.nonneg) : s.converges ↔ ∃ M, ∀ N, s.partial N ≤ M := by
+theorem Series.converges_of_nonneg_iff {s: Series} (h: s.nonneg) : s.converges ↔ ∃ M, ∀ N, s.partial N ≤ M := by
   -- This broadly follows the argument in the text, though for one direction I choose to use Mathlib routines rather than Chapter6 results.
   constructor
   . intro hconv
@@ -40,12 +40,12 @@ theorem Series.converges_of_nonneg_iff {s : Series} (h : s.nonneg) : s.converges
   intro hbound
   rcases tendsto_of_monotone (partial_of_nonneg h) with hinfin | hfin
   . obtain ⟨ M, hM ⟩ := hbound
-    obtain ⟨ N, hN ⟩ := Filter.Eventually.exists (Filter.Tendsto.eventually_gt_atTop  hinfin M)
+    obtain ⟨ N, hN ⟩ := Filter.Eventually.exists (Filter.Tendsto.eventually_gt_atTop hinfin M)
     specialize hM N
     linarith
   exact hfin
 
-theorem Series.sum_of_nonneg_lt {s : Series} (h : s.nonneg) {M:ℝ} (hM: ∀ N, s.partial N ≤ M) : s.sum ≤ M := by
+theorem Series.sum_of_nonneg_lt {s: Series} (h: s.nonneg) {M:ℝ} (hM: ∀ N, s.partial N ≤ M) : s.sum ≤ M := by
   have : ∃ M, ∀ N, s.partial N ≤ M  := by use M
   rw [←converges_of_nonneg_iff h] at this
   simp [sum, this]
@@ -54,37 +54,37 @@ theorem Series.sum_of_nonneg_lt {s : Series} (h : s.nonneg) {M:ℝ} (hM: ∀ N, 
   simp [convergesTo] at hconv
   exact le_of_tendsto' hconv hM
 
-theorem Series.partial_le_sum_of_nonneg {s : Series} (hnon : s.nonneg) (hconv : s.converges) (N : ℤ) :
+theorem Series.partial_le_sum_of_nonneg {s: Series} (hnon: s.nonneg) (hconv: s.converges) (N : ℤ) :
   s.partial N ≤ s.sum := by
   apply Monotone.ge_of_tendsto (partial_of_nonneg hnon)
   simp [sum, hconv]
   convert hconv.choose_spec
 
 /-- Some useful nonnegativity lemmas for later applications. -/
-theorem Series.partial_nonneg {s : Series} (hnon : s.nonneg) (N : ℤ) : 0 ≤ s.partial N := by
+theorem Series.partial_nonneg {s: Series} (hnon: s.nonneg) (N : ℤ) : 0 ≤ s.partial N := by
   simp [Series.partial]
   apply Finset.sum_nonneg
   intro n _; exact hnon _
 
-theorem Series.sum_of_nonneg {s:Series} (hnon : s.nonneg) : 0 ≤ s.sum := by
+theorem Series.sum_of_nonneg {s:Series} (hnon: s.nonneg) : 0 ≤ s.sum := by
   by_cases h: s.converges <;> simp [Series.sum, h]
   have := h.choose_spec
   set L := h.choose
   apply ge_of_tendsto' this (partial_nonneg hnon)
 
 /-- Corollary 7.3.2 (Comparison test) / Exercise 7.3.1 -/
-theorem Series.converges_of_le {s t : Series} (hm : s.m = t.m) (hcomp : ∀ n ≥ s.m, |s.seq n| ≤ t.seq n) (hconv : t.converges) : s.absConverges ∧ |s.sum| ≤ s.abs.sum ∧ s.abs.sum ≤ t.sum := by sorry
+theorem Series.converges_of_le {s t: Series} (hm: s.m = t.m) (hcomp: ∀ n ≥ s.m, |s.seq n| ≤ t.seq n) (hconv : t.converges) : s.absConverges ∧ |s.sum| ≤ s.abs.sum ∧ s.abs.sum ≤ t.sum := by sorry
 
-theorem Series.diverges_of_ge {s t : Series} (hm : s.m = t.m) (hcomp : ∀ n ≥ s.m, |s.seq n| ≤ t.seq n) (hdiv: ¬ s.absConverges) : t.diverges := by sorry
+theorem Series.diverges_of_ge {s t: Series} (hm: s.m = t.m) (hcomp: ∀ n ≥ s.m, |s.seq n| ≤ t.seq n) (hdiv: ¬ s.absConverges) : t.diverges := by sorry
 
 /-- Lemma 7.3.3 (Geometric series) / Exercise 7.3.2 -/
-theorem Series.converges_geom {x : ℝ} (hx : |x| < 1) : (fun n ↦ x ^ n : Series).convergesTo (1 / (1 - x)) := by sorry
+theorem Series.converges_geom {x: ℝ} (hx: |x| < 1) : (fun n ↦ x ^ n : Series).convergesTo (1 / (1 - x)) := by sorry
 
-theorem Series.absConverges_geom {x : ℝ} (hx : |x| < 1) : (fun n ↦ x ^ n : Series).absConverges := by sorry
+theorem Series.absConverges_geom {x: ℝ} (hx: |x| < 1) : (fun n ↦ x ^ n : Series).absConverges := by sorry
 
-theorem Series.diverges_geom {x : ℝ} (hx : |x| ≥ 1) : (fun n ↦ x ^ n : Series).diverges := by sorry
+theorem Series.diverges_geom {x: ℝ} (hx: |x| ≥ 1) : (fun n ↦ x ^ n : Series).diverges := by sorry
 
-theorem Series.converges_geom_iff (x : ℝ) : (fun n ↦ x ^ n : Series).converges ↔ |x| < 1 := by sorry
+theorem Series.converges_geom_iff (x: ℝ) : (fun n ↦ x ^ n : Series).converges ↔ |x| < 1 := by sorry
 
 /-- Proposition 7.3.4 (Cauchy criterion) -/
 theorem Series.cauchy_criterion {s:Series} (hm: s.m = 1) (hs:s.nonneg) (hmono: ∀ n ≥ 1, s.seq (n+1) ≤ s.seq n) : s.converges ↔ (fun k ↦ 2^k * s.seq (2^k): Series).converges := by
@@ -178,7 +178,7 @@ theorem Series.cauchy_criterion {s:Series} (hm: s.m = 1) (hs:s.nonneg) (hmono: �
     _ ≤ M := hM K
 
 /-- Corollary 7.3.7 -/
-theorem Series.converges_qseries (q : ℝ) (hq : q > 0) : (mk' (m := 1) fun n ↦ 1 / (n:ℝ) ^ q : Series).converges ↔ (q>1) := by
+theorem Series.converges_qseries (q: ℝ) (hq: q > 0) : (mk' (m := 1) fun n ↦ 1 / (n:ℝ) ^ q : Series).converges ↔ (q>1) := by
   -- This proof is written to follow the structure of the original text.
   set s := (mk' (m := 1) fun n ↦ 1 / (n:ℝ) ^ q : Series)
   have hs : s.nonneg := by intro n; simp [s]; by_cases h : 1 ≤ n <;> simp [h]; positivity

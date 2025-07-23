@@ -2,7 +2,7 @@ import Mathlib.Tactic
 import Analysis.Section_6_3
 
 /-!
-# Analysis I, Section 6.4
+# Analysis I, Section 6.4: Limsup, liminf, and limit points
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -141,8 +141,7 @@ theorem Sequence.gt_limsup_bounds {a:Sequence} {x:EReal} (h: x > a.limsup) :
   -- This proof is written to follow the structure of the original text.
   unfold Sequence.limsup at h
   simp [sInf_lt_iff] at h
-  obtain ⟨aN, ⟨ N, ⟨ hN, haN ⟩ ⟩, ha ⟩ := h
-  use N
+  obtain ⟨aN, ⟨ N, ⟨ hN, haN ⟩ ⟩, ha ⟩ := h; use N
   simp [hN]
   simp [haN, Sequence.upperseq] at ha
   intro n hn
@@ -159,15 +158,11 @@ theorem Sequence.lt_liminf_bounds {a:Sequence} {y:EReal} (h: y < a.liminf) :
 theorem Sequence.lt_limsup_bounds {a:Sequence} {x:EReal} (h: x < a.limsup) {N:ℤ} (hN: N ≥ a.m) :
     ∃ n ≥ N, a n > x := by
   -- This proof is written to follow the structure of the original text.
-  unfold Sequence.limsup at h
   have hx : x < a.upperseq N := by
     apply lt_of_lt_of_le h (sInf_le _)
     simp; use N
-  unfold Sequence.upperseq at hx
-  replace hx := Sequence.exists_between_lt_sup hx
-  obtain ⟨ n, hn, hxn, _ ⟩ := hx
-  simp [Sequence.from, hN] at hn
-  use n, hn
+  obtain ⟨ n, hn, hxn, _ ⟩ := Sequence.exists_between_lt_sup hx
+  simp [Sequence.from, hN] at hn; use n, hn
   convert gt_iff_lt.mpr hxn using 1
   simp [hn, hN.trans hn]
 
@@ -245,9 +240,7 @@ example : ((fun (n:ℕ) ↦ (2:ℝ)^(-(n:ℤ))):Sequence).TendsTo 0 := by
 abbrev Sequence.abs (a:Sequence) : Sequence where
   m := a.m
   seq := fun n ↦ |a n|
-  vanish := by
-    intro n hn
-    simp [a.vanish n hn]
+  vanish := by intro n hn; simp [a.vanish n hn]
 
 
 /-- Corollary 6.4.17 (Zero test for sequences) / Exercise 6.4.7 -/
@@ -266,31 +259,25 @@ theorem Sequence.finite_limsup_liminf_of_bounded {a:Sequence} (hbound: a.IsBound
   have hlimsup_bound : a.limsup ≤ M := by
     apply a.limsup_le_sup.trans
     apply sup_le_upper
-    intro n hN
-    simp
+    intro n hN; simp
     exact (le_abs_self _).trans (hbound n)
   have hliminf_bound : -M ≤ a.liminf := by
     apply LE.le.trans _ a.inf_le_liminf
     apply inf_ge_lower
-    intro n hN
-    simp [←EReal.coe_neg]
+    intro n hN; simp [←EReal.coe_neg]
     rw [neg_le]
     exact (neg_le_abs _).trans (hbound n)
   constructor
   . use a.limsup.toReal
     apply (EReal.coe_toReal _ _).symm
-    . contrapose! hlimsup_bound
-      simp [hlimsup_bound]
+    . contrapose! hlimsup_bound; simp [hlimsup_bound]
     replace hliminf_bound := hliminf_bound.trans a.liminf_le_limsup
-    contrapose! hliminf_bound
-    simp [hliminf_bound, ←EReal.coe_neg]
+    contrapose! hliminf_bound; simp [hliminf_bound, ←EReal.coe_neg]
   use a.liminf.toReal
   apply (EReal.coe_toReal _ _).symm
   . replace hlimsup_bound := a.liminf_le_limsup.trans hlimsup_bound
-    contrapose! hlimsup_bound
-    simp [hlimsup_bound]
-  contrapose! hliminf_bound
-  simp [hliminf_bound, ←EReal.coe_neg]
+    contrapose! hlimsup_bound; simp [hlimsup_bound]
+  contrapose! hliminf_bound; simp [hliminf_bound, ←EReal.coe_neg]
 
 /-- Theorem 6.4.18 (Completeness of the reals) -/
 theorem Sequence.Cauchy_iff_convergent (a:Sequence) :
@@ -317,8 +304,7 @@ theorem Sequence.Cauchy_iff_convergent (a:Sequence) :
       simp [Sequence.from, hN]
     have h1 : (a N - ε:ℝ) ≤ (a.from N).inf := by
       apply inf_ge_lower
-      intro n hn
-      specialize hsteady n hn N hN0
+      intro n hn; specialize hsteady n hn N hN0
       rw [ge_iff_le, EReal.coe_le_coe_iff]
       rw [Real.dist_eq, hN1, abs_le'] at hsteady
       linarith
@@ -328,15 +314,13 @@ theorem Sequence.Cauchy_iff_convergent (a:Sequence) :
       simp; use N
     have h3 : (a.from N).sup ≤ (a N + ε:ℝ) := by
       apply sup_le_upper
-      intro n hn
-      specialize hsteady n hn N hN0
+      intro n hn; specialize hsteady n hn N hN0
       rw [EReal.coe_le_coe_iff]
       rw [Real.dist_eq, hN1, abs_le'] at hsteady
       linarith
     have h4 : L_plus ≤ (a.from N).sup := by
       simp_rw [←hL_plus, Sequence.limsup, Sequence.upperseq]
-      apply sInf_le
-      simp; use N
+      apply sInf_le; simp; use N
     replace h1 := h1.trans h2
     replace h4 := h4.trans h3
     rw [EReal.coe_le_coe_iff] at h1 h4
@@ -346,17 +330,11 @@ theorem Sequence.Cauchy_iff_convergent (a:Sequence) :
     linarith
   linarith
 
-
-
-
-
-
 /-- Exercise 6.4.6 -/
 theorem Sequence.sup_not_strict_mono : ∃ (a b:ℕ → ℝ), (∀ n, a n < b n) ∧ (a:Sequence).sup ≠ (b:Sequence).sup := by
   sorry
 
 /- Exercise 6.4.7 -/
-
 def Sequence.tendsTo_real_iff :
   Decidable (∀ (a:Sequence) (x:ℝ), a.TendsTo x ↔ a.abs.TendsTo x) := by
   -- The first line of this construction should be `apply isTrue` or `apply isFalse`.
@@ -364,7 +342,6 @@ def Sequence.tendsTo_real_iff :
 
 /-- This definition is needed for Exercises 6.4.8 and 6.4.9. -/
 abbrev Sequence.ExtendedLimitPoint (a:Sequence) (x:EReal) : Prop := if x = ⊤ then ¬ a.BddAbove else if x = ⊥ then ¬ a.BddBelow else a.LimitPoint x.toReal
-
 
 /-- Exercise 6.4.8 -/
 theorem Sequence.extended_limit_point_of_limsup (a:Sequence) : a.ExtendedLimitPoint a.limsup := by sorry

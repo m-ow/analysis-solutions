@@ -2,27 +2,28 @@ import Mathlib.Tactic
 import Analysis.Section_2_3
 
 /-!
-# Analysis I, Chapter 2 epilogue
+# Analysis I, Chapter 2 epilogue: Isomorphism with the Mathlib natural numbers
 
 In this (technical) epilogue, we show that the "Chapter 2" natural numbers `Chapter2.Nat` are
-isomorphic in various standard senses to the standard natural numbers `ℕ`.
+isomorphic in various senses to the standard natural numbers `ℕ`.
 
-From this point onwards, `Chapter2.Nat` will be deprecated, and we will use the standard natural
-numbers `ℕ` instead.  In particular, one should use the full Mathlib API for `ℕ` for all
-subsequent chapters, in lieu of the `Chapter2.Nat` API.
+After this epilogue, `Chapter2.Nat` will be deprecated, and we will instead use the standard
+natural numbers `ℕ` throughout.  In particular, one should use the full Mathlib API for `ℕ` for
+all subsequent chapters, in lieu of the `Chapter2.Nat` API.
 
 Filling the sorries here requires both the Chapter2.Nat API and the Mathlib API for the standard
 natural numbers `ℕ`.  As such, they are excellent exercises to prepare you for the aforementioned
 transition.
 
 In second half of this section we also give a fully axiomatic treatment of the natural numbers
-via the Peano axioms. The treatment in the preceding three sections was only partially
-axiomatic, because we used a specific construction `Chapter2.Nat` of the natural numbers that was
-an inductive type, and used that inductive type to construct a recursor.  Here, we give some
-exercises to show how one can accomplish the same tasks directly from the Peano axioms, without
-knowing the specific implementation of the natural numbers.
+via the Peano axioms. The treatment in the preceding three sections was only partially axiomatic,
+because we used a specific construction `Chapter2.Nat` of the natural numbers that was an inductive
+type, and used that inductive type to construct a recursor.  Here, we give some exercises to show
+how one can accomplish the same tasks directly from the Peano axioms, without knowing the specific
+implementation of the natural numbers.
 -/
 
+/-- Converting a Chapter 2 natural number to a Mathlib natural number. -/
 abbrev Chapter2.Nat.toNat (n : Chapter2.Nat) : ℕ := match n with
   | zero => 0
   | succ n' => n'.toNat + 1
@@ -31,6 +32,8 @@ lemma Chapter2.Nat.zero_toNat : (0 : Chapter2.Nat).toNat = 0 := rfl
 
 lemma Chapter2.Nat.succ_toNat (n : Chapter2.Nat) : (n++).toNat = n.toNat + 1 := rfl
 
+/-- The conversion is a bijection. Here we use the existing capability (from Section 2.1 to map
+the Mathlib natural numbers to the Chapter 2 natural numbers. -/
 abbrev Chapter2.Nat.equivNat : Chapter2.Nat ≃ ℕ where
   toFun := toNat
   invFun n := (n:Chapter2.Nat)
@@ -46,6 +49,7 @@ abbrev Chapter2.Nat.equivNat : Chapter2.Nat ≃ ℕ where
     simp [←succ_eq_add_one]
     exact hn
 
+/-- The conversion preserves addition. -/
 abbrev Chapter2.Nat.map_add : ∀ (n m : Nat), (n + m).toNat = n.toNat + m.toNat := by
   intro n m
   induction' n with n hn
@@ -53,10 +57,12 @@ abbrev Chapter2.Nat.map_add : ∀ (n m : Nat), (n + m).toNat = n.toNat + m.toNat
     rw [zero_add, _root_.Nat.zero_add]
   sorry
 
+/-- The conversion preserves multiplication. -/
 abbrev Chapter2.Nat.map_mul : ∀ (n m : Nat), (n * m).toNat = n.toNat * m.toNat := by
   intro n m
   sorry
 
+/-- The conversion preserves order. -/
 abbrev Chapter2.Nat.map_le_map_iff : ∀ {n m : Nat}, n.toNat ≤ m.toNat ↔ n ≤ m := by
   intro n m
   sorry
@@ -67,6 +73,7 @@ abbrev Chapter2.Nat.equivNat_ordered_ring : Chapter2.Nat ≃+*o ℕ where
   map_mul' := map_mul
   map_le_map_iff' := map_le_map_iff
 
+/-- The conversion preserves exponentiation. -/
 lemma Chapter2.Nat.pow_eq_pow (n m : Chapter2.Nat) :
     n.toNat ^ m.toNat = n^m := by
   sorry

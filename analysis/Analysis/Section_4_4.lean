@@ -1,7 +1,7 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Section 4.4
+# Analysis I, Section 4.4: gaps in the rational numbers
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -18,7 +18,6 @@ API; one can set oneself the exercise of doing so.
 -/
 
 /-- Proposition 4.4.1 (Interspersing of integers by rationals) / Exercise 4.4.1 -/
-
 theorem Rat.between_int (x:ℚ) : ∃! n:ℤ, n ≤ x ∧ x < n+1 := by
   sorry
 
@@ -59,40 +58,33 @@ theorem Nat.not_even_and_odd (n:ℕ) : ¬ (Even n ∧ Odd n) := by
   sorry
 
 #check Nat.rec
+
 /-- Proposition 4.4.4 / Exercise 4.4.3  -/
 theorem Rat.not_exist_sqrt_two : ¬ ∃ x:ℚ, x^2 = 2 := by
   -- This proof is written to follow the structure of the original text.
-  by_contra h
-  obtain ⟨ x, hx ⟩ := h
+  by_contra h; obtain ⟨ x, hx ⟩ := h
   have hnon : x ≠ 0 := by aesop
   wlog hpos : x > 0
   . have hneg : -x > 0 := by
       contrapose! hpos; contrapose! hnon; linarith
-    specialize this (-x) (by simp [hx]) (by simp [hnon]) hneg
-    assumption
+    exact this (-x) (by simp [hx]) (by simp [hnon]) hneg
   have hrep : ∃ p q:ℕ, p > 0 ∧ q > 0 ∧ p^2 = 2*q^2 := by
     use x.num.toNat, x.den
-    have hnum_pos : x.num > 0 := num_pos.mpr hpos
-    have hden_pos : x.den > 0 := den_pos x
+    observe hnum_pos : x.num > 0
+    observe hden_pos : x.den > 0
     refine ⟨ by simp [hpos], hden_pos, ?_ ⟩
-    rw [←num_div_den x] at hx
-    field_simp at hx
+    rw [←num_div_den x] at hx; field_simp at hx
     have hnum_cast : x.num = x.num.toNat := Int.eq_natCast_toNat.mpr (by positivity)
-    rw [hnum_cast] at hx
-    norm_cast at hx
+    rw [hnum_cast] at hx; norm_cast at hx
   set P : ℕ → Prop := fun p ↦ p > 0 ∧ ∃ q > 0, p^2 = 2*q^2
-  have hP : ∃ p, P p := by
-    obtain ⟨ p, q, hp, hq, hpq ⟩ := hrep
-    use p
-    refine ⟨ hp, q, hq, hpq ⟩
+  have hP : ∃ p, P p := by aesop
   have hiter (p:ℕ) (hPp: P p) : ∃ q, q < p ∧ P q := by
     rcases p.even_or_odd'' with hp | hp
     . rw [even_iff_exists_two_mul] at hp
       obtain ⟨ k, rfl ⟩ := hp
       obtain ⟨ q, hpos, hq ⟩ := hPp.2
       have : q^2 = 2 * k^2 := by linarith
-      use q
-      constructor
+      use q; constructor
       . sorry
       exact ⟨ hpos, k, by linarith [hPp.1], this ⟩
     have h1 : Odd (p^2) := by
@@ -101,7 +93,7 @@ theorem Rat.not_exist_sqrt_two : ¬ ∃ x:ℚ, x^2 = 2 := by
       obtain ⟨ q, hpos, hq ⟩ := hPp.2
       rw [even_iff_exists_two_mul]
       use q^2
-    have h3 := Nat.not_even_and_odd (p^2)
+    observe : ¬(Even (p ^ 2) ∧ Odd (p ^ 2))
     tauto
   classical
   set f : ℕ → ℕ := fun p ↦ if hPp: P p then (hiter p hPp).choose else 0
@@ -125,19 +117,15 @@ theorem Rat.exist_approx_sqrt_two {ε:ℚ} (hε:ε>0) : ∃ x ≥ (0:ℚ), x^2 <
   -- This proof is written to follow the structure of the original text.
   by_contra! h
   have (n:ℕ): (n*ε)^2 < 2 := by
-    induction' n with n hn
-    . simp
-    specialize h (n*ε) (by positivity) hn
+    induction' n with n hn; simp
     simp [add_mul]
-    apply lt_of_le_of_ne h
+    apply lt_of_le_of_ne (h (n*ε) (by positivity) hn)
     have := not_exist_sqrt_two
-    simp at this ⊢
-    exact this _
+    simp at this ⊢; exact this _
   obtain ⟨ n, hn ⟩ := Nat.exists_gt (2/ε)
   rw [gt_iff_lt, div_lt_iff₀' (by positivity), mul_comm,
       ←sq_lt_sq₀ (by norm_num) (by positivity)] at hn
-  specialize this n
-  linarith
+  specialize this n; linarith
 
 /-- Example 4.4.6 -/
 example :

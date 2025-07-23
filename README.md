@@ -1,6 +1,6 @@
-# Partial Lean formalization of _Analysis I_
+# Lean formalization of _Analysis I_
 
-The files in this directory contain a formalization of selected portions of my text [_Analysis I_](https://terrytao.wordpress.com/books/analysis-i/) into [Lean](https://lean-lang.org/). The formalization is intended to be as faithful a paraphrasing as possible to the original text, while also showcasing Lean's features and syntax.  In particular, the formalization is _not_ optimized for efficiency, and in some cases may deviate from idiomatic Lean usage.
+The files in this directory contain a formalization of my text [_Analysis I_](https://terrytao.wordpress.com/books/analysis-i/) into [Lean](https://lean-lang.org/). The formalization is intended to be as faithful a paraphrasing as possible to the original text, while also showcasing Lean's features and syntax.  In particular, the formalization is _not_ optimized for efficiency, and in some cases may deviate from idiomatic Lean usage.
 
 Portions of the text that were left as exercises to the reader are rendered in this translation as `sorry`s.  Readers are welcome to fork the repository here to try their hand at these exercises, but I do not intend to place solutions in this repository directly.
 
@@ -16,9 +16,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
 
 ## Sections
 
-- Chapter 1: Introduction
-  - _Section 1.1: What is analysis? (planned)_
-  - _Section 1.2: Why do analysis? (planned)_
+- _Chapter 1: Introduction (not formalized)_
 - Chapter 2: Starting at the beginning: the natural numbers
   - Section 2.1: The Peano axioms ([Verso page](https://teorth.github.io/analysis/sec21/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_2_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_2_1.lean))
   - Section 2.2: Addition ([Verso page](https://teorth.github.io/analysis/sec22/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_2_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_2_2.lean))
@@ -44,7 +42,7 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - Section 5.4: Ordering the reals ([Verso page](https://teorth.github.io/analysis/sec54/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_4.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_4.lean))
   - Section 5.5: The least upper bound property ([Verso page](https://teorth.github.io/analysis/sec55/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_5.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_5.lean))
   - Section 5.6: Real exponentiation, part I ([Verso page](https://teorth.github.io/analysis/sec56/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_6.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_6.lean))
-  - Chapter 5 epilogue: Isomorphism with the Mathlib real numbers  ([Verso page](https://teorth.github.io/analysis/sec5e/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_epilogue.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_epilogue.lean))
+  - Chapter 5 epilogue: Isomorphism with the Mathlib real numbers ([Verso page](https://teorth.github.io/analysis/sec5e/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_5_epilogue.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_5_epilogue.lean))
 - Chapter 6: Limits of sequences
   - Section 6.1: Convergence and limit laws ([Verso page](https://teorth.github.io/analysis/sec61/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_1.lean))
   - Section 6.2: The extended real number system ([Verso page](https://teorth.github.io/analysis/sec62/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Section_6_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Section_6_2.lean))
@@ -104,7 +102,20 @@ In order to align the formalization with Mathlib conventions, a small number of 
   - A.7: Equality ([Verso page](https://teorth.github.io/analysis/appA7/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_A_7.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_A_7.lean))
 - Appendix B: The decimal system
   - B.1: The decimal representation of natural numbers ([Verso page](https://teorth.github.io/analysis/appB1/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_B_1.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_B_1.lean))
-  - B.2: _The decimal representation of real numbers (planned)_
+  - B.2: The decimal representation of real numbers ([Verso page](https://teorth.github.io/analysis/appB2/)) ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Appendix_B_2.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Appendix_B_2.lean))
+
+## Additional content
+
+I am using this repository to host some other minor Lean content unrelated to the text book:
+
+- A formalization of physical units
+  - Support for systems of units ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Misc/UnitsSystem.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Misc/UnitsSystem.lean))
+    - Examples of use ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Misc/UnitsSystemExamples.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Misc/UnitsSystemExamples.lean))
+  - The SI system of units ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Misc/SI.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Misc/SI.lean))
+    - Examples of use ([Documentation](https://teorth.github.io/analysis/docs/Analysis/Misc/SIExamples.html)) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Misc/SIExamples.lean))
+- A formalization of finite choice avoiding Lean's axiom of choice
+  - [Documentation](https://teorth.github.io/analysis/docs/Analysis/Misc/FiniteChoice.html) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Misc/FiniteChoice.lean))
+- Some finite probability theory [Documentation](https://teorth.github.io/analysis/docs/Analysis/Misc/Probability.html) ([Lean source](https://github.com/teorth/analysis/blob/main/analysis/Analysis/Misc/Probability.lean))
 
 ## Other resources
 

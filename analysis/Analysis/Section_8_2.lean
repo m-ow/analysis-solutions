@@ -5,7 +5,7 @@ import Analysis.Section_7_4
 import Analysis.Section_8_1
 
 /-!
-# Analysis I, Section 8.2
+# Analysis I, Section 8.2: Summation on infinite sets
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -15,9 +15,9 @@ doing so.
 
 Main constructions and results of this section:
 
-- Absolute convergence and summation on countably infinite or general sets
-- Connections with Mathlib's `Summable` and `tsum`
-- The Riemann rearrangement theorem
+- Absolute convergence and summation on countably infinite or general sets.
+- Connections with Mathlib's `Summable` and `tsum`.
+- The Riemann rearrangement theorem.
 
 Some non-trivial API is provided beyond what is given in the textbook in order connect these
 notions with existing summation notions.
@@ -85,8 +85,7 @@ theorem Sum.of_comp {X Y:Type} {f:X → ℝ} (h: AbsConvergent f) {g: Y → X} (
 
 @[simp]
 theorem Finset.Icc_eq_cast (N:ℕ) : Finset.Icc 0 (N:ℤ) = Finset.map Nat.castEmbedding (Finset.Icc 0 N) := by
-  ext n
-  simp; constructor
+  ext n; simp; constructor
   . intro ⟨ hn, hn' ⟩; lift n to ℕ using hn; use n; simp_all
   rintro ⟨ m, ⟨ hm, rfl ⟩ ⟩; simp_all
 
@@ -187,10 +186,8 @@ theorem sum_of_sum_of_AbsConvergent {f:ℕ × ℕ → ℝ} (hf:AbsConvergent f) 
     convert_to (fun n ↦ ((fun m ↦ (fplus - fminus) (n, m)):Series).sum:Series) =
       (((fun n ↦ ((fun m ↦ fplus (n, m)):Series).sum) - (fun n ↦ ((fun m ↦ (fminus) (n, m)):Series).sum):ℕ → ℝ):Series)
     . convert Series.sub_coe _ _
-    rcongr _ n
-    simp
-    convert (Series.sub _ _).2 with m
-    . rfl
+    rcongr _ n; simp
+    convert (Series.sub _ _).2 with m; rfl
     by_cases h: m ≥ 0 <;> simp [h, HSub.hSub, Sub.sub]
     . solve_by_elim
     convert hfminus_conv' n.toNat
@@ -232,8 +229,7 @@ abbrev AbsConvergent' {X:Type} (f: X → ℝ) : Prop := BddAbove ( (fun A ↦ �
 theorem AbsConvergent'.of_finite {X:Type} [Finite X] (f:X → ℝ) : AbsConvergent' f := by
   have _ := Fintype.ofFinite X
   simp [bddAbove_def]
-  use ∑ x, |f x|
-  intro A
+  use ∑ x, |f x|; intro A
   apply Finset.sum_le_univ_sum_of_nonneg; simp
 
 /-- Not in textbook, but should have been included. -/
@@ -271,8 +267,7 @@ theorem AbsConvergent'.countable_supp {X:Type} {f:X → ℝ} (hf: AbsConvergent'
 theorem AbsConvergent'.subtype {X:Type} {f:X → ℝ} (hf: AbsConvergent' f) (A: Set X) :
   AbsConvergent' (fun x:A ↦ f x) := by
   apply BddAbove.mono _ hf
-  intro z hz
-  simp at hz ⊢
+  intro z hz; simp at hz ⊢
   obtain ⟨ A, hA ⟩ := hz
   use Finset.map (Function.Embedding.subtype _) A
   simp [hA]
@@ -285,14 +280,12 @@ to establish without this) -/
 theorem Sum'.of_finsupp {X:Type} {f:X → ℝ} {A: Finset X} (h: ∀ x ∉ A, f x = 0) : Sum' f = ∑ x ∈ A, f x := by
   unfold Sum'
   set E := { x | f x ≠ 0 }
-  have hE : E ⊆ A := by
-    intro x; simp [E]; by_contra!; specialize h x this.2; tauto
+  have hE : E ⊆ A := by intro x; simp [E]; by_contra!; specialize h x this.2; tauto
   have hfin : Finite E := Finite.Set.subset _ hE
   set E' := E.toFinite.toFinset
   rw [Sum.of_finite (fun x:E ↦ f x), ←Finset.sum_subtype E' (by simp [E'])]
   replace hE : E' ⊆ A := by aesop
-  apply Finset.sum_subset hE
-  aesop
+  apply Finset.sum_subset hE; aesop
 
 /-- Not in textbook, but should have been included (the series laws are significantly harder
 to establish without this) -/
@@ -354,8 +347,7 @@ theorem Sum'.of_countable_supp {X:Type} {f:X → ℝ} {A: Set X} (hA: CountablyI
         obtain ⟨ n, hn ⟩ := (hι.comp ha_bij).2 ⟨ ↑(g x), hx' ⟩
         simp [ι, Subtype.val_inj] at hn
         replace hn := hg.1 hn; subst hn
-        use n; simp [ha_mono.le_iff_le] at ⊢ hx
-        assumption
+        use n; simpa [ha_mono.le_iff_le] using hx
       _ = _ := by
         apply Finset.sum_image _
         intro n hn m hm h
@@ -375,20 +367,18 @@ theorem Sum'.of_countable_supp {X:Type} {f:X → ℝ} {A: Set X} (hA: CountablyI
   use N; intro N' hN'
   have : N' ≥ 0 := by apply LE.le.trans _ hN'; positivity
   lift N' to ℕ using this
-  simp at hN'
-  simp [Series.partial]
+  simp [Series.partial] at hN' ⊢
   calc
     _ = ∑ n ∈ E', f ↑(g n) := by
       apply (Finset.sum_subset _ _).symm
-      . intro x; simp; intro hx; linarith [hN x hx]
-      intro x hx hx'
-      simp [E',E] at hx'; assumption
+      . intro x hx; simp at hx ⊢; linarith [hN x hx]
+      intro _ _ hx'
+      simpa [E',E] using hx'
     _ = ∑ n:E', f ↑(g ↑n) := by
       convert (Finset.sum_set_coe _).symm
     _ = ∑ n, f ↑(ι n) := by
       apply Finset.sum_congr rfl
-      intro ⟨ x, hx ⟩ _
-      simp [ι]
+      intros; simp [ι]
     _ = _ := hι.sum_comp (g := fun x ↦ f ↑x)
 
 /-- Connection with Mathlib's `Summable` property. Some version of this might be suitable
@@ -403,29 +393,27 @@ theorem AbsConvergent'.iff_Summable {X:Type} (f:X → ℝ) : AbsConvergent' f �
     have hnon : s.Nonempty := by simp [s]; use 0, ∅; simp
     have : (sSup s)-ε < sSup s := by linarith
     rw [lt_csSup_iff h hnon] at this
-    simp [s] at this
-    obtain ⟨ S, hS ⟩ := this
-    use S
-    intro T hT
+    simp [s] at this; obtain ⟨ S, hS ⟩ := this
+    use S; intro T hT
     rw [abs_of_nonneg (by positivity)]
     have : ∑ x ∈ T, |f x| + ∑ x ∈ S, |f x| ≤ sSup s := by
       apply ConditionallyCompleteLattice.le_csSup _ _ h _
       simp [s]
       use T ∪ S; exact Finset.sum_union hT
     linarith
-  . intro h
-    specialize h 1 (by norm_num)
-    obtain ⟨ S, hS ⟩ := h
-    rw [bddAbove_def]
-    use ∑ x ∈ S, |f x| + 1
-    simp; intro T
-    calc
-      _ = ∑ x ∈ (T ∩ S), |f x| + ∑ x ∈ (T \ S), |f x| :=
-        (Finset.sum_inter_add_sum_diff _ _ _).symm
-      _ ≤ _ := by
-        gcongr
-        . exact Finset.inter_subset_right
-        apply le_of_lt (lt_of_abs_lt (hS _ disjoint_sdiff_self_left))
+  intro h
+  specialize h 1 (by norm_num)
+  obtain ⟨ S, hS ⟩ := h
+  rw [bddAbove_def]
+  use ∑ x ∈ S, |f x| + 1
+  simp; intro T
+  calc
+    _ = ∑ x ∈ (T ∩ S), |f x| + ∑ x ∈ (T \ S), |f x| :=
+      (Finset.sum_inter_add_sum_diff _ _ _).symm
+    _ ≤ _ := by
+      gcongr
+      . exact Finset.inter_subset_right
+      apply le_of_lt (lt_of_abs_lt (hS _ disjoint_sdiff_self_left))
 
 /-- Maybe suitable for porting to Mathlib?-/
 theorem Filter.Eventually.int_natCast_atTop (p: ℤ → Prop) :
@@ -433,8 +421,7 @@ theorem Filter.Eventually.int_natCast_atTop (p: ℤ → Prop) :
   constructor
   . exact Filter.Eventually.natCast_atTop
   simp [Filter.eventually_atTop]
-  intro N hN
-  use N; intro n hn
+  intro N hN; use N; intro n hn
   lift n to ℕ using (by apply LE.le.trans (by positivity) hn)
   simp at hn; solve_by_elim
 

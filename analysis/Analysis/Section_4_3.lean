@@ -1,7 +1,7 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Section 4.3
+# Analysis I, Section 4.3: Absolute value and exponentiation
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -34,13 +34,12 @@ namespace Section_4_3
 /-- Definition 4.3.1 (Absolute value) -/
 abbrev abs (x:ℚ) : ℚ := if x > 0 then x else (if x < 0 then -x else 0)
 
-theorem abs_of_pos {x: ℚ} (hx: x > 0) : abs x = x := by simp [hx]
+theorem abs_of_pos {x: ℚ} (hx: 0 < x) : abs x = x := by simp [hx]
 
 /-- Definition 4.3.1 (Absolute value) -/
 theorem abs_of_neg {x: ℚ} (hx: x < 0) : abs x = -x := by
   simp [abs, hx]
-  intro hx'
-  linarith
+  intros; linarith
 
 /-- Definition 4.3.1 (Absolute value) -/
 theorem abs_of_zero : abs 0 = 0 := by rfl
@@ -161,6 +160,12 @@ theorem close_mul_mul {ε δ x y z w:ℚ} (hε: ε ≥ 0) (hxy: ε.Close x y) (h
     _ ≤ |a * z| + |b * x| + |a * b| := by gcongr; exact abs_add _ _
     _ = |a| * |z| + |b| * |x| + |a| * |b| := by simp_rw [abs_mul]
     _ ≤ _ := by gcongr
+
+/-- This variant of Proposition 4.3.7(h) was not in the textbook, but can be useful
+in some later exercises. -/
+theorem close_mul_mul' {ε δ x y z w:ℚ} (hε: ε ≥ 0) (hxy: ε.Close x y) (hzw: δ.Close z w) :
+    (ε*|z|+δ*|y|).Close (x * z) (y * w) := by
+    sorry
 
 /-- Definition 4.3.9 (exponentiation).  Here we use the Mathlib definition.-/
 lemma pow_zero (x:ℚ) : x^0 = 1 := rfl

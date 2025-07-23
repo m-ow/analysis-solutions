@@ -3,7 +3,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
-# Analysis I, Appendix A.6
+# Analysis I, Appendix A.6: Some examples of proofs and quantifiers
 
 Some examples of proofs and quantifiers in Lean
 
@@ -26,8 +26,7 @@ example : ∃ ε > 0, ∀ x, 0 < x ∧ x < ε → sin x > x / 2 := by
   use ?eps  -- we will choose this later
   constructor
   swap -- defer the checking of positivity until later
-  intro x hx
-  have hpos := hx.1
+  rintro x ⟨hpos, hx⟩
   have hderiv : deriv sin = cos := by
     ext x
     apply HasDerivAt.deriv
@@ -46,7 +45,7 @@ example : ∃ ε > 0, ∀ x, 0 < x ∧ x < ε → sin x > x / 2 := by
     simp only [cos_pi_div_three, ←gt_iff_lt] at this
     exact this
   have : y < ?eps := by
-    exact hy2.trans hx.2
+    exact hy2.trans hx
   pick_goal 3  -- Now it is time to pick ε
   . exact π/3
   exact this
@@ -72,4 +71,3 @@ example : ∃ ε > 0, ∀ x, 0 < x ∧ x < ε → sin x > x / 2 := by
   convert hcosy using 1
   . ring
   field_simp
-

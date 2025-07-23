@@ -1,7 +1,7 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Section 8.1
+# Analysis I, Section 8.1: Countability
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -13,7 +13,7 @@ Main constructions and results of this section:
 
 - Custom notions for "equal cardinality", "countable", and "at most countable".  Note that Mathlib's
 `Countable` typeclass corresponds to what we call "at most countable" in this text.
-- Countability of the integers and rationals
+- Countability of the integers and rationals.
 
 Note that as the Chapter 3 set theory has been deprecated, we will not re-use relevant constructions from that theory here, replacing them with Mathlib counterparts instead.
 
@@ -21,10 +21,12 @@ Note that as the Chapter 3 set theory has been deprecated, we will not re-use re
 
 namespace Chapter8
 
-/-- The definition of equal cardinality. For simplicity we restrict attention to the Type 0 universe. -/
+/-- The definition of equal cardinality. For simplicity we restrict attention to the Type 0 universe.
+This is analogous to `Chapter3.SetTheory.Set.EqualCard`, but we are not using the latter since
+the Chapter 3 set theory is deprecated. -/
 abbrev EqualCard (X Y : Type) : Prop := ∃ f : X → Y, Function.Bijective f
 
-/-- Equivalence with Mathlib's `Cardinal.mk` concept -/
+/-- Relation with Mathlib's `Equiv` concept -/
 theorem EqualCard.iff {X Y : Type} :
   EqualCard X Y ↔ Nonempty (X ≃ Y) := by
   simp [EqualCard]
@@ -34,6 +36,7 @@ theorem EqualCard.iff {X Y : Type} :
   rintro ⟨ e ⟩
   exact ⟨ e.toFun, e.bijective ⟩
 
+/-- Equivalence with Mathlib's `Cardinal.mk` concept -/
 theorem EqualCard.iff' {X Y : Type} :
   EqualCard X Y ↔ Cardinal.mk X = Cardinal.mk Y := by
   simp [Cardinal.eq, iff]
@@ -58,9 +61,9 @@ abbrev AtMostCountable (X : Type) : Prop := CountablyInfinite X ∨ Finite X
 
 theorem CountablyInfinite.equiv {X Y: Type} (hXY : EqualCard X Y) :
   CountablyInfinite X ↔ CountablyInfinite Y := by
-  constructor
-  . intro h; exact hXY.symm.trans h
-  intro h; exact hXY.trans h
+  constructor <;> intro h
+  . exact hXY.symm.trans h
+  exact hXY.trans h
 
 theorem Finite.equiv {X Y: Type} (hXY : EqualCard X Y) :
   Finite X ↔ Finite Y := by
@@ -75,10 +78,8 @@ theorem AtMostCountable.equiv {X Y: Type} (hXY : EqualCard X Y) :
 theorem CountablyInfinite.iff (X : Type) : CountablyInfinite X ↔ Nonempty (Denumerable X) := by
   simp [CountablyInfinite, EqualCard.iff]
   constructor
-  . rintro ⟨ e ⟩
-    exact ⟨ Denumerable.mk' e ⟩
-  rintro ⟨ h ⟩
-  exact ⟨ Denumerable.eqv X ⟩
+  . rintro ⟨ e ⟩; exact ⟨ Denumerable.mk' e ⟩
+  rintro ⟨ h ⟩; exact ⟨ Denumerable.eqv X ⟩
 
 /-- Equivalence with Mathlib's `Countable` typeclass -/
 theorem CountablyInfinite.iff' (X : Type) : CountablyInfinite X ↔ Countable X ∧ Infinite X := by
@@ -89,8 +90,6 @@ theorem CountablyInfinite.toCountable {X : Type} (hX: CountablyInfinite X) : Cou
 
 theorem CountablyInfinite.toInfinite {X : Type} (hX: CountablyInfinite X) : Infinite X := by
   rw [iff'] at hX; tauto
-
-
 
 theorem AtMostCountable.iff (X : Type) : AtMostCountable X ↔ Countable X := by
   have h1 := CountablyInfinite.iff' X
@@ -155,8 +154,7 @@ theorem Nat.min_eq {X : Set ℕ} (hX : X.Nonempty) {a:ℕ} (ha : a ∈ X ∧ ∀
   (exists_unique_min hX).unique (min_spec hX) ha
 
 @[simp]
-theorem Nat.min_empty : min ∅ = 0 := by
-  simp [Nat.min]
+theorem Nat.min_empty : min ∅ = 0 := by simp [Nat.min]
 
 example : Nat.min ((fun n ↦ 2*n) '' (Set.Ici 1)) = 2 := by sorry
 
@@ -191,7 +189,7 @@ theorem Nat.monotone_enum_of_infinite (X : Set ℕ) [Infinite X] : ∃! f : ℕ 
     solve_by_elim
   have hf_surjective : Function.Surjective f := by
     rintro ⟨ x, hx ⟩
-    simp [f]; by_contra!
+    simp [f]; by_contra
     have h1 (n:ℕ) : x ∈ { x ∈ X | ∀ (m:ℕ) (h:m < n), x ≠ a m } := by
       sorry
     have h2 (n:ℕ) : x ≥ a n := by
@@ -207,15 +205,13 @@ theorem Nat.monotone_enum_of_infinite (X : Set ℕ) [Infinite X] : ∃! f : ℕ 
   by_contra!
   replace : { n | g n ≠ f n }.Nonempty := by
     contrapose! this
-    rw [Set.eq_empty_iff_forall_notMem] at this
-    simp at this
+    simp [Set.eq_empty_iff_forall_notMem] at this
     ext n; simp [this n]
   set m := min { n | g n ≠ f n }
   have hm : g m ≠ f m := (min_spec this).1
   have hm' {n:ℕ} (hn: n < m) : g n = f n := by
-    by_contra! hgfn
-    have := (min_spec this).2 n (by simp [hgfn])
-    linarith
+    by_contra hgfn
+    linarith [(min_spec this).2 n (by simp [hgfn])]
   have hgm : g m = min { x ∈ X | ∀ (n:ℕ) (h:n < m), x ≠ a n } := by
     sorry
   rw [←ha m] at hgm
@@ -224,8 +220,8 @@ theorem Nat.monotone_enum_of_infinite (X : Set ℕ) [Infinite X] : ∃! f : ℕ 
 
 theorem Nat.countable_of_infinite (X : Set ℕ) [Infinite X] : CountablyInfinite X := by
   apply EqualCard.symm
-  exact ⟨ (monotone_enum_of_infinite X).exists.choose, (monotone_enum_of_infinite X).exists.choose_spec.1 ⟩
-
+  have := (monotone_enum_of_infinite X).exists
+  exact ⟨ this.choose, this.choose_spec.1 ⟩
 
 /-- Corollary 8.1.6 -/
 theorem Nat.atMostCountable_subset (X: Set ℕ) : AtMostCountable X := by
@@ -252,7 +248,7 @@ theorem AtMostCountable.subset' {A: Type} {X Y: Set A} (hX: AtMostCountable X) (
   apply (AtMostCountable.equiv _).mp this
   use (fun y ↦ ⟨ y.val.val, y.property ⟩ )
   constructor
-  . rintro ⟨ ⟨ y, hy⟩, hy2 ⟩ ⟨ ⟨ y', hy' ⟩, hy2' ⟩ h
+  . rintro ⟨ ⟨ y, hy ⟩, hy2 ⟩ ⟨ ⟨ y', hy' ⟩, hy2' ⟩ h
     simp [Y'] at hy hy2 hy' hy2' h ⊢; assumption
   rintro ⟨ y, hy ⟩
   use ⟨ ⟨ y, hY hy ⟩, by aesop ⟩
@@ -340,7 +336,7 @@ theorem CountablyInfinite.prod_nat : CountablyInfinite (ℕ × ℕ) := by
     use ⟨ (m, n), by aesop ⟩
   have : CountablyInfinite (Set.univ : Set (ℕ × ℕ)) := by
     convert CountablyInfinite.union lower_diag upper_diag
-    ext ⟨ n,m ⟩; simp; omega
+    ext ⟨ n, m ⟩; simp; omega
   exact (CountablyInfinite.equiv (EqualCard.univ _)).mp this
 
 /-- Corollary 8.1.14 / Exercise 8.1.8 -/

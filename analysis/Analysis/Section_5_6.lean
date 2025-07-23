@@ -3,7 +3,7 @@ import Analysis.Section_5_5
 
 
 /-!
-# Analysis I, Section 5.6
+# Analysis I, Section 5.6: Real exponentiation, part I
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text.  When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -13,9 +13,9 @@ doing so.
 
 Main constructions and results of this section:
 
-- Exponentiating reals to natural numbers and integers
-- nth roots
-- raising a real to a rational number
+- Exponentiating reals to natural numbers and integers.
+- nth roots.
+- Raising a real to a rational number.
 
 -/
 
@@ -119,15 +119,13 @@ theorem Real.rootset_bddAbove {x:Real} (hx: x ≥ 0) (n:ℕ) (hn: n ≥ 1) : Bdd
   rw [_root_.bddAbove_def]
   rcases le_or_gt x 1 with h | h
   . use 1
-    intro y hy
-    simp at hy
+    intro y hy; simp at hy
     by_contra! hy'
     replace hy' : 1 < y^n := by
       sorry
     linarith
   use x
-  intro y hy
-  simp at hy
+  intro y hy; simp at hy
   by_contra! hy'
   replace hy' : x < y^n := by
     sorry
@@ -197,10 +195,9 @@ theorem Real.pow_root_eq_pow_root {a a':ℤ} {b b':ℕ} (hb: b > 0) (hb' : b' > 
   . simp at ha
     rcases le_iff_lt_or_eq.mp ha with ha | ha
     . replace hq : ((-a:ℤ)/b:ℚ) = ((-a':ℤ)/b':ℚ) := by
-        push_cast at hq ⊢; ring_nf at ⊢ hq; simp [hq]
+        push_cast at hq ⊢; ring_nf at hq ⊢; simp [hq]
       specialize this hb hb' hq (by linarith)
-      simp [zpow_neg] at this
-      exact this
+      simpa [zpow_neg] using this
     have : a' = 0 := by sorry
     simp [ha, this]
   have : a' > 0 := by sorry

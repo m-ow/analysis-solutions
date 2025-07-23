@@ -1,7 +1,7 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Appendix A.7
+# Analysis I, Appendix A.7: Equality
 
 Introduction to equality in Lean
 

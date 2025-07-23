@@ -3,7 +3,7 @@ import Analysis.Section_5_epilogue
 import Analysis.Section_6_6
 
 /-!
-# Analysis I, Section 6.7
+# Analysis I, Section 6.7: Real exponentiation, part II
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -13,7 +13,7 @@ doing so.
 
 Main constructions and results of this section:
 
-- Real exponentiation
+- Real exponentiation.
 
 Because the Chapter 5 reals have been deprecated in favor of the Mathlib reals, and Mathlib real
 exponentiation is defined without first going through rational exponentiation, we will adopt a
@@ -36,18 +36,14 @@ lemma ratPow_continuous {x α:ℝ} (hx: x > 0) {q: ℕ → ℚ}
   have h': 1 ≤ x := by linarith
   rw [←Sequence.Cauchy_iff_convergent]
   intro ε hε
-  have := Sequence.lim_of_roots hx (ε*x^(-M)) (by positivity)
-  obtain ⟨ K, hK, hclose ⟩ := this
-  replace hq := Sequence.Cauchy_of_convergent ⟨ α, hq ⟩ (1/(K+1:ℝ)) (by positivity)
-  obtain ⟨ N, hN, hq ⟩ := hq
+  obtain ⟨ K, hK, hclose ⟩ := Sequence.lim_of_roots hx (ε*x^(-M)) (by positivity)
+  obtain ⟨ N, hN, hq ⟩ := Sequence.Cauchy_of_convergent ⟨ α, hq ⟩ (1/(K+1:ℝ)) (by positivity)
   simp [Real.CloseSeq, Real.dist_eq] at hclose hK hN
   lift N to ℕ using hN
   lift K to ℕ using hK
-  specialize hclose K (by simp) (by simp)
-  simp at hclose
+  specialize hclose K (by simp) (by simp); simp at hclose
   use N, (by simp)
-  intro n hn m hm
-  simp at hn hm
+  intro n hn m hm; simp at hn hm
   specialize hq n (by simp [hn]) m (by simp [hm])
   simp [Real.Close, hn, hm, Real.dist_eq] at hq ⊢
   have : 0 ≤ (N:ℤ) := by simp
@@ -66,27 +62,19 @@ lemma ratPow_continuous {x α:ℝ} (hx: x > 0) {q: ℕ → ℚ}
         . rw [sub_nonneg]; apply Real.one_le_rpow h' (by norm_cast; linarith)
         . specialize hbound m; simp_all [abs_le']
         rw [abs_le'] at hq; convert hq.1 using 1; field_simp
-      _ ≤ x^M * (ε * x^(-M)) := by
-        gcongr
-        simp_all [abs_le']
-      _ = ε := by
-        rw [mul_comm, mul_assoc, ←Real.rpow_add (by linarith)]; simp
-  replace : x^(q n:ℝ) ≤ x^(q m:ℝ) := by
-    rw [Real.rpow_le_rpow_left_iff h]; norm_cast; linarith
+      _ ≤ x^M * (ε * x^(-M)) := by gcongr; simp_all [abs_le']
+      _ = ε := by rw [mul_comm, mul_assoc, ←Real.rpow_add (by linarith)]; simp
+  replace : x^(q n:ℝ) ≤ x^(q m:ℝ) := by rw [Real.rpow_le_rpow_left_iff h]; norm_cast; linarith
   rw [abs_of_nonpos (by linarith)]
   calc
-    _ = x^(q n:ℝ) * (x^(q m - q n:ℝ) - 1) := by
-      ring_nf; rw [←Real.rpow_add (by linarith)]; ring_nf
+    _ = x^(q n:ℝ) * (x^(q m - q n:ℝ) - 1) := by ring_nf; rw [←Real.rpow_add (by linarith)]; ring_nf
     _ ≤ x^M * (x^(1/(K+1:ℝ)) - 1) := by
       gcongr <;> try exact h'
       . rw [sub_nonneg]; apply Real.one_le_rpow h' (by norm_cast; linarith)
       . specialize hbound n; simp_all [abs_le']
       rw [abs_le'] at hq; convert hq.2 using 1 <;> simp
-    _ ≤ x^M * (ε * x^(-M)) := by
-      gcongr
-      simp_all [abs_le']
-    _ = ε := by
-      rw [mul_comm, mul_assoc, ←Real.rpow_add (by linarith)]; simp
+    _ ≤ x^M * (ε * x^(-M)) := by gcongr; simp_all [abs_le']
+    _ = ε := by rw [mul_comm, mul_assoc, ←Real.rpow_add (by linarith)]; simp
 
 
 lemma ratPow_lim_uniq {x α:ℝ} (hx: x > 0) {q q': ℕ → ℚ}
@@ -137,21 +125,19 @@ lemma ratPow_lim_uniq {x α:ℝ} (hx: x > 0) {q q': ℕ → ℚ}
   exact ⟨ by linarith, by linarith ⟩
 
 theorem Real.eq_lim_of_rat (α:ℝ) : ∃ q: ℕ → ℚ, ((fun n ↦ (q n:ℝ)):Sequence).TendsTo α := by
-  obtain ⟨ q, hcauchy, hLIM ⟩ := Chapter5.Real.eq_lim (Chapter5.Real.equivR.symm α)
-  use q
+  obtain ⟨ q, hcauchy, hLIM ⟩ := Chapter5.Real.eq_lim (Chapter5.Real.equivR.symm α); use q
   replace hcauchy := Sequence.lim_eq_LIM hcauchy
   simp only [←hLIM, Equiv.apply_symm_apply] at hcauchy
-  convert hcauchy
-  aesop
+  convert hcauchy; aesop
 
 /-- Definition 6.7.2 (Exponentiation to a real exponent) -/
 noncomputable abbrev Real.rpow (x:ℝ) (α:ℝ) :ℝ := lim ((fun n ↦ x^((eq_lim_of_rat α).choose n:ℝ)):Sequence)
 
 lemma Real.rpow_eq_lim_ratPow {x α:ℝ} (hx: x > 0) {q: ℕ → ℚ}
  (hq: ((fun n ↦ (q n:ℝ)):Sequence).TendsTo α) :
- rpow x α = lim ((fun n ↦ x^(q n:ℝ)):Sequence) := by
-   apply ratPow_lim_uniq hx _ hq
-   exact (eq_lim_of_rat α).choose_spec
+ rpow x α = lim ((fun n ↦ x^(q n:ℝ)):Sequence) :=
+   ratPow_lim_uniq hx (eq_lim_of_rat α).choose_spec hq
+
 
 lemma Real.ratPow_tendsto_rpow {x α:ℝ} (hx: x > 0) {q: ℕ → ℚ}
  (hq: ((fun n ↦ (q n:ℝ)):Sequence).TendsTo α) :
@@ -182,8 +168,7 @@ theorem Real.ratPow_add {x:ℝ} (hx: x > 0) (q r:ℝ) : rpow x (q+r) = rpow x q 
   rw [rpow_eq_lim_ratPow hx hq', rpow_eq_lim_ratPow hx hr',
       rpow_eq_lim_ratPow hx hq'r', ←(Sequence.lim_mul h1 h2).2,
       Sequence.mul_coe]
-  rcongr n
-  rw [←Real.rpow_add (by linarith)]; simp
+  rcongr n; rw [←Real.rpow_add (by linarith)]; simp
 
 
 /-- Proposition 6.7.3(b) / Exercise 6.7.1 -/

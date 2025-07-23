@@ -2,11 +2,7 @@ import Mathlib.Tactic
 import Analysis.Section_3_1
 
 /-!
-# Analysis I, Section 3.2
-
-In this section we set up a version of Zermelo-Frankel set theory (with atoms) that tries to be
-as faithful as possible to the original text of Analysis I, Section 3.2. All numbering refers to
-the original text.
+# Analysis I, Section 3.2: Russell's paradox
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -19,8 +15,8 @@ used in a minor role in an exercise in Section 3.5.
 
 Main constructions and results of this section:
 
-- Russell's paradox (ruling out the axiom of universal specification)
-- The axiom of regularity (foundation) - an axiom designed to avoid Russell's paradox
+- Russell's paradox (ruling out the axiom of universal specification).
+- The axiom of regularity (foundation) - an axiom designed to avoid Russell's paradox.
 --/
 
 namespace Chapter3
@@ -34,7 +30,7 @@ abbrev axiom_of_universal_specification : Prop :=
   ∀ P : Object → Prop, ∃ A : Set, ∀ x : Object, x ∈ A ↔ P x
 
 theorem Russells_paradox : ¬ axiom_of_universal_specification := by
-  -- this proof is written to follow the structure of the original text.
+  -- This proof is written to follow the structure of the original text.
   intro h
   set P : Object → Prop := fun x ↦ ∃ X:Set, x = X ∧ x ∉ X
   obtain ⟨Ω, hΩ⟩ := h P
@@ -48,18 +44,15 @@ theorem Russells_paradox : ¬ axiom_of_universal_specification := by
   replace this := (hΩ _).mpr this
   contradiction
 
-/-- Axiom 3.9 (Regularity ) -/
+/-- Axiom 3.9 (Regularity) -/
 theorem SetTheory.Set.axiom_of_regularity {A:Set} (h: A ≠ ∅) :
     ∃ x:A, ∀ S:Set, x.val = S → Disjoint S A := by
   obtain ⟨ x, h, h' ⟩ := SetTheory.regularity_axiom A (nonempty_def h)
   use ⟨x, h⟩
-  intro S hS
-  specialize h' S hS
+  intro S hS; specialize h' S hS
   rw [disjoint_iff, eq_empty_iff_forall_notMem]
-  contrapose! h'
-  simp at h'
-  obtain ⟨ y, h1, h2 ⟩ := h'
-  exact ⟨ y, h2, h1 ⟩
+  contrapose! h'; simp at h'
+  aesop
 
 /--
   Exercise 3.2.1.  The spirit of the exercise is to establish these results without using either

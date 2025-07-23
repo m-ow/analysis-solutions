@@ -4,7 +4,7 @@ import Analysis.Section_9_3
 import Analysis.Section_9_4
 
 /-!
-# Analysis I, Section 9.5
+# Analysis I, Section 9.5: Left and right limits
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text.  When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -13,7 +13,7 @@ the Lean code could be "golfed" to be more elegant and idiomatic, but I have con
 doing so.
 
 Main constructions and results of this section:
-- Left and right limits
+- Left and right limits.
 -/
 
 namespace Chapter9
@@ -37,7 +37,8 @@ theorem right_limit.eq {X: Set ℝ} {f: ℝ → ℝ} {x₀:ℝ} {L:ℝ} (had: Ad
     rwa [←nhdsWithin.eq_1, ←mem_closure_iff_nhdsWithin_neBot, closure_def']
   exact tendsto_nhds_unique h'.choose_spec h
 
-theorem left_limit.eq {X: Set ℝ} {f: ℝ → ℝ} {x₀:ℝ} {L:ℝ} (had: AdherentPt x₀ (X ∩ Set.Iio x₀)) (h: Filter.Tendsto f ((nhds x₀) ⊓ Filter.principal (X ∩ Set.Iio x₀))
+theorem left_limit.eq {X: Set ℝ} {f: ℝ → ℝ} {x₀:ℝ} {L:ℝ} (had: AdherentPt x₀ (X ∩ Set.Iio x₀))
+  (h: Filter.Tendsto f ((nhds x₀) ⊓ Filter.principal (X ∩ Set.Iio x₀))
   (nhds L)) : LeftLimitExists X f x₀ ∧ left_limit X f x₀ = L := by
   have h' : LeftLimitExists X f x₀ := by use L
   simp [left_limit, h']
@@ -45,13 +46,13 @@ theorem left_limit.eq {X: Set ℝ} {f: ℝ → ℝ} {x₀:ℝ} {L:ℝ} (had: Adh
     rwa [←nhdsWithin.eq_1, ←mem_closure_iff_nhdsWithin_neBot, closure_def']
   exact tendsto_nhds_unique h'.choose_spec h
 
-  theorem right_limit.eq' {X: Set ℝ} {f: ℝ → ℝ} {x₀:ℝ} (h: RightLimitExists X f x₀) : Filter.Tendsto f ((nhds x₀) ⊓ Filter.principal (X ∩ Set.Ioi x₀)) (nhds (right_limit X f x₀)) := by
-    simp [right_limit, h]
-    convert h.choose_spec
+theorem right_limit.eq' {X: Set ℝ} {f: ℝ → ℝ} {x₀:ℝ} (h: RightLimitExists X f x₀) :
+  Filter.Tendsto f ((nhds x₀) ⊓ Filter.principal (X ∩ Set.Ioi x₀)) (nhds (right_limit X f x₀)) := by
+  simp [right_limit, h]; exact h.choose_spec
 
-theorem left_limit.eq' {X: Set ℝ} {f: ℝ → ℝ} {x₀:ℝ} (h: LeftLimitExists X f x₀) : Filter.Tendsto f ((nhds x₀) ⊓ Filter.principal (X ∩ Set.Iio x₀)) (nhds (left_limit X f x₀)) := by
-  simp [left_limit, h]
-  convert h.choose_spec
+theorem left_limit.eq' {X: Set ℝ} {f: ℝ → ℝ} {x₀:ℝ} (h: LeftLimitExists X f x₀) :
+  Filter.Tendsto f ((nhds x₀) ⊓ Filter.principal (X ∩ Set.Iio x₀)) (nhds (left_limit X f x₀)) := by
+  simp [left_limit, h]; exact h.choose_spec
 
 /-- Example 9.5.2.  The second part of this example is no longer operative as we assign "junk" values to our functions instead of leaving them undefined. -/
 example : right_limit Set.univ Real.sign 0 = 1 := by sorry
@@ -83,7 +84,7 @@ theorem ContinuousAt.iff_eq_left_right_limit {X: Set ℝ} {f: ℝ → ℝ} {x₀
   -- This proof is written to follow the structure of the original text.
   constructor
   . sorry
-  rintro ⟨ ⟨ hre, hright⟩, ⟨ hle, lheft ⟩ ⟩
+  intro ⟨ ⟨ hre, hright⟩, ⟨ hle, lheft ⟩ ⟩
   set L := f x₀
   have := (ContinuousWithinAt.tfae X f h).out 0 2
   rw [this]
@@ -93,10 +94,8 @@ theorem ContinuousAt.iff_eq_left_right_limit {X: Set ℝ} {f: ℝ → ℝ} {x₀
   rw [hright, ←Convergesto.iff] at hre
   rw [lheft, ←Convergesto.iff] at hle
   simp [Convergesto, Real.CloseNear, Real.CloseFn] at hre hle
-  specialize hre ε hε
-  specialize hle ε hε
-  obtain ⟨ δ_plus, hδ_plus, hre ⟩ := hre
-  obtain ⟨ δ_minus, hδ_minus, hle ⟩ := hle
+  specialize hre ε hε; obtain ⟨ δ_plus, hδ_plus, hre ⟩ := hre
+  specialize hle ε hε; obtain ⟨ δ_minus, hδ_minus, hle ⟩ := hle
   use min δ_plus δ_minus, (by positivity)
   intro x hx hxx₀
   rcases lt_trichotomy x x₀ with hlt | heq | hgt
@@ -110,8 +109,8 @@ abbrev HasJumpDiscontinuity (X: Set ℝ) (f: ℝ → ℝ) (x₀:ℝ) : Prop :=
 example : HasJumpDiscontinuity Set.univ Real.sign 0 := by sorry
 
 abbrev HasRemovableDiscontinuity (X: Set ℝ) (f: ℝ → ℝ) (x₀:ℝ) : Prop :=
-  RightLimitExists X f x₀ ∧ LeftLimitExists X f x₀ ∧ right_limit X f x₀ = left_limit X f x₀ ∧
-  right_limit X f x₀ ≠ f x₀
+  RightLimitExists X f x₀ ∧ LeftLimitExists X f x₀ ∧ right_limit X f x₀ = left_limit X f x₀
+  ∧ right_limit X f x₀ ≠ f x₀
 
 example : HasRemovableDiscontinuity Set.univ f_9_3_17 0 := by sorry
 

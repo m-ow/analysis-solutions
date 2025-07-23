@@ -5,7 +5,7 @@ import Analysis.Section_11_9
 
 
 /-!
-# Analysis I, Section 11.10
+# Analysis I, Section 11.10: Consequences of the fundamental theorems
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the
 original text. When there is a choice between a more idiomatic Lean solution and a
@@ -49,8 +49,7 @@ theorem PiecewiseConstantOn.RS_integ_eq_integ_of_mul_deriv
   obtain ⟨ P, hP ⟩ := hf
   rw [PiecewiseConstantOn.RS_integ_def hP α, integ_split hfα'_integ P]
   unfold PiecewiseConstantWith.RS_integ
-  apply Finset.sum_congr rfl
-  intro J hJ
+  apply Finset.sum_congr rfl; intro J hJ
   calc
     _ = Chapter11.integ ((constant_value_on f (J:Set ℝ)) • α') J := by
       apply Chapter11.integ_congr
@@ -87,8 +86,7 @@ theorem PiecewiseConstantOn.RS_integ_eq_integ_of_mul_deriv
           _ = _ := by
             convert integ_eq_antideriv_sub (le_of_lt hJab) (integ_mono' this hα') _
             apply AntiderivOn.mono (I := Icc a b) ⟨ hα_diff, _ ⟩ this
-            intro x hx
-            exact DifferentiableWithinAt.hasDerivWithinAt (hα_diff x hx)
+            intros; solve_by_elim [DifferentiableWithinAt.hasDerivWithinAt]
 
 /-- Corollary 11.10.3 -/
 theorem RS_integ_eq_integ_of_mul_deriv
@@ -198,9 +196,7 @@ theorem PiecewiseConstantOn.RS_integ_of_comp {a b:ℝ} (hab: a < b) {φ f:ℝ �
     simp only [subset_iff, mem_iff] at this ⊢
     exact this h1.2
   ext
-  apply (P.exists_unique _ h3).unique _ _
-  . simp [J.property, mem_iff, h1]
-  simp [K.property, mem_iff, h2]
+  apply (P.exists_unique _ h3).unique _ _ <;> simp [J.property, K.property, mem_iff, h1, h2]
 
 /-- Proposition 11.10.6 (Change of variables formula II)-/
 theorem RS_integ_of_comp {a b:ℝ} (hab: a < b) {φ f: ℝ → ℝ}
@@ -219,11 +215,8 @@ theorem RS_integ_of_comp {a b:ℝ} (hab: a < b) {φ f: ℝ → ℝ}
     have hpc := PiecewiseConstantOn.RS_integ_of_comp hab hφ_cont hφ_mono hf_upconst
     rw [←hpc.2] at hf_up
     have : MajorizesOn (f_up ∘ φ) (f ∘ φ) (Icc a b) := by
-      intro x hx
-      simp at hx ⊢
-      apply hf_upmajor
-      simp
-      exact ⟨ hφ_mono hx.1, hφ_mono hx.2 ⟩
+      intro x hx; simp at hx ⊢
+      apply hf_upmajor; aesop
     replace := upper_RS_integral_le_integ hfφ_bdd this hpc.1 hφ_mono
     linarith
   have hlower : lower_integral f (Icc (φ a) (φ b)) ≤ lower_RS_integral (f ∘ φ) (Icc a b) φ := by
@@ -233,11 +226,8 @@ theorem RS_integ_of_comp {a b:ℝ} (hab: a < b) {φ f: ℝ → ℝ}
     have hpc := PiecewiseConstantOn.RS_integ_of_comp hab hφ_cont hφ_mono hf_lowconst
     rw [←hpc.2] at hf_low
     have : MinorizesOn (f_low ∘ φ) (f ∘ φ) (Icc a b) := by
-      intro x hx
-      simp at hx ⊢
-      apply hf_lowminor
-      simp
-      exact ⟨ hφ_mono hx.1, hφ_mono hx.2 ⟩
+      intro x hx; simp at hx ⊢
+      apply hf_lowminor; aesop
     replace := integ_le_lower_RS_integral hfφ_bdd this hpc.1 hφ_mono
     linarith
   have hle : lower_RS_integral (f ∘ φ) (Icc a b) φ ≤ upper_RS_integral (f ∘ φ) (Icc a b) φ :=

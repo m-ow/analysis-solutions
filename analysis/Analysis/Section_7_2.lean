@@ -2,7 +2,7 @@ import Mathlib.Tactic
 import Mathlib.Algebra.Field.Power
 
 /-!
-# Analysis I, Section 7.2
+# Analysis I, Section 7.2: Infinite series
 
 I have attempted to make the translation as faithful a paraphrasing as possible of the original
 text. When there is a choice between a more idiomatic Lean solution and a more faithful
@@ -12,10 +12,8 @@ doing so.
 
 Main constructions and results of this section:
 
-- Formal series and their limits
+- Formal series and their limits.
 - Absolute convergence; basic series laws.
-
-
 
 -/
 
@@ -38,9 +36,7 @@ instance Series.instCoe : Coe (ℕ → ℝ) Series where
   coe := fun a ↦ {
     m := 0
     seq := fun n ↦ if n ≥ 0 then a n.toNat else 0
-    vanish := by
-      intro n hn
-      simp [hn]
+    vanish := by intro n hn; simp [hn]
   }
 
 @[simp]
@@ -49,9 +45,7 @@ theorem Series.eval_coe (a : ℕ → ℝ) (n : ℕ) : (a : Series).seq n = a n :
 abbrev Series.mk' {m:ℤ} (a: { n // n ≥ m } → ℝ) : Series where
   m := m
   seq := fun n ↦ if h : n ≥ m then a ⟨n, h⟩ else 0
-  vanish := by
-    intro n hn
-    simp [hn]
+  vanish := by intro n hn; simp [hn]
 
 theorem Series.eval_mk' {m:ℤ} (a : { n // n ≥ m } → ℝ) {n : ℤ} (h:n ≥ m) :
     (Series.mk' a).seq n = a ⟨ n, h ⟩ := by simp [h]
@@ -70,8 +64,7 @@ theorem Series.partial_succ (s : Series) {N:ℤ} (h: N ≥ s.m-1) : s.partial (N
 theorem Series.partial_of_lt {s : Series} {N:ℤ} (h: N < s.m) : s.partial N = 0 := by
   unfold Series.partial
   rw [Finset.sum_eq_zero]
-  intro n hn
-  simp at hn; linarith
+  intro n hn; simp at hn; linarith
 
 abbrev Series.convergesTo (s : Series) (L:ℝ) : Prop :=
   Filter.Tendsto (s.partial) Filter.atTop (nhds L)
@@ -159,8 +152,7 @@ theorem Series.converges_of_alternating {m:ℤ} {a: { n // n ≥ m} → ℝ} (ha
     ((mk' (fun n ↦ (-1)^(n:ℤ) * a n)).converges ↔ Filter.Tendsto a Filter.atTop (nhds 0)) := by
   -- This proof is written to follow the structure of the original text.
   constructor
-  . intro h
-    replace h := decay_of_converges h
+  . intro h; replace h := decay_of_converges h
     rw [tendsto_iff_dist_tendsto_zero] at h ⊢
     rw [←Filter.tendsto_comp_val_Ici_atTop (a := m)] at h
     convert h using 2 with heq n
@@ -186,13 +178,11 @@ theorem Series.converges_of_alternating {m:ℤ} {a: { n // n ≥ m} → ℝ} (ha
   have claim2 {N:ℤ} (hN: N ≥ m) (h': Odd N) : S (N+2) ≥ S N := by
     rw [claim1 hN]
     simp [Even.neg_one_zpow (Odd.add_one h')]
-    apply ha'
-    simp
+    apply ha'; simp
   have claim3 {N:ℤ} (hN: N ≥ m) (h': Even N) : S (N+2) ≤ S N := by
     rw [claim1 hN]
     simp [Odd.neg_one_zpow (Even.add_one h')]
-    apply ha'
-    simp
+    apply ha'; simp
   have why1 {N:ℤ} (hN: N ≥ m) (h': Even N) (k:ℕ) : S (N+2*k) ≤ S N := by sorry
   have why2 {N:ℤ} (hN: N ≥ m) (h': Even N) (k:ℕ) : S (N+2*k+1) ≥ S N - a ⟨ N+1, by linarith ⟩ := by sorry
   have why3 {N:ℤ} (hN: N ≥ m) (h': Even N) (k:ℕ) : S (N+2*k+1) ≤ S (N+2*k) := by sorry
@@ -204,8 +194,7 @@ theorem Series.converges_of_alternating {m:ℤ} {a: { n // n ≥ m} → ℝ} (ha
   have : CauchySeq S := by
     rw [Metric.cauchySeq_iff']
     intro ε hε
-    obtain ⟨ N, hN ⟩ := why5 (half_pos hε)
-    use N
+    obtain ⟨ N, hN ⟩ := why5 (half_pos hε); use N
     intro n hn
     specialize hN n hn N (le_refl _)
     rw [Real.dist_eq]; linarith
@@ -227,10 +216,7 @@ instance Series.inst_add : Add Series where
   add a b := {
     m := max a.m b.m
     seq := fun (n:ℤ) ↦ if n ≥ max a.m b.m then a.seq n + b.seq n else 0
-    vanish := by
-      intro n hn
-      rw [lt_iff_not_ge] at hn
-      simp [hn]
+    vanish := by intro n hn; rw [lt_iff_not_ge] at hn; simp [hn]
   }
 
 theorem Series.add_coe (a b: ℕ → ℝ) : (a:Series) + (b:Series) = (fun n ↦ a n + b n) := by
@@ -249,10 +235,7 @@ instance Series.inst.smul : SMul ℝ Series where
   smul c s := {
     m := s.m
     seq := fun n ↦ if n ≥ s.m then c * s.seq n else 0
-    vanish := by
-      intro n hn
-      rw [lt_iff_not_ge] at hn
-      simp [hn]
+    vanish := by intro n hn; rw [lt_iff_not_ge] at hn; simp [hn]
   }
 
 theorem Series.smul_coe (a: ℕ → ℝ) (c: ℝ) : (c • a:Series) = (fun n ↦ c * a n) := by
@@ -272,10 +255,7 @@ instance Series.inst_sub : Sub Series where
   sub a b := {
     m := max a.m b.m
     seq := fun (n:ℤ) ↦ if n ≥ max a.m b.m then a.seq n - b.seq n else 0
-    vanish := by
-      intro n hn
-      rw [lt_iff_not_ge] at hn
-      simp [hn]
+    vanish := by intro n hn; rw [lt_iff_not_ge] at hn; simp [hn]
   }
 
 theorem Series.sub_coe (a b: ℕ → ℝ) : (a:Series) - (b:Series) = (fun n ↦ a n - b n) := by
@@ -289,8 +269,7 @@ theorem Series.convergesTo.sub {s t:Series} {L M: ℝ} (hs: s.convergesTo L) (ht
 theorem Series.sub {s t:Series} (hs: s.converges) (ht: t.converges) :
     (s - t).converges ∧ (s-t).sum = s.sum - t.sum := by sorry
 
-abbrev Series.from (s:Series) (m₁:ℤ) : Series :=
-  mk' (m := max s.m m₁) (fun n ↦ s.seq (n:ℤ))
+abbrev Series.from (s:Series) (m₁:ℤ) : Series := mk' (m := max s.m m₁) (fun n ↦ s.seq (n:ℤ))
 
 /-- Proposition 7.2.14 (c) (Series laws) / Exercise 7.2.5 -/
 theorem Series.converges_from (s:Series) (k:ℕ) : s.converges ↔ (s.from (s.m+k)).converges := by
