@@ -24,15 +24,12 @@ namespace Chapter5
 /-- Definition 5.6.1 (Exponentiating a real by a natural number). Here we use the
     Mathlib definition coming from `Monoid`. -/
 
-lemma Real.pow_zero (x: Real) : x ^ 0 = 1 := by
-  rfl
+lemma Real.pow_zero (x: Real) : x ^ 0 = 1 := rfl
 
-lemma Real.pow_succ (x: Real) (n:ℕ) : x ^ (n+1) = (x ^ n) * x := by
-  rfl
+lemma Real.pow_succ (x: Real) (n:ℕ) : x ^ (n+1) = (x ^ n) * x := rfl
 
 lemma Real.pow_of_coe (q: ℚ) (n:ℕ) : (q:Real) ^ n = (q ^ n:ℚ) := by
-  induction' n with n hn
-  . simp
+  induction' n with n hn; simp
   simp [hn]
 
 
@@ -69,15 +66,12 @@ theorem Real.pow_abs (x:Real) (n:ℕ) : |x|^n = |x^n| := by sorry
 
 
 /-- Definition 5.6.2 (Exponentiating a real by an integer). Here we use the Mathlib definition coming from `DivInvMonoid`. -/
-lemma Real.pow_eq_pow (x: Real) (n:ℕ): x ^ (n:ℤ) = x ^ n := by
-  rfl
+lemma Real.pow_eq_pow (x: Real) (n:ℕ): x ^ (n:ℤ) = x ^ n := by rfl
 
 @[simp]
-lemma Real.zpow_zero (x: Real) : x ^ (0:ℤ) = 1 := by
-  rfl
+lemma Real.zpow_zero (x: Real) : x ^ (0:ℤ) = 1 := by rfl
 
-lemma Real.zpow_neg {x:Real} (n:ℕ) : x^(-n:ℤ) = 1 / (x^n) := by
-  simp
+lemma Real.zpow_neg {x:Real} (n:ℕ) : x^(-n:ℤ) = 1 / (x^n) := by simp
 
 /-- Analogue of Proposition 4.3.12(a) -/
 theorem Real.zpow_add (x:Real) (n m:ℤ) : x^n * x^m = x^(n+m) := by sorry
@@ -104,8 +98,7 @@ theorem Real.zpow_inj {x y:Real} {n:ℤ} (hx: x > 0) (hy : y > 0) (hn: n ≠ 0) 
 theorem Real.zpow_abs (x:Real) (n:ℤ) (hx: x ≠ 0) : |x|^n = |x^n| := by sorry
 
 /-- Definition 5.6.2.  We permit ``junk values'' when `x` is negative or `n` vanishes. -/
-noncomputable abbrev Real.root (x:Real) (n:ℕ) : Real :=
-  sSup { y:Real | y ≥ 0 ∧ y^n ≤ x }
+noncomputable abbrev Real.root (x:Real) (n:ℕ) : Real := sSup { y:Real | y ≥ 0 ∧ y^n ≤ x }
 
 noncomputable abbrev Real.sqrt (x:Real) := x.root 2
 
@@ -118,14 +111,12 @@ theorem Real.rootset_bddAbove {x:Real} (hx: x ≥ 0) (n:ℕ) (hn: n ≥ 1) : Bdd
   -- This proof is written to follow the structure of the original text.
   rw [_root_.bddAbove_def]
   rcases le_or_gt x 1 with h | h
-  . use 1
-    intro y hy; simp at hy
+  . use 1; intro y hy; simp at hy
     by_contra! hy'
     replace hy' : 1 < y^n := by
       sorry
     linarith
-  use x
-  intro y hy; simp at hy
+  use x; intro y hy; simp at hy
   by_contra! hy'
   replace hy' : x < y^n := by
     sorry
@@ -171,9 +162,7 @@ theorem Real.pow_cancel {y z:Real} (hy: y > 0) (hz: z > 0) {n:ℕ} (hn: n ≥ 1)
   (h: y^n = z^n) : y = z := by sorry
 
 example : ¬(∀ (y:Real) (z:Real) (n:ℕ) (_: n ≥ 1) (_: y^n = z^n), y = z) := by
-  simp
-  use (-3), 3, 2, by norm_num
-  constructor <;> norm_num
+  simp; exact ⟨ (-3), 3, 2, by norm_num, by norm_num, by norm_num ⟩
 
 /-- Definition 5.6.7 -/
 noncomputable abbrev Real.ratPow (x:Real) (q:ℚ) : Real := (x.root q.den)^(q.num)

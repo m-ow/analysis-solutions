@@ -101,12 +101,21 @@ abbrev Real.EventuallySteady (ε: ℝ) (a: Chapter6.Sequence) : Prop :=
 lemma Real.eventuallySteady_def (ε: ℝ) (a: Chapter6.Sequence) :
   ε.EventuallySteady a ↔ ∃ N, (N ≥ a.m) ∧ ε.Steady (a.from N) := by rfl
 
-theorem Real.steady_mono {a: Chapter6.Sequence} {ε₁ ε₂: ℝ} (hε: ε₁ ≤ ε₂) (hsteady: ε₁.Steady a) :
-    ε₂.Steady a := by sorry
+/-- For fixed s, the function ε ↦ ε.Steady s is monotone -/
+theorem Real.Steady.mono {a: Chapter6.Sequence} {ε₁ ε₂: ℝ} (hε: ε₁ ≤ ε₂) (hsteady: ε₁.Steady a) :
+    ε₂.Steady a := by
+  intro n hn m hm
+  specialize hsteady n hn m hm
+  linarith
 
-theorem Real.eventuallySteady_mono {a: Chapter6.Sequence} {ε₁ ε₂: ℝ} (hε: ε₁ ≤ ε₂)
+/-- For fixed s, the function ε ↦ ε.EventuallySteady s is monotone -/
+theorem Real.EventuallySteady.mono {a: Chapter6.Sequence} {ε₁ ε₂: ℝ} (hε: ε₁ ≤ ε₂)
   (hsteady: ε₁.EventuallySteady a) :
-    ε₂.EventuallySteady a := by sorry
+    ε₂.EventuallySteady a := by
+  obtain ⟨ N, hN, hsteady' ⟩ := hsteady
+  use N, hN
+  exact Real.Steady.mono hε hsteady'
+
 
 namespace Chapter6
 
@@ -195,7 +204,7 @@ theorem Sequence.isCauchy_of_rat (a: Chapter5.Sequence) : a.IsCauchy ↔ (a:Sequ
   obtain ⟨ ε', hε', hlt ⟩ := exists_pos_rat_lt hε
   specialize h ε' hε'
   rw [is_eventuallySteady_of_rat] at h
-  exact Real.eventuallySteady_mono (le_of_lt hlt) h
+  exact Real.EventuallySteady.mono (le_of_lt hlt) h
 
 end Chapter6
 
@@ -214,13 +223,31 @@ abbrev Real.EventuallyClose (ε: ℝ) (a: Chapter6.Sequence) (L:ℝ) : Prop :=
 theorem Real.eventuallyClose_def (ε: ℝ) (a: Chapter6.Sequence) (L:ℝ) :
   ε.EventuallyClose a L ↔ ∃ N, (N ≥ a.m) ∧ ε.CloseSeq (a.from N) L := by rfl
 
-theorem Real.close_seq_mono {a: Chapter6.Sequence} {ε₁ ε₂ L: ℝ} (hε: ε₁ ≤ ε₂)
-  (hclose: ε₁.CloseSeq a L) :
-    ε₂.CloseSeq a L := by sorry
+theorem Real.CloseSeq.coe (ε : ℝ) (a : ℕ → ℝ) (L : ℝ):
+  (ε.CloseSeq a L) ↔ ∀ n, dist (a n) L ≤ ε := by
+  constructor
+  . intro h n
+    specialize h n
+    simp_all
+  . intro h n hn
+    lift n to ℕ using (by omega)
+    specialize h n
+    simp_all
 
-theorem Real.eventuallyClose_mono {a: Chapter6.Sequence} {ε₁ ε₂ L: ℝ} (hε: ε₁ ≤ ε₂)
+theorem Real.CloseSeq.mono {a: Chapter6.Sequence} {ε₁ ε₂ L: ℝ} (hε: ε₁ ≤ ε₂)
+  (hclose: ε₁.CloseSeq a L) :
+    ε₂.CloseSeq a L := by
+  intro n hn
+  specialize hclose n hn
+  rw [Real.Close, Real.dist_eq] at *
+  linarith
+
+theorem Real.EventuallyClose.mono {a: Chapter6.Sequence} {ε₁ ε₂ L: ℝ} (hε: ε₁ ≤ ε₂)
   (hclose: ε₁.EventuallyClose a L) :
-    ε₂.EventuallyClose a L := by sorry
+    ε₂.EventuallyClose a L := by
+  obtain ⟨ N, hN, hclose' ⟩ := hclose
+  use N, hN
+  exact CloseSeq.mono hε hclose'
 
 namespace Chapter6
 
@@ -234,13 +261,29 @@ theorem Sequence.tendsTo_def (a:Sequence) (L:ℝ) :
 theorem Sequence.tendsTo_iff (a:Sequence) (L:ℝ) :
   a.TendsTo L ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, |a n - L| ≤ ε := by sorry
 
-noncomputable abbrev seq_6_1_6 : Sequence := (fun (n:ℕ) ↦ 1-(10:ℝ)^(-(n:ℤ)-1):Sequence)
+noncomputable def seq_6_1_6 : Sequence := (fun (n:ℕ) ↦ 1-(10:ℝ)^(-(n:ℤ)-1):Sequence)
 
 /-- Examples 6.1.6 -/
-example : (0.1:ℝ).CloseSeq seq_6_1_6 1 := by sorry
+example : (0.1:ℝ).CloseSeq seq_6_1_6 1 := by
+  rw [seq_6_1_6, Real.CloseSeq.coe]
+  intro n
+  rw [Real.dist_eq, abs_sub_comm, abs_of_nonneg (by
+    rw [sub_nonneg]
+    rw (occs := .pos [2]) [show (1:ℝ) = 1 - 0 by norm_num]
+    gcongr
+    positivity
+  ), sub_sub_cancel, show (0.1:ℝ) = (10:ℝ)^(-1:ℤ) by norm_num]
+  gcongr
+  . norm_num
+  . omega
+
 
 /-- Examples 6.1.6 -/
-example : ¬ (0.01:ℝ).CloseSeq seq_6_1_6 1 := by sorry
+example : ¬ (0.01:ℝ).CloseSeq seq_6_1_6 1 := by
+  intro h
+  specialize h 0 (by positivity)
+  simp [seq_6_1_6, Real.dist_eq] at h
+  norm_num at h
 
 /-- Examples 6.1.6 -/
 example : (0.01:ℝ).EventuallyClose seq_6_1_6 1 := by sorry
@@ -336,7 +379,7 @@ theorem Sequence.lim_harmonic :
       rwa [←inv_eq_one_div _] at hN
 
 /-- Proposition 6.1.12 / Exercise 6.1.5 -/
-theorem Sequence.Cauchy_of_convergent {a:Sequence} (h:a.Convergent) : a.IsCauchy := by
+theorem Sequence.IsCauchy.convergent {a:Sequence} (h:a.Convergent) : a.IsCauchy := by
   sorry
 
 /-- Example 6.1.13 -/
@@ -461,7 +504,7 @@ theorem Sequence.tendsTo_sub {a b:Sequence} {L M:ℝ} (ha: a.TendsTo L) (hb: b.T
     (a - b).TendsTo (L - M) := by
   sorry
 
-theorem Sequence.lim_sub {a b:Sequence} (ha: a.Convergent) (hb: b.Convergent) :
+theorem Sequence.LIM_sub {a b:Sequence} (ha: a.Convergent) (hb: b.Convergent) :
     (a - b).Convergent ∧ lim (a - b) = lim a - lim b := by
   sorry
 

@@ -37,7 +37,7 @@ lemma ratPow_continuous {x α:ℝ} (hx: x > 0) {q: ℕ → ℚ}
   rw [←Sequence.Cauchy_iff_convergent]
   intro ε hε
   obtain ⟨ K, hK, hclose ⟩ := Sequence.lim_of_roots hx (ε*x^(-M)) (by positivity)
-  obtain ⟨ N, hN, hq ⟩ := Sequence.Cauchy_of_convergent ⟨ α, hq ⟩ (1/(K+1:ℝ)) (by positivity)
+  obtain ⟨ N, hN, hq ⟩ := Sequence.IsCauchy.convergent ⟨ α, hq ⟩ (1/(K+1:ℝ)) (by positivity)
   simp [Real.CloseSeq, Real.dist_eq] at hclose hK hN
   lift N to ℕ using hN
   lift K to ℕ using hK

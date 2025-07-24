@@ -5,6 +5,8 @@ import Analysis.Misc.SI
 namespace SI
 open UnitsSystem
 
+/- This is needed to keep dimensions such as `Length` and `Speed * Time` defeq to each other -/
+unseal Rat.add Rat.mul Rat.sub Rat.inv
 
 variable (m:Mass) (v:Speed) (F:Force) (p:Momentum) (E:Energy) (h:Length) (t:Time) (a:Acceleration)
 
@@ -32,6 +34,20 @@ example (ht : t = 3 • hour) : minute.in t = 180 := by
   simp [←Scalar.val_inj, hour, minute, ht]
   norm_num
 
+-- An example of how to use fractional units
 
+abbrev half_frequency_unit := (1/2:ℚ) • frequency_unit
+abbrev SqrtFrequency := Scalar half_frequency_unit
+abbrev sqrt_hertz:SqrtFrequency := StandardUnit _
+
+example : sqrt_hertz**2 = hertz := by
+  simp [←Scalar.val_inj, half_frequency_unit, frequency_unit, sqrt_hertz]
+
+example {w : SqrtFrequency} (hw : w = 2 • sqrt_hertz) : hertz.in (w**2) = 4 := by
+  simp [←Scalar.val_inj, half_frequency_unit, frequency_unit, hw]
+  norm_num
+
+/-- An example of a non-negative scalar type -/
+abbrev NNTemperature := { t:Temperature // t ≥ 0 }
 
 end SI

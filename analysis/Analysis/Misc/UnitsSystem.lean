@@ -1,5 +1,6 @@
 import Mathlib.Tactic
-import Mathlib.Algebra.Group.MinimalAxioms
+import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Order.Defs.PartialOrder
 
 /-! A framework to formalize units (such as length, time, mass, velocity, etc.) in Lean.
 -/
@@ -40,11 +41,15 @@ quantity with respect to some standard set of units (e.g., SI units). -/
 structure Scalar (d:Dimensions) where
   val : ℝ
 
+theorem Scalar.val_injective (d : Dimensions) : Function.Injective (Scalar.val (d := d)) :=
+  fun x y h => by aesop
+
 /- One has the option to `work in coordinates` in a given calculation by using `simp [←val_inj]` (or `simp [←cast_eq]` below, if casting is required).  Or one can adopt
 a `coordinate-free` approach in which any tool directly accessing `val` is avoided.
 This library allows for both approaches to be employed. -/
 theorem Scalar.val_inj {d:Dimensions} (q₁ q₂:Scalar d) :
-  q₁.val = q₂.val ↔ q₁ = q₂ := by aesop
+  q₁.val = q₂.val ↔ q₁ = q₂ := Scalar.val_injective _ |>.eq_iff
+
 
 /-- We will encounter a technical issue with Lean's type system, namely that the type `Scalar d`
 and `Scalar d'` are not identical if `d'` and `d` are merely propositionally equal (as opposed
@@ -54,8 +59,8 @@ create a casting operator, where the propositional equality is attempted to be r
 tactic `module` whenever possible.  Unfortunately, the casting operator from `Scalar d` to `Scalar d'`
 cannot be captured by standard Lean coercion classes such as `Coe` or `CoeOut` as each of the types
 here contain parameters not present in the other.-/
-def Scalar.cast {d d':Dimensions}  (q: Scalar d) (h : d' = d := by module) : Scalar d' :=
-  _root_.cast (by rw [h]) q
+def Scalar.cast {d d':Dimensions}  (q: Scalar d) (_ : d' = d := by module) : Scalar d' :=
+  ⟨q.val⟩
 
 /-- This is a variant of `Scalar.val_inj` that handles casts.-/
 theorem Scalar.cast_eq {d d':Dimensions} (q: Scalar d) (q': Scalar d') (h: d = d' := by module)
@@ -97,7 +102,7 @@ theorem Scalar.toFormal_inj {d: Dimensions} (q₁ q₂:Scalar d) :
 theorem Scalar.toFormal_cast {d d': Dimensions} (q:Scalar d) (h:d' = d := by module) :
   ((q.cast h):Formal) = (q:Formal) := by
   subst h
-  simp_all only [cast, _root_.cast_eq]
+  simp_all only [cast]
 
 instance Scalar.instZero {d:Dimensions} : Zero (Scalar d) where
   zero := ⟨ 0 ⟩
@@ -124,7 +129,7 @@ theorem Scalar.val_add {d:Dimensions} (q₁ q₂:Scalar d) : (q₁ + q₂).val =
 /-- Note how the `simp` lemma is in the direction of pushing casts inward. -/
 @[simp,norm_cast]
 theorem Scalar.toFormal_add {d:Dimensions} (q₁ q₂:Scalar d) : ((q₁ + q₂:Scalar d):Formal) = (q₁:Formal) + (q₂:Formal) := by
-  simp [toFormal, MonoidAlgebra.single_add]
+  simp [toFormal]
 
 instance Scalar.instNeg {d:Dimensions} : Neg (Scalar d) where
   neg q := ⟨-q.val⟩
@@ -140,15 +145,27 @@ instance Scalar.instNeZero_neg {d:Dimensions} (q:Scalar d) [h:NeZero q] : NeZero
 theorem Scalar.toFormal_neg {d:Dimensions} (q:Scalar d) : ((-q:Scalar d):Formal) = -(q:Formal) := by
   simp [toFormal]
 
-instance Scalar.instAddGroup {d:Dimensions} : AddGroup (Scalar d) :=
-AddGroup.ofLeftAxioms
-  (by intros; rw [←toFormal_inj]; push_cast; module)
-  (by intros; rw [←toFormal_inj]; push_cast; module)
-  (by intros; rw [←toFormal_inj]; push_cast; module)
+instance Scalar.instSub {d:Dimensions} : Sub (Scalar d) where
+  sub q₁ q₂ := ⟨q₁.val - q₂.val⟩
 
-instance Scalar.instAddCommGroup {d:Dimensions} : AddCommGroup (Scalar d) where
-  add_comm q₁ q₂ := by
-    rw [←toFormal_inj]; push_cast; module
+@[simp]
+theorem Scalar.val_sub {d:Dimensions} (q₁ q₂ : Scalar d) : (q₁ - q₂).val = q₁.val - q₂.val := rfl
+
+@[simp,norm_cast]
+theorem Scalar.toFormal_sub {d:Dimensions} (q₁ q₂ :Scalar d) : ((q₁ - q₂ :Scalar d):Formal) = (q₁:Formal) - q₂ := by
+  simp [toFormal]
+
+instance Scalar.instSMul {α} {d:Dimensions} [SMul α ℝ] : SMul α (Scalar d) where
+  smul c q := ⟨c • q.val⟩
+
+@[simp]
+theorem Scalar.val_smul {α} {d:Dimensions} [SMul α ℝ] (a : α) (q:Scalar d) : (a • q).val = a • q.val := rfl
+
+instance Scalar.instAddGroup {d:Dimensions} : AddGroup (Scalar d) :=
+  val_injective _ |>.addGroup _ val_zero val_add val_neg val_sub (Function.swap val_smul) (Function.swap val_smul)
+
+instance Scalar.instAddCommGroup {d:Dimensions} : AddCommGroup (Scalar d) :=
+  val_injective _ |>.addCommGroup _ val_zero val_add val_neg val_sub (Function.swap val_smul) (Function.swap val_smul)
 
 /-- The dimensionless scalars `Scalar 0` can be identified with real numbers. -/
 @[coe]
@@ -161,8 +178,7 @@ instance Scalar.instCoeReal : Coe ℝ (Scalar 0) where
 theorem Scalar.coe_val (r:ℝ) : (r:Scalar 0).val = r := rfl
 
 @[norm_cast,simp]
-theorem Scalar.coe_zero : ((0:ℝ):Scalar 0) = 0 := by
-  simp [ofReal]; rfl
+theorem Scalar.coe_zero : ((0:ℝ):Scalar 0) = 0 := rfl
 
 theorem Scalar.neZero_coe_iff {r:ℝ} : NeZero (r:Scalar 0) ↔ r ≠ 0 := by
   simp [neZero_iff]
@@ -172,12 +188,10 @@ theorem Scalar.coe_inj {r s:ℝ} : (r:Scalar 0) = (s:Scalar 0) ↔ r = s := by
   simp [ofReal]
 
 @[norm_cast,simp]
-theorem Scalar.coe_add (r s:ℝ) : ((r+s:ℝ):Scalar 0) = (r:Scalar 0) + (s:Scalar 0) := by
-  simp [ofReal]; rfl
+theorem Scalar.coe_add (r s:ℝ) : ((r+s:ℝ):Scalar 0) = (r:Scalar 0) + (s:Scalar 0) := rfl
 
 @[norm_cast,simp]
-theorem Scalar.coe_neg (r:ℝ) : ((-r:ℝ):Scalar 0) = -(r:Scalar 0) := by
-  simp [ofReal]; rfl
+theorem Scalar.coe_neg (r:ℝ) : ((-r:ℝ):Scalar 0) = -(r:Scalar 0) := rfl
 
 @[norm_cast,simp]
 theorem Scalar.coe_sub (r s:ℝ) : ((r-s:ℝ):Scalar 0) = (r:Scalar 0) - (s:Scalar 0) := by
@@ -196,9 +210,6 @@ theorem Formal.coe_zero : ((0:ℝ):Formal) = 0 := by
 theorem Formal.coe_one : ((1:ℝ):Formal) = 1 := by
   rfl
 
-instance Scalar.instSMul {d:Dimensions} : SMul ℝ (Scalar d) where
-  smul c q := ⟨c * q.val⟩
-
 @[norm_cast,simp]
 theorem Formal.coe_nat (n:ℕ) : ((n:ℝ):Formal) = (n:Formal) := by
   rfl
@@ -206,10 +217,6 @@ theorem Formal.coe_nat (n:ℕ) : ((n:ℝ):Formal) = (n:Formal) := by
 @[norm_cast,simp]
 theorem Formal.coe_int (n:ℤ) : ((n:ℝ):Formal) = (n:Formal) := by
   rfl
-
-
-@[simp]
-theorem Scalar.val_smul {d:Dimensions} (c:ℝ) (q:Scalar d) : (c • q).val = c * q.val := rfl
 
 @[norm_cast,simp]
 theorem Scalar.toFormal_smul {d:Dimensions} (c:ℝ) (q:Scalar d)
@@ -225,11 +232,11 @@ theorem Formal.smul_eq_mul (c:ℝ) (x:Formal) : c • x = (c:Formal) * x := by
 
 @[simp]
 theorem Formal.smul_eq_mul' (c:ℕ) (x:Formal) : c • x = (c:Formal) * x := by
-  simp [Scalar.toFormal]
+  simp
 
 @[simp]
 theorem Formal.smul_eq_mul'' (c:ℤ) (x:Formal) : c • x = (c:Formal) * x := by
-  simp [Scalar.toFormal]
+  simp
 
 @[norm_cast,simp]
 theorem Scalar.coe_mul (r s:ℝ) : ((r*s:ℝ):Scalar 0) = r • (s:Scalar 0) := by
@@ -315,7 +322,6 @@ theorem Scalar.inv_mul_self {d:Dimensions} (q:Scalar d) [h:NeZero q] :  (q.inv:F
 @[simp]
 theorem Scalar.inv_coe (r:ℝ) :  ((r:Scalar 0).inv:Formal) = ((r⁻¹:ℝ):Scalar 0) := by
   rw [←toFormal_cast _ (show 0 = -0 by module)]; congr
-  symm; simp [←cast_eq]
 
 @[simp]
 theorem Scalar.mul_inv {d₁ d₂:Dimensions} (q₁:Scalar d₁) (q₂:Scalar d₂) : (q₁ * q₂).inv = ((q₁.inv) * (q₂.inv)).cast := by
@@ -375,7 +381,31 @@ theorem Scalar.toFormal_hDiv'' {d:Dimensions} (q:Scalar d) (n:ℕ) :
 theorem Scalar.toFormal_hDiv''' {d:Dimensions} (q:Scalar d) (n:ℤ) :
   ((q / n:Scalar _):Formal) = (q:Formal) * (((n:ℝ)⁻¹:ℝ):Formal) := toFormal_hDiv' _ _
 
-/-- THe standard unit of `Scalar d` is the quantity whose data `val` is equal to 1. -/
+
+instance Scalar.instLE (d:Dimensions) : LE (Scalar d) where
+  le x y := x.val ≤ y.val
+
+theorem Scalar.val_le {d:Dimensions} (x y:Scalar d) :
+  x ≤ y ↔ x.val ≤ y.val := by rfl
+
+noncomputable instance Scalar.instLinearOrder (d:Dimensions) : LinearOrder (Scalar d) where
+  le_refl := by simp [val_le]
+  le_trans := by simp [val_le]; intros; order
+  lt_iff_le_not_le := by simp [val_le]
+  le_antisymm := by simp [val_le, ←val_inj]; intros; order
+  le_total := by simp [val_le]; intros; apply LinearOrder.le_total
+  toDecidableLE := Classical.decRel _
+
+theorem Scalar.val_lt {d:Dimensions} (x y:Scalar d) :
+  x < y ↔ x.val < y.val := by simp only [lt_iff_not_ge, val_le]
+
+noncomputable instance Scalar.instOrderedSMul (d:Dimensions) : OrderedSMul ℝ (Scalar d) where
+  smul_lt_smul_of_pos := by simp [val_lt]; intros; gcongr
+  lt_of_smul_lt_smul_of_pos := by simp [val_lt]; intro _ _ _ _ h2; rwa [←mul_lt_mul_iff_of_pos_left h2]
+
+-- TODO: add in some `gcongr` lemmas for this order
+
+/-- The standard unit of `Scalar d` is the quantity whose data `val` is equal to 1. -/
 def StandardUnit (d:Dimensions) : Scalar d := ⟨ 1 ⟩
 
 @[simp]
@@ -421,7 +451,7 @@ theorem Scalar.in_def {d:Dimensions} (unit q:Scalar d) [h: NeZero unit] : q = (u
 
 @[simp]
 theorem Scalar.in_smul {d:Dimensions} (c:ℝ) (unit q:Scalar d) : unit.in (c • q) = c * unit.in q := by
-  simp [←val_inj]; ring
+  simp; ring
 
 theorem Scalar.in_inj {d:Dimensions} (unit q₁ q₂:Scalar d) [h: NeZero unit] : unit.in q₁ = unit.in q₂ ↔ q₁ = q₂ := by
   simp [neZero_iff] at h

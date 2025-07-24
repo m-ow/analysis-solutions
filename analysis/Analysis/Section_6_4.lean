@@ -283,7 +283,7 @@ theorem Sequence.finite_limsup_liminf_of_bounded {a:Sequence} (hbound: a.IsBound
 theorem Sequence.Cauchy_iff_convergent (a:Sequence) :
   a.IsCauchy ↔ a.Convergent := by
   -- This proof is written to follow the structure of the original text.
-  refine ⟨ ?_, Cauchy_of_convergent ⟩
+  refine ⟨ ?_, IsCauchy.convergent ⟩
   intro h
   obtain ⟨ ⟨ L_plus, hL_plus ⟩, ⟨ L_minus, hL_minus ⟩ ⟩ :=
     finite_limsup_liminf_of_bounded (bounded_of_cauchy h)

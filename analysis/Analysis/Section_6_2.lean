@@ -21,8 +21,7 @@ Main constructions and results of this section:
 /-- Definition 6.2.1 -/
 theorem EReal.def (x:EReal) : (∃ (y:Real), y = x) ∨ x = ⊤ ∨ x = ⊥ := by
   revert x
-  rw [EReal.forall]
-  simp
+  simp [EReal.forall]
 
 theorem EReal.real_neq_infty (x:ℝ) : (x:EReal) ≠ ⊤ := coe_ne_top _
 
@@ -60,16 +59,42 @@ theorem EReal.lt_iff (x y:EReal) : x < y ↔ x ≤ y ∧ x ≠ y := lt_iff_le_an
 #check EReal.coe_lt_coe_iff
 
 /-- Examples 6.2.4 -/
-example : (3:EReal) ≤ (5:EReal) := by sorry
+example : (3:EReal) ≤ (5:EReal) := by
+  rw [EReal.le_iff]
+  left
+  use (3:ℝ), (5:ℝ)
+  norm_cast
+
 
 /-- Examples 6.2.4 -/
-example : (3:EReal) < ⊤ := by sorry
+example : (3:EReal) < ⊤ := by
+  rw [EReal.lt_iff]
+  constructor
+  . rw [EReal.le_iff]
+    right
+    left
+    rfl
+  . apply EReal.real_neq_infty
+
 
 /-- Examples 6.2.4 -/
-example : (⊥:EReal) < ⊤ := by sorry
+example : (⊥:EReal) < ⊤ := by
+  rw [EReal.lt_iff]
+  constructor
+  . rw [EReal.le_iff]
+    right
+    left
+    rfl
+  . exact Ne.symm EReal.infty_neq_neg_infty
+
 
 /-- Examples 6.2.4 -/
-example : ¬ (3:EReal) ≤ ⊥ := by sorry
+example : ¬ (3:EReal) ≤ ⊥ := by
+  by_contra h
+  rw [EReal.le_iff] at h
+  simp at h
+  apply EReal.real_neq_neg_infty at h
+  exact h
 
 #check instCompleteLinearOrderEReal
 

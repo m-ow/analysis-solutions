@@ -37,7 +37,7 @@ lemma PSet.eq_of_ofNat_equiv_ofNat (n m : ℕ): (ofNat.{u} n).Equiv (ofNat.{u} m
   · intro heq
     rw [this m n (Nat.le_of_not_ge hmn) heq.symm]
   intro h
-  rw [PSet.Equiv.eq, Set.ext_iff] at h
+  rw [Equiv.eq, Set.ext_iff] at h
   have : n ≤ m := by
     specialize h (ofNat m)
     simpa [mem_irrefl _, mem_ofNat_iff] using h

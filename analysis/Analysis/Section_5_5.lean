@@ -127,21 +127,17 @@ lemma Real.LUB_claim1 (n : ℕ) {E: Set Real} (hE: Set.Nonempty E) (hbound: BddA
       exact upperBound_upper (le_of_lt claim1_2) hbound
     have claim1_4 : ∃ m:ℤ, L < m ∧ m ≤ K ∧ m*ε ∈ upperBounds E ∧ (m-1)*ε ∉ upperBounds E := by
       convert Real.upperBound_between (n := n) ?_ ?_ claim1_2
-      . qify; rw [←gt_iff_lt, gt_of_coe]; exact claim1_3
+      . qify; rwa [←gt_iff_lt, gt_of_coe]
       apply upperBound_upper (le_of_lt _) hbound
       rw [←gt_iff_lt]; exact hK
     obtain ⟨ m, _, _, hm, hm' ⟩ := claim1_4; use m
     have : (m/(n+1):ℚ) = m*ε := by simp [ε,ratCast_mul]; field_simp
-    constructor
-    . convert hm
+    refine ⟨ by convert hm, ?_ ⟩
     convert hm'
     simp [ratCast_sub, this, sub_mul, ε]
   intro _ _ ⟨ _, _ ⟩ ⟨ _, _ ⟩; solve_by_elim [upperBound_discrete_unique]
 
-lemma Real.LUB_claim2
-  (E : Set Real)
-  (N:ℕ)
-  (a b: ℕ → ℚ)
+lemma Real.LUB_claim2 {E : Set Real} (N:ℕ) {a b: ℕ → ℚ}
   (hb : ∀ n, b n = 1 / (↑n + 1))
   (hm1 : ∀ (n : ℕ), ↑(a n) ∈ upperBounds E)
   (hm2 : ∀ (n : ℕ), ↑((a - b) n) ∉ upperBounds E)
@@ -151,16 +147,14 @@ lemma Real.LUB_claim2
     constructor
     . specialize hm1 n; specialize hm2 n'
       have bound1 : ((a-b) n') < a n := by
-        rw [lt_of_coe]
-        contrapose! hm2; solve_by_elim [upperBound_upper]
+        rw [lt_of_coe]; contrapose! hm2; solve_by_elim [upperBound_upper]
       have bound3 : 1/((n':ℚ)+1) ≤ 1/(N+1) := by gcongr
       rw [←neg_le_neg_iff] at bound3
       rw [Pi.sub_apply] at bound1
       linarith [hb n']
     specialize hm1 n'; specialize hm2 n
     have bound1 : ((a-b) n) < a n' := by
-      rw [lt_of_coe]
-      contrapose! hm2; exact upperBound_upper hm2 hm1
+      rw [lt_of_coe]; contrapose! hm2; exact upperBound_upper hm2 hm1
     have bound2 : ((a-b) n) = a n - 1 / (n+1) := by simp [hb n]
     have bound3 : 1/((n+1):ℚ) ≤ 1/(N+1) := by gcongr
     linarith
@@ -177,7 +171,7 @@ theorem Real.LUB_exist {E: Set Real} (hE: Set.Nonempty E) (hbound: BddAbove E): 
   have hb : (b:Sequence).IsCauchy := IsCauchy.harmonic
   have hm1 (n:ℕ) : (a n:Real) ∈ upperBounds E := (claim1 n).exists.choose_spec.1
   have hm2 (n:ℕ) : ¬ ((a - b) n: Real) ∈ upperBounds E := (claim1 n).exists.choose_spec.2
-  have claim2 (N:ℕ) := Real.LUB_claim2 _ N _ _ (by aesop) hm1 hm2
+  have claim2 (N:ℕ) := Real.LUB_claim2 N (by aesop) hm1 hm2
   have claim3 : (a:Sequence).IsCauchy := (LIM_of_Cauchy claim2).1
   set S := LIM a
   have claim4 : S = LIM (a - b) := by
@@ -186,8 +180,7 @@ theorem Real.LUB_exist {E: Set Real} (hE: Set.Nonempty E) (hbound: BddAbove E): 
   use S
   rw [isLUB_def, upperBound_def]
   constructor
-  . intro x hx
-    apply Real.LIM_of_ge claim3
+  . intros; apply Real.LIM_of_ge claim3
     intro n; specialize hm1 n
     rw [upperBound_def] at hm1; solve_by_elim
   intro y hy
@@ -195,8 +188,8 @@ theorem Real.LUB_exist {E: Set Real} (hE: Set.Nonempty E) (hbound: BddAbove E): 
     contrapose! hm2; use n
     exact upperBound_upper (le_of_lt hm2) hy
   rw [claim4]
-  apply LIM_of_le _ claim5
-  solve_by_elim [IsCauchy.sub]
+  exact LIM_of_le (by solve_by_elim [Sequence.IsCauchy.sub]) claim5
+
 
 /-- A bare-bones extended real class to define supremum. -/
 inductive ExtendedReal where
@@ -239,8 +232,7 @@ noncomputable abbrev ExtendedReal.sup (E: Set Real) : ExtendedReal :=
   (fun _ ↦ ⊤)) (fun _ ↦ ⊥)
 
 /-- Definition 5.5.10 (Supremum)-/
-theorem ExtendedReal.sup_of_empty : sup ∅ = ⊥ := by
-  simp [sup]
+theorem ExtendedReal.sup_of_empty : sup ∅ = ⊥ := by simp [sup]
 
 /-- Definition 5.5.10 (Supremum)-/
 theorem ExtendedReal.sup_of_unbounded {E: Set Real} (hb: ¬ BddAbove E) : sup E = ⊤ := by
@@ -254,8 +246,7 @@ theorem ExtendedReal.sup_of_bounded {E: Set Real} (hnon: E.Nonempty) (hb: BddAbo
   convert (Real.LUB_exist hnon hb).choose_spec
 
 theorem ExtendedReal.sup_of_bounded_finite {E: Set Real} (hnon: E.Nonempty) (hb: BddAbove E) :
-    (sup E).IsFinite := by
-  simp [sup, hnon, hb, IsFinite]
+    (sup E).IsFinite := by simp [sup, hnon, hb, IsFinite]
 
 /-- Proposition 5.5.12 -/
 theorem Real.exist_sqrt_two : ∃ x:Real, x^2 = 2 := by
@@ -274,10 +265,8 @@ theorem Real.exist_sqrt_two : ∃ x:Real, x^2 = 2 := by
   have claim2': E.Nonempty := Set.nonempty_of_mem claim2
   set x := ((ExtendedReal.sup E):Real)
   have claim3 : IsLUB E x := by solve_by_elim [ExtendedReal.sup_of_bounded]
-  have claim4 : x ≥ 1 := by
-    rw [isLUB_def, upperBound_def] at claim3; solve_by_elim [claim3.1]
-  have claim5 : x ≤ 2 := by
-    rw [isLUB_def] at claim3; solve_by_elim [claim3.2]
+  have claim4 : x ≥ 1 := by rw [isLUB_def, upperBound_def] at claim3; solve_by_elim [claim3.1]
+  have claim5 : x ≤ 2 := by rw [isLUB_def] at claim3; solve_by_elim [claim3.2]
   have claim6 : x.isPos := by rw [isPos_iff]; linarith
   use x
   rcases trichotomous' (x^2) 2 with h | h | h
@@ -295,8 +284,7 @@ theorem Real.exist_sqrt_two : ∃ x:Real, x^2 = 2 := by
       _ = x^2 - 4 * ε := by ring
       _ > 2 := hε3
     have why (y:Real) (hy: y ∈ E) : x - ε ≥ y := by sorry
-    have claim13: x-ε ∈ upperBounds E := by
-      rwa [upperBound_def]
+    have claim13: x-ε ∈ upperBounds E := by rwa [upperBound_def]
     have claim14: x ≤ x-ε := by rw [isLUB_def] at claim3; solve_by_elim [claim3.2]
     linarith
   . have claim7 : ∃ ε, 0 < ε ∧ ε < 1 ∧ x^2 + 5*ε < 2 := by
@@ -313,8 +301,7 @@ theorem Real.exist_sqrt_two : ∃ x:Real, x^2 = 2 := by
       _ = x^2 + 5*ε := by ring
       _ < 2 := hε3
     have claim9 : x + ε ∈ E := by simp [E, claim8]; linarith
-    have claim10 : x + ε ≤ x := by
-      rw [isLUB_def, upperBound_def] at claim3; solve_by_elim [claim3.1]
+    have claim10 : x + ε ≤ x := by rw [isLUB_def, upperBound_def] at claim3; solve_by_elim [claim3.1]
     linarith
   assumption
 
@@ -337,9 +324,7 @@ theorem ExtendedReal.inf_of_unbounded {E: Set Real} (hb: ¬ BddBelow E) : inf E 
   simp [inf, hE, hb]
 
 theorem ExtendedReal.inf_of_bounded {E: Set Real} (hnon: E.Nonempty) (hb: BddBelow E) :
-    IsGLB E (inf E) := by
-  simp [hnon, hb, inf]
-  exact (Real.GLB_exist hnon hb).choose_spec
+    IsGLB E (inf E) := by simp [hnon, hb, inf]; exact (Real.GLB_exist hnon hb).choose_spec
 
 theorem ExtendedReal.inf_of_bounded_finite {E: Set Real} (hnon: E.Nonempty) (hb: BddBelow E) :
     (inf E).IsFinite := by simp [inf, hnon, hb, IsFinite]

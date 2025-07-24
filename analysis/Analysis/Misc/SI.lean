@@ -1,21 +1,24 @@
 import Mathlib.Tactic
 import Analysis.Misc.UnitsSystem
+import Mathlib.Algebra.Group.MinimalAxioms
 
 
-/-- The SI unit system. -/
+/-- The SI unit system.  In order to permit fractional dimensions, we allow dimensions to be rational; but then to maintain defeq of various explicit dimensions, we need to unseal the arithmetic operations on the rationals. -/
 @[ext]
 structure SI_dimensions where
-  units_length : ℤ
-  units_mass : ℤ
-  units_time : ℤ
-  units_current : ℤ
-  units_temperature : ℤ
-  units_amount : ℤ
-  units_intensity : ℤ
+  units_length : ℚ
+  units_mass : ℚ
+  units_time : ℚ
+  units_current : ℚ
+  units_temperature : ℚ
+  units_amount : ℚ
+  units_intensity : ℚ
 deriving DecidableEq
 
 instance SI_dimensions.instZero : Zero SI_dimensions where
   zero := ⟨0, 0, 0, 0, 0, 0, 0⟩
+
+theorem SI_dimensions.zero_eq : (0:SI_dimensions) = ⟨ 0,0,0,0,0,0,0⟩ := rfl
 
 /-- The addition structure here is simple enough that one gets a lot of definitional equalities, e.g., between `d₁+d₂` and `d₂+d₁` for explicit choices of `d₁` and `d₂`,
 which is convenient as it means we do not need to utilize the `cast` operator much. -/
@@ -33,15 +36,38 @@ instance SI_dimensions.instNeg : Neg SI_dimensions where
   neg d := ⟨-d.units_length, -d.units_mass, -d.units_time, -d.units_current,
             -d.units_temperature, -d.units_amount, -d.units_intensity⟩
 
+@[simp]
+theorem Rat.neg_eq (q:ℚ) : Rat.neg q = -q := rfl
+
+theorem Rat.add_eq (q r:ℚ) : Rat.add q r = q + r := rfl
+
 instance SI_dimensions.instAddGroup : AddGroup SI_dimensions :=
 AddGroup.ofLeftAxioms
   (by intros; simp_rw [HAdd.hAdd, Add.add]; simp [add_assoc])
   (by intros; simp_rw [HAdd.hAdd, Add.add, OfNat.ofNat, Zero.zero]; simp)
-  (by intros; simp_rw [Neg.neg, HAdd.hAdd, Add.add, OfNat.ofNat, Zero.zero]; simp [Int.Linear.neg_fold])
+  (by intros; simp_rw [Neg.neg, HAdd.hAdd, Add.add, OfNat.ofNat, Zero.zero]; simp)
 
 instance SI_dimensions.instAddCommGroup : AddCommGroup SI_dimensions where
   add_comm d₁ d₂ := by
     simp_rw [HAdd.hAdd, Add.add]; simp [add_comm]
+
+instance SI_dimensions.instSMul : SMul ℚ SI_dimensions where
+  smul q d := ⟨q * d.units_length, q * d.units_mass, q * d.units_time, q * d.units_current,
+                q * d.units_temperature, q * d.units_amount, q * d.units_intensity⟩
+
+instance SI_dimensions.instModule : Module ℚ SI_dimensions where
+  one_smul d := by
+    ext <;> simp [HSMul.hSMul, SMul.smul, One.one]
+  mul_smul q₁ q₂ d := by
+    ext <;> simp [HSMul.hSMul, SMul.smul, mul_assoc]
+  smul_add q d₁ d₂ := by
+    ext <;> simp [HSMul.hSMul, SMul.smul, HAdd.hAdd, Add.add, add_smul] <;> simp [Rat.add_eq, mul_add]
+  smul_zero q := by
+    ext <;> simp [HSMul.hSMul, SMul.smul, zero_eq]
+  add_smul d₁ d₂ q := by
+    ext <;> simp [HAdd.hAdd, Add.add, HSMul.hSMul, SMul.smul, add_smul] <;> simp [Rat.add_eq, add_mul]
+  zero_smul d := by
+    ext <;> simp [HSMul.hSMul, SMul.smul, zero_eq]
 
 abbrev SI : UnitsSystem := {
   Dimensions := SI_dimensions
@@ -51,6 +77,7 @@ abbrev SI : UnitsSystem := {
 /-- The SI system will be automatically installed as a global instance by any Lean file that imports this one.  This makes it difficult to use any competing unit system
 simultaneously, but that should be a rare use case. -/
 instance instSI : UnitsSystem := SI
+instance instSI_module : Module ℚ SI.Dimensions := SI_dimensions.instModule
 
 namespace SI
 open UnitsSystem
